@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<title>Hospital Analytics</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+</head>
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<header>
+
+    <h1>🏥 Hospital Data Analytics System</h1>
+
+    <p>
+        Hospital Management & Data Analytics Platform
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
+
+<nav>
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📊 Analytics
+    </a>
+
+    {% endif %}
+
+
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+
+    <a href="{{ url_for('logout') }}">
+        🚪 Logout
+    </a>
+
+</nav>
+
+
+<!-- =====================================================
+     USER INFORMATION
+     ===================================================== -->
+
+<div class="user-info">
+
+    <p>
+        Welcome,
+        <strong>{{ session["username"] }}</strong>
+    </p>
+
+    <p>
+        Role:
+        <strong>{{ session["role"] }}</strong>
+    </p>
+
+</div>
+
+
+<!-- =====================================================
+     PAGE TITLE
+     ===================================================== -->
+
+<h2>📊 Hospital Analytics</h2>
+
+<p>
+    This page provides statistical summaries and visual
+    analysis of hospital patients, doctors and appointments.
+</p>
+
+
+<!-- =====================================================
+     1. PATIENT COUNT BY GENDER
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>1. Patient Count by Gender</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Gender</th>
+                <th>Total Patients</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in gender_data %}
+
+            <tr>
+
+                <td>
+                    {{ row["gender"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="genderChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     2. PATIENT COUNT BY AGE GROUP
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>2. Patient Count by Age Group</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Age Group</th>
+                <th>Total Patients</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in age_group_data %}
+
+            <tr>
+
+                <td>
+                    {{ row["age_group"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="ageGroupChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     3. APPOINTMENT COUNT BY STATUS
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>3. Appointment Count by Status</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Status</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in status_data %}
+
+            <tr>
+
+                <td>
+                    {{ row["status"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="statusChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     4. DOCTOR COUNT BY SPECIALIZATION
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>4. Doctor Count by Specialization</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Specialization</th>
+                <th>Total Doctors</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in specialization_data %}
+
+            <tr>
+
+                <td>
+                    {{ row["specialization"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="specializationChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     5. DOCTOR COUNT BY DEPARTMENT
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>5. Doctor Count by Department</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Department</th>
+                <th>Total Doctors</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in department_data %}
+
+            <tr>
+
+                <td>
+                    {{ row["department"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="departmentChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     6. DOCTOR APPOINTMENT WORKLOAD
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>6. Doctor Appointment Workload</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Doctor</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in doctor_workload %}
+
+            <tr>
+
+                <td>
+                    {{ row["doctor_name"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="doctorWorkloadChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     7. PATIENT APPOINTMENT FREQUENCY
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>7. Patient Appointment Frequency</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Patient</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in patient_frequency %}
+
+            <tr>
+
+                <td>
+                    {{ row["patient_name"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="patientFrequencyChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     8. APPOINTMENTS BY DATE
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>8. Appointments by Date</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Appointment Date</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in appointments_by_date %}
+
+            <tr>
+
+                <td>
+                    {{ row["appointment_date"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="appointmentsDateChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     9. APPOINTMENTS BY MONTH
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>9. Appointments by Month</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Month</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in appointments_by_month %}
+
+            <tr>
+
+                <td>
+                    {{ row["month"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="appointmentsMonthChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     10. APPOINTMENTS BY DAY OF WEEK
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>10. Appointments by Day of Week</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Day</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in appointments_by_day %}
+
+            <tr>
+
+                <td>
+                    {{ row["day_name"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="dayOfWeekChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     11. DOCTOR WORKLOAD BY DATE
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>11. Doctor Workload by Date</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Date</th>
+                <th>Doctor</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in doctor_workload_by_date %}
+
+            <tr>
+
+                <td>
+                    {{ row["appointment_date"] }}
+                </td>
+
+                <td>
+                    {{ row["doctor_name"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="doctorDateWorkloadChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     12. PATIENT VISITS BY DATE
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>12. Patient Visits by Date</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Total Visits</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in patient_visits_by_date %}
+
+            <tr>
+
+                <td>
+                    {{ row["appointment_date"] }}
+                </td>
+
+                <td>
+                    {{ row["patient_name"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="patientVisitsDateChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     13. APPOINTMENT STATUS BY DATE
+     ===================================================== -->
+
+<div class="analytics-section">
+
+    <h2>13. Appointment Status by Date</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Total Appointments</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+            {% for row in appointment_status_by_date %}
+
+            <tr>
+
+                <td>
+                    {{ row["appointment_date"] }}
+                </td>
+
+                <td>
+                    {{ row["status"] }}
+                </td>
+
+                <td>
+                    {{ row["total"] }}
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+
+    <div class="chart-container">
+
+        <canvas id="statusDateChart"></canvas>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     JAVASCRIPT / CHARTS
+     ===================================================== -->
+
+<script>
+
+    /* =====================================================
+       1. PATIENT COUNT BY GENDER
+       ===================================================== */
+
+    const genderData =
+        {{ gender_data | map(attribute="gender") | list | tojson }};
+
+    const genderTotals =
+        {{ gender_data | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("genderChart"),
+        {
+            type: "pie",
+
+            data: {
+
+                labels: genderData,
+
+                datasets: [
+                    {
+                        label: "Patients",
+
+                        data: genderTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       2. PATIENT COUNT BY AGE GROUP
+       ===================================================== */
+
+    const ageGroupData =
+        {{ age_group_data | map(attribute="age_group") | list | tojson }};
+
+    const ageGroupTotals =
+        {{ age_group_data | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("ageGroupChart"),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: ageGroupData,
+
+                datasets: [
+                    {
+                        label: "Patients",
+
+                        data: ageGroupTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       3. APPOINTMENT COUNT BY STATUS
+       ===================================================== */
+
+    const statusLabels =
+        {{ status_data | map(attribute="status") | list | tojson }};
+
+    const statusTotals =
+        {{ status_data | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("statusChart"),
+        {
+            type: "doughnut",
+
+            data: {
+
+                labels: statusLabels,
+
+                datasets: [
+                    {
+                        label: "Appointments",
+
+                        data: statusTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       4. DOCTOR COUNT BY SPECIALIZATION
+       ===================================================== */
+
+    const specializationLabels =
+        {{ specialization_data | map(attribute="specialization") | list | tojson }};
+
+    const specializationTotals =
+        {{ specialization_data | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("specializationChart"),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: specializationLabels,
+
+                datasets: [
+                    {
+                        label: "Doctors",
+
+                        data: specializationTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       5. DOCTOR COUNT BY DEPARTMENT
+       ===================================================== */
+
+    const departmentLabels =
+        {{ department_data | map(attribute="department") | list | tojson }};
+
+    const departmentTotals =
+        {{ department_data | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("departmentChart"),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: departmentLabels,
+
+                datasets: [
+                    {
+                        label: "Doctors",
+
+                        data: departmentTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       6. DOCTOR APPOINTMENT WORKLOAD
+       ===================================================== */
+
+    const doctorWorkloadLabels =
+        {{ doctor_workload | map(attribute="doctor_name") | list | tojson }};
+
+    const doctorWorkloadTotals =
+        {{ doctor_workload | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("doctorWorkloadChart"),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: doctorWorkloadLabels,
+
+                datasets: [
+                    {
+                        label: "Appointments",
+
+                        data: doctorWorkloadTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+
+                indexAxis: "y"
+            }
+        }
+    );
+
+
+    /* =====================================================
+       7. PATIENT APPOINTMENT FREQUENCY
+       ===================================================== */
+
+    const patientFrequencyLabels =
+        {{ patient_frequency | map(attribute="patient_name") | list | tojson }};
+
+    const patientFrequencyTotals =
+        {{ patient_frequency | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("patientFrequencyChart"),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: patientFrequencyLabels,
+
+                datasets: [
+                    {
+                        label: "Appointments",
+
+                        data: patientFrequencyTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true,
+
+                indexAxis: "y"
+            }
+        }
+    );
+
+
+    /* =====================================================
+       8. APPOINTMENTS BY DATE
+       ===================================================== */
+
+    const appointmentDateLabels =
+        {{ appointments_by_date | map(attribute="appointment_date") | list | tojson }};
+
+    const appointmentDateTotals =
+        {{ appointments_by_date | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("appointmentsDateChart"),
+        {
+            type: "line",
+
+            data: {
+
+                labels: appointmentDateLabels,
+
+                datasets: [
+                    {
+                        label: "Appointments",
+
+                        data: appointmentDateTotals,
+
+                        fill: false
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       9. APPOINTMENTS BY MONTH
+       ===================================================== */
+
+    const appointmentMonthLabels =
+        {{ appointments_by_month | map(attribute="month") | list | tojson }};
+
+    const appointmentMonthTotals =
+        {{ appointments_by_month | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("appointmentsMonthChart"),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: appointmentMonthLabels,
+
+                datasets: [
+                    {
+                        label: "Appointments",
+
+                        data: appointmentMonthTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       10. APPOINTMENTS BY DAY OF WEEK
+       ===================================================== */
+
+    const dayLabels =
+        {{ appointments_by_day | map(attribute="day_name") | list | tojson }};
+
+    const dayTotals =
+        {{ appointments_by_day | map(attribute="total") | list | tojson }};
+
+
+    new Chart(
+        document.getElementById("dayOfWeekChart"),
+        {
+            type: "bar",
+
+            data: {
+
+                labels: dayLabels,
+
+                datasets: [
+                    {
+                        label: "Appointments",
+
+                        data: dayTotals
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       11. DOCTOR WORKLOAD BY DATE
+       ===================================================== */
+
+    const doctorDateLabels =
+        {{ doctor_workload_by_date
+            | map(attribute="appointment_date")
+            | list
+            | tojson }};
+
+    const doctorDateTotals =
+        {{ doctor_workload_by_date
+            | map(attribute="total")
+            | list
+            | tojson }};
+
+
+    new Chart(
+        document.getElementById("doctorDateWorkloadChart"),
+        {
+            type: "line",
+
+            data: {
+
+                labels: doctorDateLabels,
+
+                datasets: [
+                    {
+                        label: "Doctor Appointments",
+
+                        data: doctorDateTotals,
+
+                        fill: false
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       12. PATIENT VISITS BY DATE
+       ===================================================== */
+
+    const patientVisitDateLabels =
+        {{ patient_visits_by_date
+            | map(attribute="appointment_date")
+            | list
+            | tojson }};
+
+    const patientVisitDateTotals =
+        {{ patient_visits_by_date
+            | map(attribute="total")
+            | list
+            | tojson }};
+
+
+    new Chart(
+        document.getElementById("patientVisitsDateChart"),
+        {
+            type: "line",
+
+            data: {
+
+                labels: patientVisitDateLabels,
+
+                datasets: [
+                    {
+                        label: "Patient Visits",
+
+                        data: patientVisitDateTotals,
+
+                        fill: false
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+
+    /* =====================================================
+       13. APPOINTMENT STATUS BY DATE
+       ===================================================== */
+
+    const statusDateLabels =
+        {{ appointment_status_by_date
+            | map(attribute="appointment_date")
+            | list
+            | tojson }};
+
+    const statusDateTotals =
+        {{ appointment_status_by_date
+            | map(attribute="total")
+            | list
+            | tojson }};
+
+
+    new Chart(
+        document.getElementById("statusDateChart"),
+        {
+            type: "line",
+
+            data: {
+
+                labels: statusDateLabels,
+
+                datasets: [
+                    {
+                        label: "Appointments by Status",
+
+                        data: statusDateTotals,
+
+                        fill: false
+                    }
+                ]
+            },
+
+            options: {
+                responsive: true
+            }
+        }
+    );
+
+</script>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<hr>
+
+<p>
+    <strong>🏥 Hospital Data Analytics System</strong>
+</p>
+
+<p>
+    Role-Based Access Control Enabled
+</p>
+
+
+</body>
+
+</html>

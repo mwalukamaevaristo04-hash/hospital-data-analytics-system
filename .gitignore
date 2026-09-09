@@ -1,0 +1,4 @@
+venv/
+hospital.db
+pycache/
+*.pyc

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Hospital Data Analytics System - Appointments
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
+<header>
+
+    <h1>
+        🏥 Hospital Data Analytics System
+    </h1>
+
+    <p>
+        Appointment Management
+    </p>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav>
+
+    <a href="{{ url_for('home') }}">
+        Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        Medical Records
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}">
+        Pharmacy
+    </a>
+
+    <a href="{{ url_for('laboratory') }}">
+        Laboratory
+    </a>
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+        <a href="{{ url_for('analytics') }}">
+            Analytics
+        </a>
+
+    {% endif %}
+
+
+    {% if role == "Admin" %}
+
+        <a href="{{ url_for('users') }}">
+            Users
+        </a>
+
+    {% endif %}
+
+
+    <a href="{{ url_for('logout') }}">
+        Logout
+    </a>
+
+</nav>
+
+
+<!-- =====================================================
+     USER INFORMATION
+===================================================== -->
+
+<div class="user-info">
+
+    <strong>
+        User:
+    </strong>
+
+    {{ username }}
+
+    &nbsp;&nbsp; | &nbsp;&nbsp;
+
+    <strong>
+        Role:
+    </strong>
+
+    {{ role }}
+
+</div>
+
+
+<!-- =====================================================
+     MAIN CONTAINER
+===================================================== -->
+
+<div class="container">
+
+
+    <h2>
+        📅 Appointments
+    </h2>
+
+
+    <!-- =================================================
+         APPOINTMENT SUMMARY CARDS
+    ================================================== -->
+
+    <div class="cards">
+
+
+        <!-- TOTAL -->
+
+        <div class="card">
+
+            <div>
+
+                <div class="number">
+                    {{ total_appointments }}
+                </div>
+
+                <h3>
+                    Total Appointments
+                </h3>
+
+                <p>
+                    All appointments
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- PENDING -->
+
+        <div class="card">
+
+            <div>
+
+                <div class="number">
+                    {{ pending_appointments }}
+                </div>
+
+                <h3>
+                    Pending
+                </h3>
+
+                <p>
+                    Waiting for doctor action
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ACCEPTED -->
+
+        <div class="card">
+
+            <div>
+
+                <div class="number">
+                    {{ accepted_appointments }}
+                </div>
+
+                <h3>
+                    Accepted
+                </h3>
+
+                <p>
+                    Appointments accepted
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- REJECTED -->
+
+        <div class="card">
+
+            <div>
+
+                <div class="number">
+                    {{ rejected_appointments }}
+                </div>
+
+                <h3>
+                    Rejected
+                </h3>
+
+                <p>
+                    Appointments rejected
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- COMPLETED -->
+
+        <div class="card">
+
+            <div>
+
+                <div class="number">
+                    {{ completed_appointments }}
+                </div>
+
+                <h3>
+                    Completed
+                </h3>
+
+                <p>
+                    Completed appointments
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- TODAY -->
+
+        <div class="card">
+
+            <div>
+
+                <div class="number">
+                    {{ today_appointments }}
+                </div>
+
+                <h3>
+                    Today's Appointments
+                </h3>
+
+                <p>
+                    Scheduled for today
+                </p>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =================================================
+         SCHEDULE NEW APPOINTMENT
+    ================================================== -->
+
+    {% if role in ["Admin", "Receptionist"] %}
+
+        <div class="form-section">
+
+            <h2>
+                ➕ Schedule New Appointment
+            </h2>
+
+
+            <form method="POST"
+                  action="{{ url_for('add_appointment') }}">
+
+
+                <label>
+                    Patient
+                </label>
+
+                <select name="patient_id"
+                        required>
+
+                    <option value="">
+                        Select Patient
+                    </option>
+
+                    {% for patient in patients %}
+
+                        <option value="{{ patient.id }}">
+
+                            {{ patient.full_name }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <label>
+                    Doctor
+                </label>
+
+                <select name="doctor_id"
+                        required>
+
+                    <option value="">
+                        Select Doctor
+                    </option>
+
+                    {% for doctor in doctors %}
+
+                        <option value="{{ doctor.id }}">
+
+                            {{ doctor.full_name }}
+
+                            -
+                            {{ doctor.specialization }}
+
+                        </option>
+
+                    {% endfor %}
+
+                </select>
+
+
+                <label>
+                    Appointment Date
+                </label>
+
+                <input type="date"
+                       name="appointment_date"
+                       required>
+
+
+                <label>
+                    Appointment Time
+                </label>
+
+                <input type="time"
+                       name="appointment_time"
+                       required>
+
+
+                <label>
+                    Reason
+                </label>
+
+                <textarea name="reason"
+                          rows="4"
+                          placeholder="Enter reason for appointment"></textarea>
+
+
+                <button type="submit">
+                    Schedule Appointment
+                </button>
+
+
+            </form>
+
+        </div>
+
+    {% endif %}
+
+
+    <!-- =================================================
+         APPOINTMENT TABLE
+    ================================================== -->
+
+    <div class="table-section">
+
+        <h2>
+            📋 Appointment Records
+        </h2>
+
+
+        {% if appointments %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Patient
+                        </th>
+
+                        <th>
+                            Doctor
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                        <th>
+                            Time
+                        </th>
+
+                        <th>
+                            Reason
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for appointment in appointments %}
+
+                        <tr>
+
+                            <td>
+                                {{ appointment.id }}
+                            </td>
+
+                            <td>
+                                {{ appointment.patient_name }}
+                            </td>
+
+                            <td>
+                                {{ appointment.doctor_name }}
+                            </td>
+
+                            <td>
+                                {{ appointment.appointment_date }}
+                            </td>
+
+                            <td>
+                                {{ appointment.appointment_time }}
+                            </td>
+
+                            <td>
+                                {{ appointment.reason }}
+                            </td>
+
+                            <td>
+
+                                <strong>
+                                    {{ appointment.status }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+
+                                <!-- =================================
+                                     DOCTOR ACTIONS
+                                ================================== -->
+
+                                {% if role == "Doctor" %}
+
+
+                                    {% if appointment.status == "Pending" %}
+
+                                        <form method="POST"
+                                              action="{{ url_for('accept_appointment', appointment_id=appointment.id) }}"
+                                              style="display:inline;">
+
+                                            <button type="submit">
+                                                Accept
+                                            </button>
+
+                                        </form>
+
+
+                                        <form method="POST"
+                                              action="{{ url_for('reject_appointment', appointment_id=appointment.id) }}"
+                                              style="display:inline;">
+
+                                            <button type="submit">
+                                                Reject
+                                            </button>
+
+                                        </form>
+
+
+                                    {% elif appointment.status == "Accepted" %}
+
+                                        <form method="POST"
+                                              action="{{ url_for('complete_appointment', appointment_id=appointment.id) }}"
+                                              style="display:inline;">
+
+                                            <button type="submit">
+                                                Complete
+                                            </button>
+
+                                        </form>
+
+
+                                    {% elif appointment.status == "Completed" %}
+
+                                        ✓ Completed
+
+
+                                    {% elif appointment.status == "Rejected" %}
+
+                                        ✕ Rejected
+
+
+                                    {% elif appointment.status == "Cancelled" %}
+
+                                        ✕ Cancelled
+
+
+                                    {% else %}
+
+                                        {{ appointment.status }}
+
+                                    {% endif %}
+
+
+                                <!-- =================================
+                                     ADMIN + RECEPTIONIST ACTIONS
+                                ================================== -->
+
+                                {% elif role in ["Admin", "Receptionist"] %}
+
+
+                                    {% if appointment.status not in ["Completed", "Cancelled", "Rejected"] %}
+
+                                        <form method="POST"
+                                              action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}"
+                                              style="display:inline;">
+
+                                            <button type="submit">
+                                                Cancel
+                                            </button>
+
+                                        </form>
+
+
+                                    {% else %}
+
+                                        {{ appointment.status }}
+
+                                    {% endif %}
+
+
+                                <!-- =================================
+                                     DATA ANALYST
+                                ================================== -->
+
+                                {% elif role == "Data Analyst" %}
+
+                                    View Only
+
+
+                                {% else %}
+
+                                    No Action
+
+                                {% endif %}
+
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+
+        {% else %}
+
+            <p>
+                No appointments found.
+            </p>
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- =================================================
+         INFORMATION
+    ================================================== -->
+
+    <div class="user-info">
+
+        <h3>
+            Appointment Workflow
+        </h3>
+
+        <p>
+            Receptionist schedules the appointment,
+            the assigned Doctor reviews it,
+            and the appointment moves through
+            Pending, Accepted, Rejected,
+            Completed or Cancelled status.
+        </p>
+
+    </div>
+
+
+</div>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+    <p>
+        Hospital Data Analytics System
+    </p>
+
+    <p>
+        Appointment Management Module
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>

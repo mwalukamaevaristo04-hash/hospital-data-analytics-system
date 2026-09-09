@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Monthly Report - Hospital Data Analytics System
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .report-container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
+
+        .report-header,
+        .filter-card,
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .report-header {
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .report-header h2 {
+            margin: 0 0 8px 0;
+        }
+
+        .report-header p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .filter-card {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: end;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        .form-group select {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+            min-width: 180px;
+        }
+
+        .generate-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .generate-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        }
+
+        .summary-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .summary-title {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .summary-value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .report-card {
+            padding: 25px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+
+        .report-card h3 {
+            margin-top: 0;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .report-table th {
+            background: #f8fafc;
+            font-weight: 700;
+        }
+
+        .report-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            background: #374151;
+            color: white;
+        }
+
+        .print-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1100px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .report-container {
+                width: 92%;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .form-group select {
+                width: 100%;
+            }
+
+        }
+
+        @media print {
+
+            nav,
+            .user-info,
+            .actions,
+            .filter-card {
+                display: none !important;
+            }
+
+            .report-container {
+                width: 100%;
+                margin: 0;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>
+        🏥 Hospital Data Analytics System
+    </h1>
+
+    <p>
+        Hospital Management & Data Analytics Platform
+    </p>
+
+</header>
+
+<nav>
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    <a href="{{ url_for('analytics') }}">
+        📊 Analytics
+    </a>
+
+    <a href="{{ url_for('reports') }}">
+        📑 Reports
+    </a>
+
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}">
+        🚪 Logout
+    </a>
+
+</nav>
+
+<div class="user-info">
+
+    <p>
+        Welcome,
+        <strong>{{ username }}</strong>
+    </p>
+
+    <p>
+        Role:
+        <strong>{{ role }}</strong>
+    </p>
+
+</div>
+
+<div class="report-container">
+
+    <div class="report-header">
+
+        <h2>
+            🗓️ Monthly Hospital Report
+        </h2>
+
+        <p>
+            Hospital activities and statistics for a selected month.
+        </p>
+
+    </div>
+
+    <div class="actions">
+
+        <a href="{{ url_for('reports') }}"
+           class="action-btn back-btn">
+
+            ← Back to Reports
+
+        </a>
+
+        <button onclick="window.print()"
+                class="action-btn print-btn">
+
+            🖨️ Print Report
+
+        </button>
+
+    </div>
+
+    <div class="filter-card">
+
+        <form method="GET"
+              action="{{ url_for('monthly_report') }}"
+              class="filter-form">
+
+            <div class="form-group">
+
+                <label for="month">
+                    Month
+                </label>
+
+                <select name="month"
+                        id="month"
+                        required>
+
+                    <option value="1"
+                        {% if selected_month == 1 %}selected{% endif %}>
+                        January
+                    </option>
+
+                    <option value="2"
+                        {% if selected_month == 2 %}selected{% endif %}>
+                        February
+                    </option>
+
+                    <option value="3"
+                        {% if selected_month == 3 %}selected{% endif %}>
+                        March
+                    </option>
+
+                    <option value="4"
+                        {% if selected_month == 4 %}selected{% endif %}>
+                        April
+                    </option>
+
+                    <option value="5"
+                        {% if selected_month == 5 %}selected{% endif %}>
+                        May
+                    </option>
+
+                    <option value="6"
+                        {% if selected_month == 6 %}selected{% endif %}>
+                        June
+                    </option>
+
+                    <option value="7"
+                        {% if selected_month == 7 %}selected{% endif %}>
+                        July
+                    </option>
+
+                    <option value="8"
+                        {% if selected_month == 8 %}selected{% endif %}>
+                        August
+                    </option>
+
+                    <option value="9"
+                        {% if selected_month == 9 %}selected{% endif %}>
+                        September
+                    </option>
+
+                    <option value="10"
+                        {% if selected_month == 10 %}selected{% endif %}>
+                        October
+                    </option>
+
+                    <option value="11"
+                        {% if selected_month == 11 %}selected{% endif %}>
+                        November
+                    </option>
+
+                    <option value="12"
+                        {% if selected_month == 12 %}selected{% endif %}>
+                        December
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="year">
+                    Year
+                </label>
+
+                <select name="year"
+                        id="year"
+                        required>
+
+                    {% for year in range(2020, 2031) %}
+
+                    <option value="{{ year }}"
+                        {% if selected_year == year %}selected{% endif %}>
+
+                        {{ year }}
+
+                    </option>
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+            <button type="submit"
+                    class="generate-btn">
+
+                📊 Generate Monthly Report
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="summary-grid">
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                👥
+            </div>
+
+            <div class="summary-title">
+                Patients
+            </div>
+
+            <div class="summary-value">
+                {{ total_patients|default(0) }}
+            </div>
+
+        </div>
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                📅
+            </div>
+
+            <div class="summary-title">
+                Appointments
+            </div>
+
+            <div class="summary-value">
+                {{ total_appointments|default(0) }}
+            </div>
+
+        </div>
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                📋
+            </div>
+
+            <div class="summary-title">
+                Medical Records
+            </div>
+
+            <div class="summary-value">
+                {{ total_medical_records|default(0) }}
+            </div>
+
+        </div>
+
+        <div class="summary-card">
+
+            <div class="summary-icon">
+                🩺
+            </div>
+
+            <div class="summary-title">
+                Diagnoses
+            </div>
+
+            <div class="summary-value">
+                {{ total_diagnoses|default(0) }}
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="report-card">
+
+        <h3>
+            📊 Monthly Daily Activity
+        </h3>
+
+        {% if daily_data %}
+
+        <table class="report-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Patients
+                    </th>
+
+                    <th>
+                        Appointments
+                    </th>
+
+                    <th>
+                        Medical Records
+                    </th>
+
+                    <th>
+                        Diagnoses
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for day in daily_data %}
+
+                <tr>
+
+                    <td>
+                        {{ day['date'] }}
+                    </td>
+
+                    <td>
+                        {{ day['patients']|default(0) }}
+                    </td>
+
+                    <td>
+                        {{ day['appointments']|default(0) }}
+                    </td>
+
+                    <td>
+                        {{ day['medical_records']|default(0) }}
+                    </td>
+
+                    <td>
+                        {{ day['diagnoses']|default(0) }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-message">
+
+            No daily activity data found for this month.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <div class="report-card">
+
+        <h3>
+            📅 Monthly Appointments
+        </h3>
+
+        {% if appointments %}
+
+        <table class="report-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Date
+                    </th>
+
+                    <th>
+                        Patient
+                    </th>
+
+                    <th>
+                        Doctor
+                    </th>
+
+                    <th>
+                        Time
+                    </th>
+
+                    <th>
+                        Status
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for appointment in appointments %}
+
+                <tr>
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+                        {{ appointment['appointment_date'] }}
+                    </td>
+
+                    <td>
+                        {{ appointment['patient_name'] }}
+                    </td>
+
+                    <td>
+                        Dr. {{ appointment['doctor_name'] }}
+                    </td>
+
+                    <td>
+                        {{ appointment['appointment_time'] or '-' }}
+                    </td>
+
+                    <td>
+                        {{ appointment['status'] or '-' }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-message">
+
+            No appointments found for this month.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    <div class="report-card">
+
+        <h3>
+            🩺 Monthly Diagnoses
+        </h3>
+
+        {% if diagnoses %}
+
+        <table class="report-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Diagnosis
+                    </th>
+
+                    <th>
+                        Number of Cases
+                    </th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for diagnosis in diagnoses %}
+
+                <tr>
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+                        {{ diagnosis['diagnosis'] }}
+                    </td>
+
+                    <td>
+                        {{ diagnosis['count'] }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-message">
+
+            No diagnosis data found for this month.
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

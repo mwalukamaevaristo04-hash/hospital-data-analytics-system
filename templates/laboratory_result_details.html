@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Laboratory Result</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+    .result-page {
+        width: 95%;
+        max-width: 1100px;
+        margin: 30px auto;
+    }
+
+    .result-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 25px;
+    }
+
+    .result-header h1 {
+        margin: 0;
+    }
+
+    .result-header p {
+        color: #64748b;
+        margin-top: 7px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 7px;
+        border: none;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #475569;
+        color: white;
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .status {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 20px;
+        background: #dcfce7;
+        color: #166534;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .information-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .info-box {
+        background: #f8fafc;
+        padding: 18px;
+        border-radius: 8px;
+        border-left: 4px solid #2563eb;
+    }
+
+    .info-box strong {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .info-box span {
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .section {
+        margin-top: 25px;
+        padding-top: 25px;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .section h2 {
+        margin-top: 0;
+        color: #1e293b;
+    }
+
+    .result-text {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 20px;
+        line-height: 1.7;
+        color: #334155;
+        white-space: pre-wrap;
+    }
+
+    .main-result {
+        background: #eff6ff;
+        border-left: 5px solid #2563eb;
+        border-radius: 8px;
+        padding: 22px;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1e40af;
+    }
+
+    .specialty-box {
+        background: #f5f3ff;
+        border-left-color: #7c3aed;
+    }
+
+    .doctor-box {
+        background: #f0fdf4;
+        border-left-color: #16a34a;
+    }
+
+    .notice {
+        margin-top: 25px;
+        padding: 18px;
+        background: #fff7ed;
+        border-left: 4px solid #f97316;
+        border-radius: 8px;
+        color: #9a3412;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 700px) {
+
+        .information-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .result-card {
+            padding: 20px;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<div class="result-page">
+
+
+    <div class="result-header">
+
+        <div>
+
+            <h1>Laboratory Result</h1>
+
+            <p>
+                Laboratory Result ID:
+                LAB-RESULT-{{ result['id'] }}
+            </p>
+
+        </div>
+
+
+        <div class="actions">
+
+            <a href="{{ url_for('laboratory_requests') }}"
+               class="btn btn-secondary">
+                Back to Requests
+            </a>
+
+            <a href="{{ url_for('laboratory') }}"
+               class="btn btn-primary">
+                Laboratory Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="result-card">
+
+
+        <div class="information-grid">
+
+
+            <div class="info-box">
+
+                <strong>Patient</strong>
+
+                <span>
+                    {{ result['patient_name'] }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>Patient ID</strong>
+
+                <span>
+                    {{ result['patient_id'] }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>Laboratory Test</strong>
+
+                <span>
+                    {{ result['test_name'] }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>Category</strong>
+
+                <span>
+                    {{ result['category'] or 'General' }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>Request Date</strong>
+
+                <span>
+                    {{ result['request_date'] }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>Result Date</strong>
+
+                <span>
+                    {{ result['result_date'] }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>Performed By</strong>
+
+                <span>
+                    {{ result['performed_by'] or 'Laboratory Staff' }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box">
+
+                <strong>Status</strong>
+
+                <span class="status">
+                    Completed
+                </span>
+
+            </div>
+
+
+            <div class="info-box specialty-box">
+
+                <strong>Recommended Specialty</strong>
+
+                <span>
+                    {{ result['recommended_specialty'] or 'Not Assigned' }}
+                </span>
+
+            </div>
+
+
+            <div class="info-box doctor-box">
+
+                <strong>Assigned Doctor</strong>
+
+                <span>
+
+                    {% if result['doctor_name'] %}
+
+                        {{ result['doctor_name'] }}
+
+                        {% if result['doctor_specialization'] %}
+                            -
+                            {{ result['doctor_specialization'] }}
+                        {% endif %}
+
+                    {% else %}
+
+                        Not Assigned
+
+                    {% endif %}
+
+                </span>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="section">
+
+            <h2>Result Value</h2>
+
+            <div class="main-result">
+
+                {{ result['result_value']
+                   or 'No numerical/text result entered.' }}
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <h2>Findings</h2>
+
+            <div class="result-text">
+
+                {{ result['finding']
+                   or 'No findings recorded.' }}
+
+            </div>
+
+        </div>
+
+
+        <div class="section">
+
+            <h2>Interpretation</h2>
+
+            <div class="result-text">
+
+                {{ result['interpretation']
+                   or 'No interpretation recorded.' }}
+
+            </div>
+
+        </div>
+
+
+        {% if result['notes'] %}
+
+        <div class="section">
+
+            <h2>Request Notes</h2>
+
+            <div class="result-text">
+
+                {{ result['notes'] }}
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="notice">
+
+            <strong>Clinical Information:</strong>
+
+            This laboratory result represents a
+            laboratory finding or interpretation.
+            It should be considered together with the
+            patient's clinical history and examination.
+            The result does not automatically constitute
+            a medical diagnosis.
+
+        </div>
+
+
+    </div>
+
+</div>
+```
+
+</body>
+</html>

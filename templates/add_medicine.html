@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Add Medicine - Hospital Data Analytics System
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .page-container {
+            width: 95%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .form-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        }
+
+        .page-title {
+            margin-bottom: 25px;
+        }
+
+        .page-title h2 {
+            margin-bottom: 7px;
+            color: #1e3a8a;
+        }
+
+        .page-title p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 7px;
+            color: #374151;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #2563eb;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        .form-note {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .save-button,
+        .cancel-button {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .save-button {
+            background: #198754;
+            color: white;
+        }
+
+        .save-button:hover {
+            background: #157347;
+        }
+
+        .cancel-button {
+            background: #6b7280;
+            color: white;
+        }
+
+        .cancel-button:hover {
+            background: #4b5563;
+        }
+
+        .section-heading {
+            grid-column: 1 / -1;
+            margin-top: 5px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+            color: #1e3a8a;
+            font-size: 17px;
+        }
+
+        @media (max-width: 700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width,
+            .section-heading {
+                grid-column: 1;
+            }
+
+            .form-panel {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .save-button,
+            .cancel-button {
+                text-align: center;
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     HOSPITAL HEADER
+     ===================================================== -->
+
+<header>
+
+    <h1>
+        🏥 Hospital Data Analytics System
+    </h1>
+
+    <p>
+        Hospital Management & Data Analytics Platform
+    </p>
+
+</header>
+
+
+
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
+
+<nav>
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📊 Analytics
+    </a>
+
+    {% endif %}
+
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}">
+        🚪 Logout
+    </a>
+
+</nav>
+
+
+
+<!-- =====================================================
+     USER INFORMATION
+     ===================================================== -->
+
+<div class="user-info">
+
+    <p>
+        Welcome,
+        <strong>{{ username }}</strong>
+    </p>
+
+    <p>
+        Role:
+        <strong>{{ role }}</strong>
+    </p>
+
+</div>
+
+
+
+<!-- =====================================================
+     MAIN CONTAINER
+     ===================================================== -->
+
+<div class="page-container">
+
+
+    <!-- =================================================
+         FORM PANEL
+         ================================================= -->
+
+    <div class="form-panel">
+
+
+        <div class="page-title">
+
+            <h2>
+                💊 Add New Medicine
+            </h2>
+
+            <p>
+                Enter medicine information to add it to
+                the pharmacy inventory.
+            </p>
+
+        </div>
+
+
+
+        <!-- =================================================
+             MEDICINE FORM
+             ================================================= -->
+
+        <form method="POST"
+              action="{{ url_for('add_medicine') }}">
+
+
+            <div class="form-grid">
+
+
+                <!-- =========================================
+                     BASIC INFORMATION
+                     ========================================= -->
+
+                <div class="section-heading">
+                    Medicine Information
+                </div>
+
+
+
+                <!-- MEDICINE NAME -->
+
+                <div class="form-group">
+
+                    <label for="medicine_name">
+                        Medicine Name
+                        <span class="required">*</span>
+                    </label>
+
+                    <input type="text"
+                           id="medicine_name"
+                           name="medicine_name"
+                           placeholder="Enter medicine name"
+                           required>
+
+                </div>
+
+
+
+                <!-- CATEGORY -->
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <input type="text"
+                           id="category"
+                           name="category"
+                           placeholder="e.g. Antibiotic, Analgesic">
+
+                </div>
+
+
+
+                <!-- UNIT -->
+
+                <div class="form-group">
+
+                    <label for="unit">
+                        Unit
+                    </label>
+
+                    <select id="unit"
+                            name="unit">
+
+                        <option value="">
+                            Select Unit
+                        </option>
+
+                        <option value="Tablets">
+                            Tablets
+                        </option>
+
+                        <option value="Capsules">
+                            Capsules
+                        </option>
+
+                        <option value="Bottles">
+                            Bottles
+                        </option>
+
+                        <option value="Vials">
+                            Vials
+                        </option>
+
+                        <option value="Ampoules">
+                            Ampoules
+                        </option>
+
+                        <option value="Sachets">
+                            Sachets
+                        </option>
+
+                        <option value="Tubes">
+                            Tubes
+                        </option>
+
+                        <option value="Pieces">
+                            Pieces
+                        </option>
+
+                        <option value="Units">
+                            Units
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- SUPPLIER -->
+
+                <div class="form-group">
+
+                    <label for="supplier">
+                        Supplier
+                    </label>
+
+                    <input type="text"
+                           id="supplier"
+                           name="supplier"
+                           placeholder="Enter supplier name">
+
+                </div>
+
+
+
+                <!-- =========================================
+                     STOCK INFORMATION
+                     ========================================= -->
+
+                <div class="section-heading">
+                    Stock Information
+                </div>
+
+
+
+                <!-- QUANTITY -->
+
+                <div class="form-group">
+
+                    <label for="quantity">
+                        Initial Quantity
+                        <span class="required">*</span>
+                    </label>
+
+                    <input type="number"
+                           id="quantity"
+                           name="quantity"
+                           min="0"
+                           value="0"
+                           required>
+
+                    <span class="form-note">
+                        Number of units currently available.
+                    </span>
+
+                </div>
+
+
+
+                <!-- REORDER LEVEL -->
+
+                <div class="form-group">
+
+                    <label for="reorder_level">
+                        Reorder Level
+                        <span class="required">*</span>
+                    </label>
+
+                    <input type="number"
+                           id="reorder_level"
+                           name="reorder_level"
+                           min="0"
+                           value="10"
+                           required>
+
+                    <span class="form-note">
+                        Stock level at which restocking is required.
+                    </span>
+
+                </div>
+
+
+
+                <!-- UNIT PRICE -->
+
+                <div class="form-group">
+
+                    <label for="unit_price">
+                        Unit Price
+                    </label>
+
+                    <input type="number"
+                           id="unit_price"
+                           name="unit_price"
+                           min="0"
+                           step="0.01"
+                           value="0"
+                           placeholder="0.00">
+
+                    <span class="form-note">
+                        Price of one medicine unit.
+                    </span>
+
+                </div>
+
+
+
+                <!-- BATCH NUMBER -->
+
+                <div class="form-group">
+
+                    <label for="batch_number">
+                        Batch Number
+                    </label>
+
+                    <input type="text"
+                           id="batch_number"
+                           name="batch_number"
+                           placeholder="Enter batch number">
+
+                </div>
+
+
+
+                <!-- =========================================
+                     EXPIRY INFORMATION
+                     ========================================= -->
+
+                <div class="section-heading">
+                    Expiry Information
+                </div>
+
+
+
+                <!-- EXPIRY DATE -->
+
+                <div class="form-group">
+
+                    <label for="expiry_date">
+                        Expiry Date
+                    </label>
+
+                    <input type="date"
+                           id="expiry_date"
+                           name="expiry_date">
+
+                    <span class="form-note">
+                        Select the medicine expiry date.
+                    </span>
+
+                </div>
+
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group full-width">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea id="description"
+                              name="description"
+                              placeholder="Enter additional information about this medicine..."></textarea>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FORM ACTIONS
+                 ================================================= -->
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="save-button">
+
+                    💾 Save Medicine
+
+                </button>
+
+
+                <a href="{{ url_for('medicines') }}"
+                   class="cancel-button">
+
+                    ❌ Cancel
+
+                </a>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<p style="text-align: center; margin: 30px 0;">
+
+    <strong>
+        🏥 Hospital Data Analytics System
+    </strong>
+
+</p>
+
+<p style="text-align: center; margin-bottom: 30px;">
+
+    Role-Based Access Control Enabled
+
+</p>
+
+
+</body>
+
+</html>

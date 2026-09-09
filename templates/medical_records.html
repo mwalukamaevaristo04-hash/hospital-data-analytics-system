@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Medical Records - Hospital Data Analytics System
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .medical-container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
+
+        .medical-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .medical-header h2 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .medical-header p {
+            color: #6b7280;
+            margin-bottom: 0;
+        }
+
+        .role-label {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            display: block;
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.10);
+            border-color: #93c5fd;
+        }
+
+        .summary-card.active {
+            border: 2px solid #2563eb;
+            background: #f8fbff;
+        }
+
+        .summary-card:active {
+            transform: scale(0.98);
+        }
+
+        .summary-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .summary-title {
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .summary-value {
+            font-size: 30px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .summary-description {
+            margin-top: 7px;
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .form-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            margin-top: 20px;
+        }
+
+        .save-btn {
+            background: #16a34a;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .save-btn:hover {
+            background: #15803d;
+        }
+
+        .records-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        .records-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .records-header h2 {
+            margin: 0;
+        }
+
+        .search-box {
+            padding: 10px 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+            width: 280px;
+            max-width: 100%;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .filter-info {
+            display: block;
+            background: #eff6ff;
+            color: #1d4ed8;
+            padding: 10px 14px;
+            border-radius: 7px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        .records-table th,
+        .records-table td {
+            padding: 13px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .records-table th {
+            background: #f8fafc;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .records-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .patient-name {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .doctor-name {
+            font-weight: 600;
+        }
+
+        .diagnosis-text {
+            max-width: 220px;
+            line-height: 1.5;
+        }
+
+        .linked {
+            color: #15803d;
+            font-weight: 600;
+        }
+
+        .not-linked {
+            color: #9ca3af;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            margin-right: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #d97706;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 35px;
+            color: #6b7280;
+        }
+
+        .empty-message h3 {
+            color: #374151;
+        }
+
+        .page-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 7px;
+            background: #374151;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-btn:hover {
+            background: #1f2937;
+        }
+
+        .all-records-btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .all-records-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .hidden-row {
+            display: none !important;
+        }
+
+        @media (max-width: 1100px) {
+
+            .summary-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 800px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .medical-container {
+                width: 92%;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .records-header {
+                align-items: stretch;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>
+        🏥 Hospital Data Analytics System
+    </h1>
+
+    <p>
+        Hospital Management & Data Analytics Platform
+    </p>
+
+</header>
+
+<nav>
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    {% if role in [
+        "Admin",
+        "Doctor",
+        "Receptionist",
+        "Data Analyst"
+    ] %}
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    {% endif %}
+
+    {% if role in [
+        "Admin",
+        "Doctor",
+        "Receptionist",
+        "Data Analyst"
+    ] %}
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    {% endif %}
+
+    {% if role in [
+        "Admin",
+        "Doctor",
+        "Receptionist",
+        "Data Analyst"
+    ] %}
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    {% endif %}
+
+    {% if role in [
+        "Admin",
+        "Doctor",
+        "Receptionist",
+        "Data Analyst"
+    ] %}
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    {% endif %}
+
+    {% if role in [
+        "Admin",
+        "Doctor",
+        "Data Analyst"
+    ] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📊 Analytics
+    </a>
+
+    {% endif %}
+
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}">
+        🚪 Logout
+    </a>
+
+</nav>
+
+<div class="user-info">
+
+    <p>
+        Welcome,
+        <strong>{{ username }}</strong>
+    </p>
+
+    <p>
+        Role:
+        <strong>{{ role }}</strong>
+    </p>
+
+</div>
+
+<div class="medical-container">
+
+    <div class="medical-header">
+
+        <h2>
+
+            {% if page_title %}
+
+                📋 {{ page_title }}
+
+            {% else %}
+
+                📋 Medical Records
+
+            {% endif %}
+
+        </h2>
+
+        <p>
+            Manage and view patient medical records.
+        </p>
+
+        <span class="role-label">
+            {{ role }}
+        </span>
+
+    </div>
+
+
+    {% set ns = namespace(
+        total=0,
+        today=0,
+        diagnosis=0,
+        appointment=0
+    ) %}
+
+
+    {% for record in medical_records %}
+
+        {% set ns.total = ns.total + 1 %}
+
+        {% if record['visit_date'] == current_date %}
+
+            {% set ns.today = ns.today + 1 %}
+
+        {% endif %}
+
+        {% if record['diagnosis'] and record['diagnosis']|trim != '' %}
+
+            {% set ns.diagnosis = ns.diagnosis + 1 %}
+
+        {% endif %}
+
+        {% if record['appointment_id'] %}
+
+            {% set ns.appointment = ns.appointment + 1 %}
+
+        {% endif %}
+
+    {% endfor %}
+
+
+    <div class="summary-grid">
+
+
+        <a href="{{ url_for('medical_records') }}"
+           class="summary-card {% if active_filter == 'all' or not active_filter %}active{% endif %}"
+           title="Click to open all medical records">
+
+            <div class="summary-icon">
+                📋
+            </div>
+
+            <div class="summary-title">
+                Total Medical Records
+            </div>
+
+            <div class="summary-value">
+                {{ ns.total }}
+            </div>
+
+            <div class="summary-description">
+                Open all medical records
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('medical_records_today') }}"
+           class="summary-card {% if active_filter == 'today' %}active{% endif %}"
+           title="Click to open today's medical records">
+
+            <div class="summary-icon">
+                📅
+            </div>
+
+            <div class="summary-title">
+                Today's Records
+            </div>
+
+            <div class="summary-value">
+                {{ ns.today }}
+            </div>
+
+            <div class="summary-description">
+                Open today's medical records
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('medical_records_diagnosed') }}"
+           class="summary-card {% if active_filter == 'diagnosed' %}active{% endif %}"
+           title="Click to open diagnosed medical records">
+
+            <div class="summary-icon">
+                🩺
+            </div>
+
+            <div class="summary-title">
+                Diagnosed Records
+            </div>
+
+            <div class="summary-value">
+                {{ ns.diagnosis }}
+            </div>
+
+            <div class="summary-description">
+                Open records containing diagnosis
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('medical_records_linked') }}"
+           class="summary-card {% if active_filter == 'linked' %}active{% endif %}"
+           title="Click to open records linked to appointments">
+
+            <div class="summary-icon">
+                🔗
+            </div>
+
+            <div class="summary-title">
+                Linked Appointments
+            </div>
+
+            <div class="summary-value">
+                {{ ns.appointment }}
+            </div>
+
+            <div class="summary-description">
+                Open records linked to appointments
+            </div>
+
+        </a>
+
+
+    </div>
+
+
+    <div class="page-actions">
+
+        {% if active_filter and active_filter != "all" %}
+
+        <a href="{{ url_for('medical_records') }}"
+           class="all-records-btn">
+
+            📋 View All Records
+
+        </a>
+
+        {% endif %}
+
+
+        <a href="{{ url_for('home') }}"
+           class="back-btn">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    {% if role in ["Admin", "Doctor"] %}
+
+
+    <div class="form-card">
+
+        <h2>
+            ➕ Add Medical Record
+        </h2>
+
+
+        <form method="POST"
+              action="{{ url_for('add_medical_record') }}">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="patient_id">
+                        Patient
+                    </label>
+
+                    <select name="patient_id"
+                            id="patient_id"
+                            required>
+
+                        <option value="">
+                            Select Patient
+                        </option>
+
+                        {% for patient in patients %}
+
+                        <option value="{{ patient['id'] }}">
+
+                            {{ patient['full_name'] }}
+
+                            {% if patient['phone'] %}
+
+                                - {{ patient['phone'] }}
+
+                            {% endif %}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="doctor_id">
+                        Doctor
+                    </label>
+
+
+                    {% if role == "Doctor" %}
+
+
+                        {% if doctors %}
+
+                        <select name="doctor_id"
+                                id="doctor_id"
+                                required>
+
+                            {% for doctor in doctors %}
+
+                            <option value="{{ doctor['id'] }}"
+
+                                {% if session.get('doctor_id') == doctor['id'] %}
+
+                                    selected
+
+                                {% endif %}>
+
+                                Dr. {{ doctor['full_name'] }}
+
+                                -
+
+                                {{ doctor['specialization'] }}
+
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        {% else %}
+
+                        <input type="text"
+                               value="Doctor profile not linked"
+                               readonly>
+
+                        {% endif %}
+
+
+                    {% else %}
+
+
+                    <select name="doctor_id"
+                            id="doctor_id"
+                            required>
+
+                        <option value="">
+                            Select Doctor
+                        </option>
+
+                        {% for doctor in doctors %}
+
+                        <option value="{{ doctor['id'] }}">
+
+                            Dr. {{ doctor['full_name'] }}
+
+                            -
+
+                            {{ doctor['specialization'] }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="appointment_id">
+                        Appointment
+                    </label>
+
+                    <select name="appointment_id"
+                            id="appointment_id">
+
+                        <option value="">
+                            No Appointment / Not Linked
+                        </option>
+
+                        {% for appointment in appointments %}
+
+                        <option value="{{ appointment['id'] }}">
+
+                            {{ appointment['patient_name'] }}
+
+                            -
+
+                            Dr. {{ appointment['doctor_name'] }}
+
+                            -
+
+                            {{ appointment['appointment_date'] }}
+
+                            {% if appointment['appointment_time'] %}
+
+                                {{ appointment['appointment_time'] }}
+
+                            {% endif %}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="visit_date">
+                        Visit Date
+                    </label>
+
+                    <input type="date"
+                           name="visit_date"
+                           id="visit_date"
+                           value="{{ current_date }}"
+                           required>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="chief_complaint">
+                        Chief Complaint
+                    </label>
+
+                    <textarea name="chief_complaint"
+                              id="chief_complaint"
+                              placeholder="Enter patient's main complaint..."></textarea>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="diagnosis">
+                        Diagnosis
+                    </label>
+
+                    <textarea name="diagnosis"
+                              id="diagnosis"
+                              placeholder="Enter diagnosis..."></textarea>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="symptoms">
+                        Symptoms
+                    </label>
+
+                    <textarea name="symptoms"
+                              id="symptoms"
+                              placeholder="Enter symptoms..."></textarea>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="treatment">
+                        Treatment
+                    </label>
+
+                    <textarea name="treatment"
+                              id="treatment"
+                              placeholder="Enter treatment given..."></textarea>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="prescription">
+                        Prescription
+                    </label>
+
+                    <textarea name="prescription"
+                              id="prescription"
+                              placeholder="Enter prescribed medicines..."></textarea>
+
+                </div>
+
+
+                <div class="form-group full">
+
+                    <label for="notes">
+                        Additional Notes
+                    </label>
+
+                    <textarea name="notes"
+                              id="notes"
+                              placeholder="Enter additional clinical notes..."></textarea>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="form-submit">
+
+                <button type="submit"
+                        class="save-btn">
+
+                    💾 Save Medical Record
+
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+
+    {% endif %}
+
+
+    <div class="records-card">
+
+
+        <div class="records-header">
+
+            <h2>
+
+                📑
+
+                {% if page_title %}
+
+                    {{ page_title }}
+
+                {% else %}
+
+                    Medical Records List
+
+                {% endif %}
+
+            </h2>
+
+            <input type="text"
+                   id="recordSearch"
+                   class="search-box"
+                   placeholder="🔎 Search patient, doctor or diagnosis...">
+
+        </div>
+
+
+        {% if active_filter == "today" %}
+
+        <div class="filter-info">
+
+            📅 Showing medical records for today:
+
+            <strong>
+                {{ current_date }}
+            </strong>
+
+        </div>
+
+        {% elif active_filter == "diagnosed" %}
+
+        <div class="filter-info">
+
+            🩺 Showing medical records that contain a diagnosis.
+
+        </div>
+
+        {% elif active_filter == "linked" %}
+
+        <div class="filter-info">
+
+            🔗 Showing medical records linked to appointments.
+
+        </div>
+
+        {% else %}
+
+        <div id="filterInfo"
+             class="filter-info"
+             style="display:none;">
+
+        </div>
+
+        {% endif %}
+
+
+        {% if medical_records %}
+
+
+        <table class="records-table">
+
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        #
+                    </th>
+
+                    <th>
+                        Patient
+                    </th>
+
+                    <th>
+                        Doctor
+                    </th>
+
+                    <th>
+                        Visit Date
+                    </th>
+
+                    <th>
+                        Diagnosis
+                    </th>
+
+                    <th>
+                        Appointment
+                    </th>
+
+                    <th>
+                        Actions
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+
+                {% for record in medical_records %}
+
+
+                <tr class="record-row">
+
+
+                    <td>
+
+                        {{ record['id'] }}
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="patient-name">
+
+                            {{ record['patient_name'] }}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span class="doctor-name">
+
+                            Dr. {{ record['doctor_name'] }}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        {{ record['visit_date'] }}
+
+                    </td>
+
+
+                    <td>
+
+                        <div class="diagnosis-text">
+
+                            {% if record['diagnosis'] and record['diagnosis']|trim != '' %}
+
+                                {{ record['diagnosis'] }}
+
+                            {% else %}
+
+                                <span style="color:#9ca3af;">
+
+                                    Not specified
+
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        {% if record['appointment_date'] %}
+
+                            <span class="linked">
+
+                                {{ record['appointment_date'] }}
+
+                                {% if record['appointment_time'] %}
+
+                                    <br>
+
+                                    {{ record['appointment_time'] }}
+
+                                {% endif %}
+
+                            </span>
+
+                        {% else %}
+
+                            <span class="not-linked">
+
+                                Not linked
+
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+
+                    <td>
+
+
+                        <a href="{{ url_for(
+                            'medical_record_details',
+                            record_id=record['id']
+                        ) }}"
+                           class="action-btn view-btn">
+
+                            👁 View
+
+                        </a>
+
+
+                        {% if role in ["Admin", "Doctor"] %}
+
+
+                        <a href="{{ url_for(
+                            'edit_medical_record',
+                            record_id=record['id']
+                        ) }}"
+                           class="action-btn edit-btn">
+
+                            ✏️ Edit
+
+                        </a>
+
+
+                        {% endif %}
+
+
+                        {% if role == "Admin" %}
+
+
+                        <form method="POST"
+                              action="{{ url_for(
+                                  'delete_medical_record',
+                                  record_id=record['id']
+                              ) }}"
+                              style="display:inline;"
+                              onsubmit="return confirm(
+                                  'Are you sure you want to delete this medical record?'
+                              );">
+
+
+                            <button type="submit"
+                                    class="action-btn delete-btn">
+
+                                🗑 Delete
+
+                            </button>
+
+
+                        </form>
+
+
+                        {% endif %}
+
+
+                    </td>
+
+
+                </tr>
+
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+        {% else %}
+
+
+        <div class="empty-message">
+
+            <h3>
+
+                📭 No Medical Records Found
+
+            </h3>
+
+
+            {% if active_filter == "today" %}
+
+            <p>
+
+                There are no medical records for today.
+
+            </p>
+
+            {% elif active_filter == "diagnosed" %}
+
+            <p>
+
+                There are no medical records containing a diagnosis.
+
+            </p>
+
+            {% elif active_filter == "linked" %}
+
+            <p>
+
+                There are no medical records linked to appointments.
+
+            </p>
+
+            {% elif role in ["Admin", "Doctor"] %}
+
+            <p>
+
+                There are currently no medical records.
+
+                Use the form above to add a medical record.
+
+            </p>
+
+            {% else %}
+
+            <p>
+
+                There are currently no medical records
+
+                in the system.
+
+            </p>
+
+            {% endif %}
+
+        </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const searchBox =
+            document.getElementById("recordSearch");
+
+        const rows =
+            document.querySelectorAll(".record-row");
+
+        const filterInfo =
+            document.getElementById("filterInfo");
+
+
+        function searchRecords() {
+
+            const searchValue = searchBox
+                ? searchBox.value.toLowerCase().trim()
+                : "";
+
+            let visibleCount = 0;
+
+
+            rows.forEach(function(row) {
+
+                const rowText =
+                    row.textContent.toLowerCase();
+
+
+                if (rowText.includes(searchValue)) {
+
+                    row.classList.remove("hidden-row");
+
+                    visibleCount++;
+
+                } else {
+
+                    row.classList.add("hidden-row");
+
+                }
+
+            });
+
+
+            if (filterInfo) {
+
+                if (searchValue === "") {
+
+                    filterInfo.style.display = "none";
+
+                } else {
+
+                    filterInfo.style.display = "block";
+
+                    filterInfo.textContent =
+                        "Showing " +
+                        visibleCount +
+                        " medical record(s) matching your search.";
+
+                }
+
+            }
+
+        }
+
+
+        if (searchBox) {
+
+            searchBox.addEventListener(
+                "input",
+                searchRecords
+            );
+
+        }
+
+
+        searchRecords();
+
+    });
+
+</script>
+
+
+</body>
+
+</html>

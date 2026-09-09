@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+    Reports - Hospital Data Analytics System
+</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+    .reports-container {
+        width: 95%;
+        max-width: 1400px;
+        margin: 30px auto;
+    }
+
+    .reports-header {
+        background: white;
+        padding: 28px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .reports-header h2 {
+        margin: 0 0 8px 0;
+        color: #111827;
+    }
+
+    .reports-header p {
+        margin: 0;
+        color: #6b7280;
+    }
+
+    .role-label {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 6px 13px;
+        border-radius: 20px;
+        background: #eef2ff;
+        color: #4338ca;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    .reports-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        margin-bottom: 18px;
+        color: #111827;
+    }
+
+    .section-title h3 {
+        margin: 0 0 5px 0;
+        font-size: 21px;
+    }
+
+    .section-title p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .reports-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .report-card {
+        display: block;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 23px;
+        text-decoration: none;
+        color: inherit;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease;
+        min-height: 175px;
+        box-sizing: border-box;
+    }
+
+    .report-card:hover {
+        transform: translateY(-4px);
+        border-color: #93c5fd;
+        box-shadow: 0 7px 18px rgba(0, 0, 0, 0.10);
+    }
+
+    .report-icon {
+        font-size: 34px;
+        margin-bottom: 13px;
+    }
+
+    .report-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .report-description {
+        font-size: 13px;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+
+    .report-arrow {
+        margin-top: 15px;
+        color: #2563eb;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .statistics-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        margin-top: 25px;
+    }
+
+    .statistics-card h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+    }
+
+    .statistics-card p {
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+
+    .statistics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+    }
+
+    .stat-box {
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .stat-icon {
+        font-size: 27px;
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .stat-value {
+        color: #111827;
+        font-size: 28px;
+        font-weight: 700;
+    }
+
+    .export-section {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        margin-top: 25px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .export-section h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+    }
+
+    .export-section p {
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+
+    .export-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+    }
+
+    .export-card {
+        display: block;
+        padding: 20px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.2s ease;
+    }
+
+    .export-card:hover {
+        border-color: #93c5fd;
+        transform: translateY(-2px);
+    }
+
+    .export-icon {
+        font-size: 30px;
+        margin-bottom: 10px;
+    }
+
+    .export-title {
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #111827;
+    }
+
+    .export-description {
+        font-size: 13px;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+
+    .export-options {
+        margin-top: 15px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .export-option {
+        display: inline-block;
+        padding: 8px 12px;
+        border-radius: 7px;
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        transition: background 0.2s ease;
+    }
+
+    .export-option:hover {
+        background: #1d4ed8;
+    }
+
+    .page-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 7px;
+        background: #374151;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .back-btn:hover {
+        background: #1f2937;
+    }
+
+    @media (max-width: 1100px) {
+
+        .reports-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .statistics-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .export-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+    @media (max-width: 700px) {
+
+        .reports-container {
+            width: 92%;
+        }
+
+        .reports-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .statistics-grid {
+            grid-template-columns: 1fr;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<header>
+
+```
+<h1>
+    🏥 Hospital Data Analytics System
+</h1>
+
+<p>
+    Hospital Management & Data Analytics Platform
+</p>
+```
+
+</header>
+
+<nav>
+
+```
+<a href="{{ url_for('home') }}">
+    🏠 Dashboard
+</a>
+
+
+{% if role in [
+    "Admin",
+    "Doctor",
+    "Receptionist",
+    "Data Analyst"
+] %}
+
+<a href="{{ url_for('patients') }}">
+    👥 Patients
+</a>
+
+{% endif %}
+
+
+{% if role in [
+    "Admin",
+    "Doctor",
+    "Receptionist",
+    "Data Analyst"
+] %}
+
+<a href="{{ url_for('doctors') }}">
+    👨‍⚕️ Doctors
+</a>
+
+{% endif %}
+
+
+{% if role in [
+    "Admin",
+    "Doctor",
+    "Receptionist",
+    "Data Analyst"
+] %}
+
+<a href="{{ url_for('appointments') }}">
+    📅 Appointments
+</a>
+
+{% endif %}
+
+
+{% if role in [
+    "Admin",
+    "Doctor",
+    "Receptionist",
+    "Data Analyst"
+] %}
+
+<a href="{{ url_for('medical_records') }}">
+    📋 Medical Records
+</a>
+
+{% endif %}
+
+
+{% if role in [
+    "Admin",
+    "Doctor",
+    "Data Analyst"
+] %}
+
+<a href="{{ url_for('analytics') }}">
+    📊 Analytics
+</a>
+
+{% endif %}
+
+
+{% if role in [
+    "Admin",
+    "Doctor",
+    "Data Analyst"
+] %}
+
+<a href="{{ url_for('reports') }}">
+    📑 Reports
+</a>
+
+{% endif %}
+
+
+{% if role == "Admin" %}
+
+<a href="{{ url_for('users') }}">
+    👤 Users
+</a>
+
+{% endif %}
+
+
+<a href="{{ url_for('logout') }}">
+    🚪 Logout
+</a>
+```
+
+</nav>
+
+<div class="user-info">
+
+```
+<p>
+    Welcome,
+    <strong>{{ username }}</strong>
+</p>
+
+<p>
+    Role:
+    <strong>{{ role }}</strong>
+</p>
+```
+
+</div>
+
+<div class="reports-container">
+
+```
+<div class="reports-header">
+
+    <h2>
+        📑 Reports
+    </h2>
+
+    <p>
+        Generate, view and analyze hospital reports
+        from different areas of the hospital system.
+    </p>
+
+    <span class="role-label">
+        {{ role }}
+    </span>
+
+</div>
+
+
+<div class="page-actions">
+
+    <a href="{{ url_for('home') }}"
+       class="back-btn">
+
+        ← Back to Dashboard
+
+    </a>
+
+</div>
+
+
+<div class="reports-section">
+
+
+    <div class="section-title">
+
+        <h3>
+            📊 Standard Reports
+        </h3>
+
+        <p>
+            Select the type of report you want to view.
+        </p>
+
+    </div>
+
+
+    <div class="reports-grid">
+
+
+        <a href="{{ url_for('daily_report') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                📅
+            </div>
+
+            <div class="report-title">
+                Daily Report
+            </div>
+
+            <div class="report-description">
+                View hospital activities and records
+                for a selected day.
+            </div>
+
+            <div class="report-arrow">
+                View Daily Report →
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('weekly_report') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                📆
+            </div>
+
+            <div class="report-title">
+                Weekly Report
+            </div>
+
+            <div class="report-description">
+                Analyze hospital activities and
+                patient records for a selected week.
+            </div>
+
+            <div class="report-arrow">
+                View Weekly Report →
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('monthly_report') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                🗓️
+            </div>
+
+            <div class="report-title">
+                Monthly Report
+            </div>
+
+            <div class="report-description">
+                Review hospital performance and
+                activities for a selected month.
+            </div>
+
+            <div class="report-arrow">
+                View Monthly Report →
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('patient_report') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                👤
+            </div>
+
+            <div class="report-title">
+                Patient Report
+            </div>
+
+            <div class="report-description">
+                View patient information, visits,
+                medical records and treatment history.
+            </div>
+
+            <div class="report-arrow">
+                View Patient Report →
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('appointment_report') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                📅
+            </div>
+
+            <div class="report-title">
+                Appointment Report
+            </div>
+
+            <div class="report-description">
+                Analyze appointments by date,
+                doctor, patient and appointment status.
+            </div>
+
+            <div class="report-arrow">
+                View Appointment Report →
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('doctor_report') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                👨‍⚕️
+            </div>
+
+            <div class="report-title">
+                Doctor Report
+            </div>
+
+            <div class="report-description">
+                View doctor workload, appointments,
+                patients and medical records.
+            </div>
+
+            <div class="report-arrow">
+                View Doctor Report →
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('diagnosis_report') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                🩺
+            </div>
+
+            <div class="report-title">
+                Disease / Diagnosis Report
+            </div>
+
+            <div class="report-description">
+                Analyze diagnosed diseases and
+                their frequency among patients.
+            </div>
+
+            <div class="report-arrow">
+                View Diagnosis Report →
+            </div>
+
+        </a>
+
+
+        <a href="{{ url_for('hospital_statistics') }}"
+           class="report-card">
+
+            <div class="report-icon">
+                🏥
+            </div>
+
+            <div class="report-title">
+                Hospital Statistics
+            </div>
+
+            <div class="report-description">
+                View overall hospital statistics
+                and key performance indicators.
+            </div>
+
+            <div class="report-arrow">
+                View Hospital Statistics →
+            </div>
+
+        </a>
+
+
+    </div>
+
+</div>
+
+
+<div class="statistics-card">
+
+
+    <h3>
+        📈 Hospital Statistics Overview
+    </h3>
+
+
+    <p>
+        Quick overview of major hospital data.
+    </p>
+
+
+    <div class="statistics-grid">
+
+
+        <div class="stat-box">
+
+            <div class="stat-icon">
+                👥
+            </div>
+
+            <div class="stat-label">
+                Total Patients
+            </div>
+
+            <div class="stat-value">
+                {{ total_patients|default(0) }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <div class="stat-icon">
+                👨‍⚕️
+            </div>
+
+            <div class="stat-label">
+                Total Doctors
+            </div>
+
+            <div class="stat-value">
+                {{ total_doctors|default(0) }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <div class="stat-icon">
+                📅
+            </div>
+
+            <div class="stat-label">
+                Total Appointments
+            </div>
+
+            <div class="stat-value">
+                {{ total_appointments|default(0) }}
+            </div>
+
+        </div>
+
+
+        <div class="stat-box">
+
+            <div class="stat-icon">
+                📋
+            </div>
+
+            <div class="stat-label">
+                Medical Records
+            </div>
+
+            <div class="stat-value">
+                {{ total_medical_records|default(0) }}
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<div class="export-section">
+
+
+    <h3>
+        📤 Export Reports
+    </h3>
+
+
+    <p>
+        Select the report period first, then export
+        the report as PDF, Excel or CSV.
+    </p>
+
+
+    <div class="export-grid">
+
+
+        <div class="export-card">
+
+            <div class="export-icon">
+                📄
+            </div>
+
+            <div class="export-title">
+                Export as PDF
+            </div>
+
+            <div class="export-description">
+                Generate a professional PDF report
+                suitable for printing and sharing.
+            </div>
+
+
+            <div class="export-options">
+
+                <a href="{{ url_for('daily_report_pdf') }}"
+                   class="export-option">
+
+                    Daily PDF
+
+                </a>
+
+
+                <a href="{{ url_for('weekly_report_pdf') }}"
+                   class="export-option">
+
+                    Weekly PDF
+
+                </a>
+
+
+                <a href="{{ url_for('monthly_report_pdf') }}"
+                   class="export-option">
+
+                    Monthly PDF
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="export-card">
+
+            <div class="export-icon">
+                📊
+            </div>
+
+            <div class="export-title">
+                Export as Excel
+            </div>
+
+            <div class="export-description">
+                Export report data to Excel for
+                further analysis and processing.
+            </div>
+
+
+            <div class="export-options">
+
+                <a href="{{ url_for('daily_report_excel') }}"
+                   class="export-option">
+
+                    Daily Excel
+
+                </a>
+
+
+                <a href="{{ url_for('weekly_report_excel') }}"
+                   class="export-option">
+
+                    Weekly Excel
+
+                </a>
+
+
+                <a href="{{ url_for('monthly_report_excel') }}"
+                   class="export-option">
+
+                    Monthly Excel
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="export-card">
+
+            <div class="export-icon">
+                📋
+            </div>
+
+            <div class="export-title">
+                Export as CSV
+            </div>
+
+            <div class="export-description">
+                Download report data as CSV for
+                use in Excel, Python, Stata and other tools.
+            </div>
+
+
+            <div class="export-options">
+
+                <a href="{{ url_for('daily_report_csv') }}"
+                   class="export-option">
+
+                    Daily CSV
+
+                </a>
+
+
+                <a href="{{ url_for('weekly_report_csv') }}"
+                   class="export-option">
+
+                    Weekly CSV
+
+                </a>
+
+
+                <a href="{{ url_for('monthly_report_csv') }}"
+                   class="export-option">
+
+                    Monthly CSV
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+```
+
+</div>
+
+</body>
+
+</html>

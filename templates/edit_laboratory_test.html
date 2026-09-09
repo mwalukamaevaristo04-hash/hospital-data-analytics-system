@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Laboratory Test</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .form-page {
+            width: 95%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .form-header {
+            margin-bottom: 25px;
+        }
+
+        .form-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #64748b;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 7px;
+            color: #334155;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: white;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .form-actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 18px;
+            border-radius: 7px;
+            border: none;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+
+        @media (max-width: 700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: auto;
+            }
+
+            .form-card {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="form-page">
+
+        <div class="form-header">
+
+            <h1>Edit Laboratory Test</h1>
+
+            <p>
+                Update laboratory or diagnostic test
+                information.
+            </p>
+
+        </div>
+
+
+        <div class="form-card">
+
+            <form method="POST"
+                  action="{{ url_for(
+                      'edit_laboratory_test',
+                      test_id=test['id']
+                  ) }}">
+
+
+                <div class="form-grid">
+
+
+                    <div class="form-group">
+
+                        <label for="test_name">
+
+                            Test Name
+                            <span class="required">*</span>
+
+                        </label>
+
+                        <input type="text"
+                               id="test_name"
+                               name="test_name"
+                               value="{{ test['test_name'] }}"
+                               required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="category">
+                            Category
+                        </label>
+
+                        <select id="category"
+                                name="category">
+
+                            <option value="">
+                                Select Category
+                            </option>
+
+                            <option value="Hematology"
+                                {% if test['category'] == 'Hematology' %}selected{% endif %}>
+                                Hematology
+                            </option>
+
+                            <option value="Biochemistry"
+                                {% if test['category'] == 'Biochemistry' %}selected{% endif %}>
+                                Biochemistry
+                            </option>
+
+                            <option value="Parasitology"
+                                {% if test['category'] == 'Parasitology' %}selected{% endif %}>
+                                Parasitology
+                            </option>
+
+                            <option value="Microbiology"
+                                {% if test['category'] == 'Microbiology' %}selected{% endif %}>
+                                Microbiology
+                            </option>
+
+                            <option value="Clinical Laboratory"
+                                {% if test['category'] == 'Clinical Laboratory' %}selected{% endif %}>
+                                Clinical Laboratory
+                            </option>
+
+                            <option value="Diagnostic Imaging"
+                                {% if test['category'] == 'Diagnostic Imaging' %}selected{% endif %}>
+                                Diagnostic Imaging
+                            </option>
+
+                            <option value="Immunology"
+                                {% if test['category'] == 'Immunology' %}selected{% endif %}>
+                                Immunology
+                            </option>
+
+                            <option value="Other"
+                                {% if test['category'] == 'Other' %}selected{% endif %}>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group full-width">
+
+                        <label for="description">
+                            Description
+                        </label>
+
+                        <textarea id="description"
+                                  name="description">{{ test['description'] or '' }}</textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="normal_range">
+                            Normal Range
+                        </label>
+
+                        <input type="text"
+                               id="normal_range"
+                               name="normal_range"
+                               value="{{ test['normal_range'] or '' }}">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="unit">
+                            Unit
+                        </label>
+
+                        <input type="text"
+                               id="unit"
+                               name="unit"
+                               value="{{ test['unit'] or '' }}">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="price">
+                            Price (TZS)
+                        </label>
+
+                        <input type="number"
+                               id="price"
+                               name="price"
+                               min="0"
+                               step="0.01"
+                               value="{{ test['price'] or 0 }}">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="recommended_specialty">
+                            Recommended Specialty
+                        </label>
+
+                        <select id="recommended_specialty"
+                                name="recommended_specialty">
+
+                            <option value="">
+                                Select Specialty
+                            </option>
+
+                            <option value="Internal Medicine"
+                                {% if test['recommended_specialty'] == 'Internal Medicine' %}selected{% endif %}>
+                                Internal Medicine
+                            </option>
+
+                            <option value="Hematology"
+                                {% if test['recommended_specialty'] == 'Hematology' %}selected{% endif %}>
+                                Hematology
+                            </option>
+
+                            <option value="Orthopedic"
+                                {% if test['recommended_specialty'] == 'Orthopedic' %}selected{% endif %}>
+                                Orthopedic
+                            </option>
+
+                            <option value="Pulmonology"
+                                {% if test['recommended_specialty'] == 'Pulmonology' %}selected{% endif %}>
+                                Pulmonology
+                            </option>
+
+                            <option value="Ophthalmology"
+                                {% if test['recommended_specialty'] == 'Ophthalmology' %}selected{% endif %}>
+                                Ophthalmology
+                            </option>
+
+                            <option value="Cardiology"
+                                {% if test['recommended_specialty'] == 'Cardiology' %}selected{% endif %}>
+                                Cardiology
+                            </option>
+
+                            <option value="Neurology"
+                                {% if test['recommended_specialty'] == 'Neurology' %}selected{% endif %}>
+                                Neurology
+                            </option>
+
+                            <option value="Pediatrics"
+                                {% if test['recommended_specialty'] == 'Pediatrics' %}selected{% endif %}>
+                                Pediatrics
+                            </option>
+
+                            <option value="Gynecology"
+                                {% if test['recommended_specialty'] == 'Gynecology' %}selected{% endif %}>
+                                Gynecology
+                            </option>
+
+                            <option value="Urology"
+                                {% if test['recommended_specialty'] == 'Urology' %}selected{% endif %}>
+                                Urology
+                            </option>
+
+                            <option value="Dermatology"
+                                {% if test['recommended_specialty'] == 'Dermatology' %}selected{% endif %}>
+                                Dermatology
+                            </option>
+
+                            <option value="ENT"
+                                {% if test['recommended_specialty'] == 'ENT' %}selected{% endif %}>
+                                ENT
+                            </option>
+
+                            <option value="General Practice"
+                                {% if test['recommended_specialty'] == 'General Practice' %}selected{% endif %}>
+                                General Practice
+                            </option>
+
+                            <option value="Other"
+                                {% if test['recommended_specialty'] == 'Other' %}selected{% endif %}>
+                                Other
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button type="submit"
+                            class="btn btn-primary">
+                        Update Laboratory Test
+                    </button>
+
+                    <a href="{{ url_for('laboratory_tests') }}"
+                       class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

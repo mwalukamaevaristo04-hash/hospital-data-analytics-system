@@ -1,0 +1,563 @@
+/* =========================================================
+   HOSPITAL DATA ANALYTICS SYSTEM
+   MAIN STYLESHEET
+   ========================================================= */
+
+
+/* =========================================================
+   GENERAL PAGE
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 30px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f7fb;
+    color: #263238;
+}
+
+
+/* =========================================================
+   HOSPITAL HEADER
+   ========================================================= */
+
+header {
+    background-color: #0d47a1;
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+header h1 {
+    color: white;
+    margin: 0 0 8px 0;
+    font-size: 28px;
+}
+
+header p {
+    margin: 0;
+    font-size: 15px;
+}
+
+
+/* =========================================================
+   NAVIGATION BAR
+   ========================================================= */
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center;
+    gap: 8px;
+    background-color: white;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+nav a {
+    padding: 10px 15px;
+    border-radius: 6px;
+    color: #1565c0;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+nav a:hover {
+    background-color: #1565c0;
+    color: white;
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   HEADINGS
+   ========================================================= */
+
+h1 {
+    margin-bottom: 10px;
+    color: #0d47a1;
+}
+
+h2 {
+    margin-top: 25px;
+    color: #1565c0;
+}
+
+h3 {
+    margin-top: 0;
+    color: #1565c0;
+}
+
+
+/* =========================================================
+   LINKS
+   ========================================================= */
+
+a {
+    color: #1565c0;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
+   USER INFORMATION
+   ========================================================= */
+
+.user-info {
+    background-color: white;
+    padding: 15px 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    max-width: 500px;
+}
+
+.user-info p {
+    margin: 8px 0;
+}
+
+
+/* =========================================================
+   DASHBOARD CARDS
+   TWO CARDS PER ROW
+   ========================================================= */
+
+.cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    margin-top: 25px;
+    margin-bottom: 30px;
+    margin-left:auto;
+    margin-right:auto;
+    max-width: 900px;
+    width: 100%;
+    align-items: stretch;
+}
+
+
+/* =========================================================
+   INDIVIDUAL DASHBOARD CARD
+   SAME SIZE
+   ========================================================= */
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: white;
+    padding: 22px;
+    height: 170px;
+    min-height: 170px;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: #263238;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.14);
+    text-decoration: none;
+}
+
+.card h3 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+
+.card p {
+    margin: 5px 0;
+}
+/* =========================================================
+   NUMBERS INSIDE CARDS
+   ========================================================= */
+
+.number {
+    font-size: 34px;
+    font-weight: bold;
+    color: #0d47a1;
+    margin: 5px 0;
+    line-height:1.2;
+}
+
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+
+form {
+    background-color: white;
+    padding: 20px;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    max-width: 650px;
+}
+
+label {
+    display: inline-block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #37474f;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    max-width: 600px;
+    padding: 11px;
+    border: 1px solid #cfd8dc;
+    border-radius: 6px;
+    font-size: 15px;
+    background-color: white;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(46, 118, 190, 0.12);
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background-color: #1565c0;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0d47a1;
+}
+
+
+/* =========================================================
+   TABLES
+   ========================================================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th {
+    background-color: #1565c0;
+    color: white;
+    padding: 13px;
+    text-align: left;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+tr:hover {
+    background-color: #f5f9ff;
+}
+
+
+/* =========================================================
+   TABLE ACTIONS
+   ========================================================= */
+
+td a {
+    margin-right: 10px;
+}
+
+td form {
+    display: inline;
+    padding: 0;
+    margin: 0;
+    background: none;
+    box-shadow: none;
+}
+
+td form button {
+    background-color: #c62828;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+
+td form button:hover {
+    background-color: #8e0000;
+}
+
+
+/* =========================================================
+   HORIZONTAL LINE
+   ========================================================= */
+
+hr {
+    border: none;
+    border-top: 1px solid #d5dce3;
+    margin: 30px 0;
+}
+
+
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+
+/* =========================================================
+   LOGIN PAGE
+   ========================================================= */
+
+.login-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 70px auto;
+    background-color: white;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.12);
+}
+
+.login-container h1 {
+    text-align: center;
+    font-size: 26px;
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.login-container form {
+    max-width: none;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+.login-container button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+}
+
+
+/* =========================================================
+   ANALYTICS
+   ========================================================= */
+
+.analytics-section {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.chart-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+}
+
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+
+    header h1 {
+        font-size: 22px;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    nav {
+        flex-direction: column;
+    }
+
+    nav a {
+        width: 100%;
+        text-align: center;
+    }
+
+    .login-container {
+        margin: 30px auto;
+        padding: 25px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE SCREENS
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .card {
+        padding: 20px;
+        min-height: 150px;
+    }
+
+    .number {
+        font-size: 28px;
+    }
+
+    .user-info {
+        padding: 12px;
+    }
+}
+
+
+/* =====================================================
+   ROLE INFORMATION BUBBLES
+   ===================================================== */
+
+.role-bubbles {
+    display: flex;
+    justify-content: center;
+    margin: 25px auto;
+    max-width: 900px;
+}
+
+.role-bubble {
+    width: 100%;
+    padding: 25px;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
+    border: 1px solid #e0e0e0;
+}
+
+.role-bubble h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.access-item {
+    background: #f7f9fc;
+    padding: 15px 18px;
+    margin-top: 12px;
+    border-radius: 12px;
+    border-left: 5px solid #3498db;
+}
+
+.access-item strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.access-item p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+
+/* Doctor */
+
+.doctor-bubble {
+    border-top: 5px solid #3498db;
+}
+
+
+/* Admin */
+
+.admin-bubble {
+    border-top: 5px solid #8e44ad;
+}
+
+
+/* Receptionist */
+
+.receptionist-bubble {
+    border-top: 5px solid #27ae60;
+}
+
+
+/* Data Analyst */
+
+.analyst-bubble {
+    border-top: 5px solid #f39c12;
+}
+
+
+/* Mobile responsiveness */
+
+@media (max-width: 600px) {
+
+    .role-bubbles {
+        width: 95%;
+    }
+
+    .role-bubble {
+        padding: 18px;
+    }
+
+    .role-bubble h3 {
+        font-size: 19px;
+    }
+}

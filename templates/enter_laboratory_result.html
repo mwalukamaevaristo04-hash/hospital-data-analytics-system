@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Enter Laboratory Result</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+    .result-page {
+        width: 95%;
+        max-width: 1100px;
+        margin: 30px auto;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        margin-bottom: 8px;
+    }
+
+    .page-header p {
+        color: #64748b;
+    }
+
+    .result-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .request-summary {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .summary-item {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 15px;
+        border-left: 4px solid #2563eb;
+    }
+
+    .summary-item strong {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .summary-item span {
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #334155;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        font-size: 14px;
+        box-sizing: border-box;
+        background: white;
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    .form-help {
+        color: #64748b;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .form-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 11px 18px;
+        border-radius: 7px;
+        border: none;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-success {
+        background: #16a34a;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #475569;
+        color: white;
+    }
+
+    @media (max-width: 800px) {
+
+        .request-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .full-width {
+            grid-column: auto;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<div class="result-page">
+
+    <div class="page-header">
+
+        <h1>Enter Laboratory Result</h1>
+
+        <p>
+            Record the result and findings for the
+            selected laboratory request.
+        </p>
+
+    </div>
+
+
+    <div class="result-card">
+
+
+        <div class="request-summary">
+
+            <div class="summary-item">
+
+                <strong>Request ID</strong>
+
+                <span>
+                    LAB-{{ laboratory_request['id'] }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <strong>Patient</strong>
+
+                <span>
+                    {{ laboratory_request['patient_name'] }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <strong>Test</strong>
+
+                <span>
+                    {{ laboratory_request['test_name'] }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <strong>Category</strong>
+
+                <span>
+                    {{ laboratory_request['category'] or 'General' }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <strong>Request Date</strong>
+
+                <span>
+                    {{ laboratory_request['request_date'] }}
+                </span>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <strong>Recommended Specialty</strong>
+
+                <span>
+                    {{ laboratory_request['recommended_specialty'] or 'Not Assigned' }}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <form method="POST"
+              action="{{ url_for(
+                  'enter_laboratory_result',
+                  request_id=laboratory_request['id']
+              ) }}">
+
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="result_value">
+                        Result Value
+                    </label>
+
+                    <input type="text"
+                           id="result_value"
+                           name="result_value"
+                           value="{{ result['result_value'] if result else '' }}"
+                           placeholder="e.g. Positive, 95 mg/dL, Normal">
+
+                    <div class="form-help">
+                        Enter the measured value or main
+                        laboratory result.
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="result_date">
+
+                        Result Date
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input type="date"
+                           id="result_date"
+                           name="result_date"
+                           value="{{ result['result_date'] if result else '' }}"
+                           required>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="finding">
+                        Findings
+                    </label>
+
+                    <textarea id="finding"
+                              name="finding"
+                              placeholder="Describe the findings observed during the test...">{{ result['finding'] if result else '' }}</textarea>
+
+                </div>
+
+
+                <div class="form-group full-width">
+
+                    <label for="interpretation">
+                        Interpretation
+                    </label>
+
+                    <textarea id="interpretation"
+                              name="interpretation"
+                              placeholder="Enter the professional interpretation of the result...">{{ result['interpretation'] if result else '' }}</textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="recommended_specialty">
+                        Recommended Specialty
+                    </label>
+
+                    <select id="recommended_specialty"
+                            name="recommended_specialty">
+
+                        <option value="">
+                            Select Specialty
+                        </option>
+
+                        {% set current_specialty =
+                            result['recommended_specialty']
+                            if result
+                            else laboratory_request['recommended_specialty']
+                        %}
+
+                        <option value="Internal Medicine"
+                            {% if current_specialty == 'Internal Medicine' %}selected{% endif %}>
+                            Internal Medicine
+                        </option>
+
+                        <option value="Hematology"
+                            {% if current_specialty == 'Hematology' %}selected{% endif %}>
+                            Hematology
+                        </option>
+
+                        <option value="Orthopedic"
+                            {% if current_specialty == 'Orthopedic' %}selected{% endif %}>
+                            Orthopedic
+                        </option>
+
+                        <option value="Pulmonology"
+                            {% if current_specialty == 'Pulmonology' %}selected{% endif %}>
+                            Pulmonology
+                        </option>
+
+                        <option value="Ophthalmology"
+                            {% if current_specialty == 'Ophthalmology' %}selected{% endif %}>
+                            Ophthalmology
+                        </option>
+
+                        <option value="Cardiology"
+                            {% if current_specialty == 'Cardiology' %}selected{% endif %}>
+                            Cardiology
+                        </option>
+
+                        <option value="Neurology"
+                            {% if current_specialty == 'Neurology' %}selected{% endif %}>
+                            Neurology
+                        </option>
+
+                        <option value="Pediatrics"
+                            {% if current_specialty == 'Pediatrics' %}selected{% endif %}>
+                            Pediatrics
+                        </option>
+
+                        <option value="Gynecology"
+                            {% if current_specialty == 'Gynecology' %}selected{% endif %}>
+                            Gynecology
+                        </option>
+
+                        <option value="Urology"
+                            {% if current_specialty == 'Urology' %}selected{% endif %}>
+                            Urology
+                        </option>
+
+                        <option value="Dermatology"
+                            {% if current_specialty == 'Dermatology' %}selected{% endif %}>
+                            Dermatology
+                        </option>
+
+                        <option value="ENT"
+                            {% if current_specialty == 'ENT' %}selected{% endif %}>
+                            ENT
+                        </option>
+
+                        <option value="General Practice"
+                            {% if current_specialty == 'General Practice' %}selected{% endif %}>
+                            General Practice
+                        </option>
+
+                        <option value="Other"
+                            {% if current_specialty == 'Other' %}selected{% endif %}>
+                            Other
+                        </option>
+
+                    </select>
+
+                    <div class="form-help">
+                        This determines which medical
+                        specialty should review the result.
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="doctor_id">
+                        Assign Doctor
+                    </label>
+
+                    <select id="doctor_id"
+                            name="doctor_id">
+
+                        <option value="">
+                            Select Doctor
+                        </option>
+
+                        {% for doctor in doctors %}
+
+                        <option value="{{ doctor['id'] }}"
+                            {% if result and result['doctor_id'] == doctor['id'] %}selected{% endif %}>
+
+                            {{ doctor['full_name'] }}
+
+                            -
+                            {{ doctor['specialization'] }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                    <div class="form-help">
+                        You can assign the completed result
+                        to the appropriate doctor.
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn btn-success">
+                    Save Laboratory Result
+                </button>
+
+                <a href="{{ url_for('laboratory_requests') }}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+```
+
+</body>
+</html>

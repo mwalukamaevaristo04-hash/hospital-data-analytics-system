@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+    Pharmacy Report - Hospital Data Analytics System
+</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+    }
+
+    .header {
+        background: #ffffff;
+        padding: 25px 40px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #1f2937;
+    }
+
+    .header p {
+        margin: 7px 0 0 0;
+        color: #6b7280;
+        font-size: 15px;
+    }
+
+    .user-info {
+        margin-top: 15px;
+        color: #374151;
+        font-size: 14px;
+    }
+
+    .user-info strong {
+        color: #111827;
+    }
+
+    .navigation {
+        background: #ffffff;
+        padding: 15px 40px;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .navigation a {
+        text-decoration: none;
+        color: #374151;
+        background: #f3f4f6;
+        padding: 10px 16px;
+        border-radius: 7px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .navigation a:hover {
+        background: #e5e7eb;
+    }
+
+    .navigation .active {
+        background: #2563eb;
+        color: white;
+    }
+
+    .navigation .logout {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .container {
+        width: 94%;
+        max-width: 1500px;
+        margin: 30px auto;
+    }
+
+    .page-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .page-title h2 {
+        margin: 0;
+        font-size: 25px;
+        color: #111827;
+    }
+
+    .back-button {
+        text-decoration: none;
+        background: #374151;
+        color: white;
+        padding: 11px 18px;
+        border-radius: 7px;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .back-button:hover {
+        background: #1f2937;
+    }
+
+    .section-title {
+        margin: 30px 0 18px 0;
+        font-size: 20px;
+        color: #111827;
+    }
+
+    .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+
+    .card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 22px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        min-height: 145px;
+        transition: 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.10);
+    }
+
+    .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 12px;
+    }
+
+    .card-value {
+        font-size: 30px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .card-description {
+        margin-top: 8px;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .icon {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+
+    .report-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+        margin-top: 25px;
+    }
+
+    .report-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 25px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .report-card h3 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 19px;
+        color: #111827;
+    }
+
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f3f4f6;
+        color: #374151;
+        text-align: left;
+        padding: 13px 12px;
+        font-size: 13px;
+        border-bottom: 1px solid #d1d5db;
+        white-space: nowrap;
+    }
+
+    td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 13px;
+    }
+
+    tr:hover td {
+        background: #f9fafb;
+    }
+
+    .medicine-name {
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .number {
+        font-weight: 700;
+    }
+
+    .currency {
+        font-weight: 700;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 35px 15px;
+        color: #6b7280;
+    }
+
+    .empty-state .empty-icon {
+        font-size: 40px;
+        margin-bottom: 10px;
+    }
+
+    .summary-card {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 25px;
+        margin-top: 25px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .summary-card h3 {
+        margin-top: 0;
+        margin-bottom: 18px;
+        font-size: 19px;
+        color: #111827;
+    }
+
+    .summary-list {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .summary-item {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 18px;
+        border: 1px solid #e5e7eb;
+        transition: 0.2s;
+    }
+
+    .summary-item:hover {
+        background: #f3f4f6;
+        transform: translateY(-2px);
+    }
+
+    .summary-label {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .summary-value {
+        font-size: 23px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .report-note {
+        background: #f9fafb;
+        border-left: 4px solid #2563eb;
+        padding: 18px;
+        border-radius: 6px;
+        margin-top: 10px;
+    }
+
+    .report-note p {
+        margin: 0;
+        color: #6b7280;
+        line-height: 1.7;
+        font-size: 14px;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 25px;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    @media (max-width: 1100px) {
+
+        .cards {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .report-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-list {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 650px) {
+
+        .cards {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-list {
+            grid-template-columns: 1fr;
+        }
+
+        .header {
+            padding: 22px;
+        }
+
+        .navigation {
+            padding: 12px 22px;
+        }
+
+        .container {
+            width: 95%;
+        }
+
+        .page-title h2 {
+            font-size: 21px;
+        }
+
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<div class="header">
+
+    <h1>
+        💊 Pharmacy Management
+    </h1>
+
+    <p>
+        Hospital Data Analytics System
+    </p>
+
+    <div class="user-info">
+
+        Welcome,
+        <strong>{{ username }}</strong>
+
+        <br>
+
+        Role:
+        <strong>{{ role }}</strong>
+
+    </div>
+
+</div>
+
+
+<div class="navigation">
+
+    <a href="/">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('medicines') }}">
+        📦 Medicines
+    </a>
+
+    <a href="{{ url_for('pharmacy_prescriptions') }}">
+        📋 Prescriptions
+    </a>
+
+    <a href="{{ url_for('pharmacy_report') }}"
+       class="active">
+        📊 Pharmacy Report
+    </a>
+
+    <a href="{{ url_for('logout') }}"
+       class="logout">
+        🚪 Logout
+    </a>
+
+</div>
+
+
+<div class="container">
+
+
+    <div class="page-title">
+
+        <h2>
+            📊 Pharmacy Report
+        </h2>
+
+        <a href="{{ url_for('pharmacy') }}"
+           class="back-button">
+
+            ← Back to Pharmacy
+
+        </a>
+
+    </div>
+
+
+    <h3 class="section-title">
+        Pharmacy Overview
+    </h3>
+
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <div class="icon">
+                💊
+            </div>
+
+            <div class="card-title">
+                Total Medicines
+            </div>
+
+            <div class="card-value">
+                {{ total_medicines }}
+            </div>
+
+            <div class="card-description">
+                Medicines registered in pharmacy
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="icon">
+                💰
+            </div>
+
+            <div class="card-title">
+                Total Stock Value
+            </div>
+
+            <div class="card-value">
+
+                TZS
+                {{ "{:,.2f}".format(total_stock_value or 0) }}
+
+            </div>
+
+            <div class="card-description">
+                Current value of available stock
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="icon">
+                📦
+            </div>
+
+            <div class="card-title">
+                Dispensed Prescriptions
+            </div>
+
+            <div class="card-value">
+                {{ dispensed_prescriptions }}
+            </div>
+
+            <div class="card-description">
+                Prescriptions already dispensed
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="icon">
+                📋
+            </div>
+
+            <div class="card-title">
+                Pending Prescriptions
+            </div>
+
+            <div class="card-value">
+                {{ pending_prescriptions }}
+            </div>
+
+            <div class="card-description">
+                Prescriptions waiting for dispensing
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <h3>
+            📌 Prescription Summary
+        </h3>
+
+        <div class="summary-list">
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    Total Prescriptions
+                </div>
+
+                <div class="summary-value">
+
+                    {{
+                        (dispensed_prescriptions or 0)
+                        +
+                        (pending_prescriptions or 0)
+                        +
+                        (cancelled_prescriptions or 0)
+                    }}
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    Dispensed
+                </div>
+
+                <div class="summary-value">
+                    {{ dispensed_prescriptions }}
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    Pending
+                </div>
+
+                <div class="summary-value">
+                    {{ pending_prescriptions }}
+                </div>
+
+            </div>
+
+
+            <div class="summary-item">
+
+                <div class="summary-label">
+                    Cancelled
+                </div>
+
+                <div class="summary-value">
+                    {{ cancelled_prescriptions }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <div class="report-grid">
+
+
+        <div class="report-card">
+
+            <h3>
+                📦 Stock by Medicine Category
+            </h3>
+
+
+            {% if category_data %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Category
+                            </th>
+
+                            <th>
+                                Total Medicines
+                            </th>
+
+                            <th>
+                                Total Stock
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for category in category_data %}
+
+                        <tr>
+
+                            <td>
+
+                                {% if category['category'] %}
+
+                                    {{ category['category'] }}
+
+                                {% else %}
+
+                                    Uncategorized
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td class="number">
+
+                                {{ category['total_medicines'] }}
+
+                            </td>
+
+
+                            <td class="number">
+
+                                {{ category['total_stock'] }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    📦
+                </div>
+
+                <p>
+                    No medicine category data available.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <div class="report-card">
+
+            <h3>
+                🏆 Most Dispensed Medicines
+            </h3>
+
+
+            {% if most_dispensed %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Rank
+                            </th>
+
+                            <th>
+                                Medicine
+                            </th>
+
+                            <th>
+                                Quantity Dispensed
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        {% for medicine in most_dispensed %}
+
+                        <tr>
+
+                            <td class="number">
+
+                                {{ loop.index }}
+
+                            </td>
+
+
+                            <td>
+
+                                <span class="medicine-name">
+
+                                    {{ medicine['medicine_name'] }}
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="number">
+
+                                {{ medicine['total_quantity'] }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🏆
+                </div>
+
+                <p>
+                    No dispensed prescriptions available yet.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+    </div>
+
+
+    <div class="summary-card">
+
+        <h3>
+            📈 Report Interpretation
+        </h3>
+
+        <div class="report-note">
+
+            <p>
+
+                This report provides an overview of the current
+                pharmacy inventory and prescription activities.
+
+                The stock value represents the estimated value of
+                medicines currently available in the pharmacy,
+                calculated using quantity multiplied by unit price.
+
+                The prescription summary shows the number of
+                prescriptions that are pending, dispensed, or
+                cancelled.
+
+                The category table summarizes medicine availability
+                according to medicine category, while the most
+                dispensed table identifies medicines with the highest
+                dispensing quantities.
+
+            </p>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="footer">
+
+    Hospital Data Analytics System
+
+    <br>
+
+    Pharmacy Management Module
+
+</div>
+```
+
+</body>
+
+</html>

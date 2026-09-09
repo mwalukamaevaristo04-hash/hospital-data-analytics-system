@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+    Login - Hospital Data Analytics and Forecasting System
+</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+
+    /* =====================================================
+       PAGE BACKGROUND
+    ===================================================== */
+
+    body {
+
+        margin: 0;
+
+        min-height: 100vh;
+
+        font-family:
+            Arial,
+            Helvetica,
+            sans-serif;
+
+        background-image:
+            linear-gradient(
+                rgba(8, 30, 48, 0.68),
+                rgba(8, 30, 48, 0.72)
+            ),
+            url("/static/hospital.jpg");
+
+        background-size: cover;
+
+        background-position: center;
+
+        background-repeat: no-repeat;
+
+        background-attachment: fixed;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 35px 20px;
+    }
+
+
+    /* =====================================================
+       MAIN LOGIN CARD
+       TANZANIA FLAG WATERMARK IS APPLIED TO THIS
+       WHOLE CARD
+    ===================================================== */
+
+    .login-container {
+
+        width: 100%;
+
+        max-width: 520px;
+
+        background: rgba(255, 255, 255, 0.96);
+
+        border-radius: 22px;
+
+        padding: 34px;
+
+        box-shadow:
+            0 20px 55px rgba(0, 0, 0, 0.30);
+
+        position: relative;
+
+        overflow: hidden;
+    }
+
+
+    /* =====================================================
+       TANZANIA FLAG WATERMARK
+       COVERS THE WHOLE LOGIN CARD
+    ===================================================== */
+
+    .login-container::before {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        background-image:
+            url("https://upload.wikimedia.org/wikipedia/commons/3/38/Flag_of_Tanzania.svg");
+
+        background-size: cover;
+
+        background-position: center;
+
+        background-repeat: no-repeat;
+
+        opacity: 0.10;
+
+        z-index: 0;
+
+        pointer-events: none;
+    }
+
+
+    /* =====================================================
+       SOFT WHITE OVERLAY
+       KEEPS THE FLAG AS A WATERMARK
+    ===================================================== */
+
+    .login-container::after {
+
+        content: "";
+
+        position: absolute;
+
+        inset: 0;
+
+        background: rgba(255, 255, 255, 0.35);
+
+        z-index: 0;
+
+        pointer-events: none;
+    }
+
+
+    /* =====================================================
+       ALL LOGIN CARD CONTENT
+       STAYS ABOVE WATERMARK
+    ===================================================== */
+
+    .login-content {
+
+        position: relative;
+
+        z-index: 1;
+    }
+
+
+    /* =====================================================
+       SYSTEM HEADER
+    ===================================================== */
+
+    .system-header {
+
+        text-align: center;
+
+        margin-bottom: 25px;
+    }
+
+
+    .hospital-icon {
+
+        font-size: 42px;
+
+        margin-bottom: 8px;
+    }
+
+
+    .system-header h1 {
+
+        margin: 0;
+
+        font-size: 27px;
+
+        line-height: 1.25;
+
+        color: #12344d;
+    }
+
+
+    .system-header p {
+
+        margin-top: 10px;
+
+        margin-bottom: 0;
+
+        color: #64748b;
+
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       LOGIN SECTION
+    ===================================================== */
+
+    .login-section {
+
+        width: 100%;
+    }
+
+
+    .login-section h2 {
+
+        text-align: center;
+
+        margin-top: 0;
+
+        margin-bottom: 8px;
+
+        color: #1e293b;
+
+        font-size: 23px;
+    }
+
+
+    .login-description {
+
+        text-align: center;
+
+        color: #64748b;
+
+        font-size: 14px;
+
+        margin-bottom: 25px;
+    }
+
+
+    /* =====================================================
+       ERROR MESSAGE
+    ===================================================== */
+
+    .error-message {
+
+        background: rgba(254, 226, 226, 0.92);
+
+        color: #b91c1c;
+
+        border: 1px solid #fecaca;
+
+        border-radius: 10px;
+
+        padding: 12px 14px;
+
+        margin-bottom: 18px;
+
+        text-align: center;
+
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       FORM
+    ===================================================== */
+
+    form {
+
+        width: 100%;
+    }
+
+
+    label {
+
+        display: block;
+
+        margin-bottom: 7px;
+
+        color: #334155;
+
+        font-weight: 600;
+
+        font-size: 14px;
+    }
+
+
+    input {
+
+        width: 100%;
+
+        padding: 13px 14px;
+
+        margin-bottom: 18px;
+
+        border: 1px solid #cbd5e1;
+
+        border-radius: 10px;
+
+        outline: none;
+
+        font-size: 15px;
+
+        background: rgba(248, 250, 252, 0.94);
+
+        transition: 0.2s;
+    }
+
+
+    input:focus {
+
+        border-color: #2563eb;
+
+        background: #ffffff;
+
+        box-shadow:
+            0 0 0 3px rgba(37, 99, 235, 0.10);
+    }
+
+
+    button {
+
+        width: 100%;
+
+        padding: 14px;
+
+        border: none;
+
+        border-radius: 10px;
+
+        background: #12344d;
+
+        color: white;
+
+        font-size: 16px;
+
+        font-weight: 700;
+
+        cursor: pointer;
+
+        transition: 0.25s;
+    }
+
+
+    button:hover {
+
+        background: #0f4c75;
+
+        transform: translateY(-1px);
+    }
+
+
+    /* =====================================================
+       DEVELOPER INFORMATION
+    ===================================================== */
+
+    .developer-section {
+
+        position: relative;
+
+        margin-top: 30px;
+
+        padding: 20px;
+
+        border-radius: 16px;
+
+        overflow: hidden;
+
+        border: 1px solid rgba(15, 23, 42, 0.10);
+
+        background: rgba(255, 255, 255, 0.55);
+    }
+
+
+    .developer-title {
+
+        text-align: center;
+
+        margin-bottom: 15px;
+
+        color: #12344d;
+
+        font-size: 15px;
+
+        font-weight: 800;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.6px;
+
+        background: rgba(255, 255, 255, 0.65);
+
+        border-radius: 8px;
+
+        padding: 7px 10px;
+    }
+
+
+    .developer-content {
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: space-between;
+
+        gap: 20px;
+    }
+
+
+    /* =====================================================
+       DEVELOPER DETAILS
+    ===================================================== */
+
+    .developer-details {
+
+        flex: 1;
+
+        min-width: 0;
+
+        background: rgba(255, 255, 255, 0.68);
+
+        padding: 10px 12px;
+
+        border-radius: 10px;
+    }
+
+
+    .developer-name {
+
+        margin: 0 0 7px 0;
+
+        color: #12344d;
+
+        font-size: 17px;
+
+        font-weight: 800;
+    }
+
+
+    .developer-role {
+
+        margin: 0 0 12px 0;
+
+        color: #166534;
+
+        font-size: 13px;
+
+        font-weight: 700;
+    }
+
+
+    .developer-contact {
+
+        margin: 6px 0;
+
+        color: #334155;
+
+        font-size: 13px;
+
+        word-break: break-word;
+    }
+
+
+    .contact-label {
+
+        font-weight: 700;
+
+        color: #1e293b;
+    }
+
+
+    /* =====================================================
+       PROFILE PHOTO
+    ===================================================== */
+
+    .developer-photo {
+
+        width: 95px;
+
+        height: 95px;
+
+        flex-shrink: 0;
+
+        border-radius: 50%;
+
+        object-fit: cover;
+
+        border: 4px solid rgba(255, 255, 255, 0.95);
+
+        box-shadow:
+            0 7px 20px rgba(0, 0, 0, 0.20);
+    }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    .login-footer {
+
+        text-align: center;
+
+        margin-top: 18px;
+
+        font-size: 12px;
+
+        color: #64748b;
+    }
+
+
+    /* =====================================================
+       MOBILE RESPONSIVE
+    ===================================================== */
+
+    @media (max-width: 600px) {
+
+        body {
+
+            padding: 20px 12px;
+        }
+
+
+        .login-container {
+
+            padding: 25px 20px;
+
+            border-radius: 18px;
+        }
+
+
+        .system-header h1 {
+
+            font-size: 23px;
+        }
+
+
+        .developer-content {
+
+            gap: 12px;
+        }
+
+
+        .developer-photo {
+
+            width: 82px;
+
+            height: 82px;
+        }
+
+
+        .developer-name {
+
+            font-size: 15px;
+        }
+
+
+        .developer-contact {
+
+            font-size: 12px;
+        }
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<!-- =====================================================
+     MAIN LOGIN CARD
+===================================================== -->
+
+<div class="login-container">
+
+
+    <div class="login-content">
+
+
+        <!-- =================================================
+             SYSTEM HEADER
+        ================================================== -->
+
+        <div class="system-header">
+
+            <div class="hospital-icon">
+                🏥
+            </div>
+
+            <h1>
+                Hospital Data Analytics and Forecasting System
+            </h1>
+
+            <p>
+                Secure Healthcare Management and Analytics Platform
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             LOGIN
+        ================================================== -->
+
+        <div class="login-section">
+
+            <h2>
+                Login
+            </h2>
+
+            <p class="login-description">
+                Please login to continue.
+            </p>
+
+
+            {% if error %}
+
+                <div class="error-message">
+
+                    {{ error }}
+
+                </div>
+
+            {% endif %}
+
+
+            <form method="POST">
+
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter username"
+                    required
+                >
+
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter password"
+                    required
+                >
+
+
+                <button type="submit">
+                    Login
+                </button>
+
+
+            </form>
+
+        </div>
+
+
+        <!-- =================================================
+             DEVELOPER INFORMATION
+        ================================================== -->
+
+        <div class="developer-section">
+
+
+            <div class="developer-title">
+
+                This System is Developed by Data Scientist
+
+            </div>
+
+
+            <div class="developer-content">
+
+
+                <!-- DEVELOPER DETAILS -->
+
+                <div class="developer-details">
+
+                    <p class="developer-name">
+                        Evaristo A. Mwalukama
+                    </p>
+
+
+                    <p class="developer-role">
+                        Data Scientist
+                    </p>
+
+
+                    <p class="developer-contact">
+
+                        <span class="contact-label">
+                            Phone:
+                        </span>
+
+                        0748923766
+
+                    </p>
+
+
+                    <p class="developer-contact">
+
+                        <span class="contact-label">
+                            Email:
+                        </span>
+
+                        mwalukamaevaristo04@gmail.com
+
+                    </p>
+
+                </div>
+
+
+                <!-- PROFILE PHOTO -->
+
+                <img
+                    class="developer-photo"
+                    src="{{ url_for('static', filename='chopa.jpg') }}"
+                    alt="Developer Profile"
+                >
+
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             FOOTER
+        ================================================== -->
+
+        <div class="login-footer">
+
+            Hospital Data Analytics and Forecasting System
+
+        </div>
+
+
+    </div>
+
+
+</div>
+```
+
+</body>
+
+</html>

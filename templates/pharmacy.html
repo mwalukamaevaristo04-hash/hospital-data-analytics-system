@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Pharmacy Management - Hospital Data Analytics System</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+        background: #f4f7fb;
+        color: #1f2937;
+    }
+
+    .container {
+        width: 95%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .topbar {
+        background: #ffffff;
+        padding: 18px 25px;
+        margin-bottom: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .topbar-left h1 {
+        font-size: 27px;
+        margin-bottom: 5px;
+        color: #1e3a8a;
+    }
+
+    .topbar-left p {
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .user-info {
+        text-align: right;
+        font-size: 14px;
+    }
+
+    .user-info strong {
+        color: #1e3a8a;
+    }
+
+    .user-role {
+        color: #6b7280;
+        margin-top: 4px;
+    }
+
+    .navigation {
+        background: #ffffff;
+        padding: 15px 20px;
+        margin-bottom: 25px;
+        border-radius: 12px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .navigation a {
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #374151;
+        background: #f3f4f6;
+        transition: 0.2s;
+    }
+
+    .navigation a:hover {
+        background: #e5e7eb;
+    }
+
+    .navigation .active {
+        background: #1e3a8a;
+        color: white;
+    }
+
+    .navigation .logout {
+        margin-left: auto;
+        background: #dc2626;
+        color: white;
+    }
+
+    .navigation .logout:hover {
+        background: #b91c1c;
+    }
+
+    .section-title {
+        font-size: 21px;
+        margin-bottom: 15px;
+        color: #111827;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+
+        min-height: 135px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        transition: transform 0.2s, box-shadow 0.2s;
+
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-content h3 {
+        font-size: 15px;
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+
+    .stat-number {
+        font-size: 32px;
+        font-weight: bold;
+        color: #111827;
+    }
+
+    .stat-description {
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 7px;
+    }
+
+    .stat-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 12px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        font-size: 27px;
+    }
+
+    .medicine-icon {
+        background: #dbeafe;
+    }
+
+    .stock-icon {
+        background: #dcfce7;
+    }
+
+    .warning-icon {
+        background: #fef3c7;
+    }
+
+    .danger-icon {
+        background: #fee2e2;
+    }
+
+    .pending-icon {
+        background: #ede9fe;
+    }
+
+    .quick-actions {
+        background: white;
+        padding: 22px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+        margin-bottom: 30px;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .action-button {
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        background: #1e3a8a;
+        color: white;
+        transition: 0.2s;
+    }
+
+    .action-button:hover {
+        background: #172554;
+    }
+
+    .action-button.secondary {
+        background: #374151;
+    }
+
+    .action-button.secondary:hover {
+        background: #1f2937;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .panel {
+        background: white;
+        border-radius: 14px;
+        padding: 22px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+        margin-bottom: 30px;
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 10px;
+    }
+
+    .panel-header h2 {
+        font-size: 19px;
+        color: #111827;
+    }
+
+    .view-all {
+        text-decoration: none;
+        font-size: 13px;
+        color: #1d4ed8;
+        font-weight: bold;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f3f4f6;
+        padding: 12px;
+        text-align: left;
+        font-size: 13px;
+        color: #374151;
+    }
+
+    td {
+        padding: 13px 12px;
+        border-bottom: 1px solid #e5e7eb;
+        font-size: 13px;
+    }
+
+    tr:hover td {
+        background: #f9fafb;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+    .badge-normal {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-low {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-expired {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .badge-pending {
+        background: #ede9fe;
+        color: #6b21a8;
+    }
+
+    .warning-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .warning-item {
+        padding: 14px;
+        border-radius: 9px;
+        background: #f9fafb;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .warning-item.expired {
+        border-left-color: #dc2626;
+    }
+
+    .warning-item strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .warning-item span {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .empty-message {
+        padding: 20px;
+        text-align: center;
+        color: #9ca3af;
+        font-size: 14px;
+    }
+
+    .footer {
+        text-align: center;
+        padding: 25px;
+        color: #9ca3af;
+        font-size: 13px;
+    }
+
+    @media (max-width: 900px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .topbar {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .user-info {
+            text-align: left;
+        }
+
+        .navigation .logout {
+            margin-left: 0;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<div class="topbar">
+
+    <div class="topbar-left">
+        <h1>💊 Pharmacy Management</h1>
+        <p>Hospital Data Analytics System</p>
+    </div>
+
+    <div class="user-info">
+        <div>
+            Welcome,
+            <strong>{{ username }}</strong>
+        </div>
+
+        <div class="user-role">
+            Role: {{ role }}
+        </div>
+    </div>
+
+</div>
+
+
+<div class="navigation">
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}" class="active">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('medicines') }}">
+        📦 Medicines
+    </a>
+
+    <a href="{{ url_for('pharmacy_prescriptions') }}">
+        📋 Prescriptions
+    </a>
+
+    <a href="{{ url_for('pharmacy_report') }}">
+        📊 Pharmacy Report
+    </a>
+
+    <a href="{{ url_for('logout') }}" class="logout">
+        🚪 Logout
+    </a>
+
+</div>
+
+
+<h2 class="section-title">Pharmacy Overview</h2>
+
+<div class="stats-grid">
+
+    <a href="{{ url_for('medicines') }}" class="stat-card">
+
+        <div class="stat-content">
+
+            <h3>Total Medicines</h3>
+
+            <div class="stat-number">
+                {{ total_medicines }}
+            </div>
+
+            <div class="stat-description">
+                Medicines registered in pharmacy
+            </div>
+
+        </div>
+
+        <div class="stat-icon medicine-icon">
+            💊
+        </div>
+
+    </a>
+
+
+    <a href="{{ url_for('medicines') }}" class="stat-card">
+
+        <div class="stat-content">
+
+            <h3>Total Stock</h3>
+
+            <div class="stat-number">
+                {{ total_stock }}
+            </div>
+
+            <div class="stat-description">
+                Total medicine units available
+            </div>
+
+        </div>
+
+        <div class="stat-icon stock-icon">
+            📦
+        </div>
+
+    </a>
+
+
+    <a href="{{ url_for('medicines') }}" class="stat-card">
+
+        <div class="stat-content">
+
+            <h3>Low Stock</h3>
+
+            <div class="stat-number">
+                {{ low_stock }}
+            </div>
+
+            <div class="stat-description">
+                Medicines below reorder level
+            </div>
+
+        </div>
+
+        <div class="stat-icon warning-icon">
+            ⚠️
+        </div>
+
+    </a>
+
+
+    <a href="{{ url_for('medicines') }}" class="stat-card">
+
+        <div class="stat-content">
+
+            <h3>Expired Medicines</h3>
+
+            <div class="stat-number">
+                {{ expired_medicines }}
+            </div>
+
+            <div class="stat-description">
+                Medicines past expiry date
+            </div>
+
+        </div>
+
+        <div class="stat-icon danger-icon">
+            ❌
+        </div>
+
+    </a>
+
+
+    <a href="{{ url_for('pharmacy_prescriptions') }}" class="stat-card">
+
+        <div class="stat-content">
+
+            <h3>Pending Prescriptions</h3>
+
+            <div class="stat-number">
+                {{ pending_prescriptions }}
+            </div>
+
+            <div class="stat-description">
+                Prescriptions waiting for dispensing
+            </div>
+
+        </div>
+
+        <div class="stat-icon pending-icon">
+            📋
+        </div>
+
+    </a>
+
+</div>
+
+
+<div class="quick-actions">
+
+    <div class="panel-header">
+        <h2>Quick Actions</h2>
+    </div>
+
+    <div class="action-buttons">
+
+        <a href="{{ url_for('medicines') }}" class="action-button">
+            📦 Manage Medicines
+        </a>
+
+        <a href="{{ url_for('pharmacy_prescriptions') }}" class="action-button">
+            📋 View Prescriptions
+        </a>
+
+        <a href="{{ url_for('pharmacy_report') }}" class="action-button secondary">
+            📊 View Pharmacy Report
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="content-grid">
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h2>Medicine Inventory</h2>
+
+            <a href="{{ url_for('medicines') }}" class="view-all">
+                View All →
+            </a>
+
+        </div>
+
+        <div class="table-container">
+
+            {% if medicines %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Category</th>
+                        <th>Stock</th>
+                        <th>Unit</th>
+                        <th>Expiry Date</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for medicine in medicines %}
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                {{ medicine['medicine_name'] }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {{ medicine['category'] or '-' }}
+                        </td>
+
+                        <td>
+                            {{ medicine['quantity'] }}
+                        </td>
+
+                        <td>
+                            {{ medicine['unit'] or '-' }}
+                        </td>
+
+                        <td>
+                            {{ medicine['expiry_date'] or '-' }}
+                        </td>
+
+                        <td>
+
+                            {% if medicine['expiry_date'] and medicine['expiry_date'] < current_date %}
+
+                                <span class="badge badge-expired">
+                                    Expired
+                                </span>
+
+                            {% elif medicine['quantity'] <= medicine['reorder_level'] %}
+
+                                <span class="badge badge-low">
+                                    Low Stock
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-normal">
+                                    Available
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="empty-message">
+                No medicines have been registered yet.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <div class="panel">
+
+        <div class="panel-header">
+
+            <h2>⚠️ Low Stock</h2>
+
+        </div>
+
+        <div class="warning-list">
+
+            {% if low_stock_medicines %}
+
+                {% for medicine in low_stock_medicines %}
+
+                <div class="warning-item">
+
+                    <strong>
+                        {{ medicine['medicine_name'] }}
+                    </strong>
+
+                    <span>
+                        Available:
+                        <strong>{{ medicine['quantity'] }}</strong>
+                        {{ medicine['unit'] or 'units' }}
+                    </span>
+
+                    <br>
+
+                    <span>
+                        Reorder level:
+                        {{ medicine['reorder_level'] }}
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+
+                <div class="empty-message">
+                    No medicines are currently below the reorder level.
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="panel">
+
+    <div class="panel-header">
+
+        <h2>❌ Expired Medicines</h2>
+
+        <a href="{{ url_for('medicines') }}" class="view-all">
+            Manage Medicines →
+        </a>
+
+    </div>
+
+    <div class="table-container">
+
+        {% if expired_medicine_list %}
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Medicine</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Expiry Date</th>
+                    <th>Supplier</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for medicine in expired_medicine_list %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ medicine['medicine_name'] }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ medicine['category'] or '-' }}
+                    </td>
+
+                    <td>
+                        {{ medicine['quantity'] }}
+                    </td>
+
+                    <td>
+                        {{ medicine['expiry_date'] or '-' }}
+                    </td>
+
+                    <td>
+                        {{ medicine['supplier'] or '-' }}
+                    </td>
+
+                    <td>
+
+                        <span class="badge badge-expired">
+                            Expired
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="empty-message">
+            ✅ No expired medicines found.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="footer">
+    Hospital Data Analytics System &copy; 2026
+</div>
+```
+
+</div>
+
+</body>
+</html>

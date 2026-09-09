@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Laboratory Requests</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+
+        .requests-page {
+            width: 95%;
+            max-width: 1500px;
+            margin: 30px auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+        }
+
+        .page-header p {
+            color: #64748b;
+            margin-top: 7px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 7px;
+            border: none;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #d97706;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #475569;
+            color: white;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #334155;
+            text-align: left;
+            padding: 14px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .patient-name {
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .test-name {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .request-id {
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-processing {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .notes {
+            max-width: 220px;
+            line-height: 1.5;
+            color: #475569;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="requests-page">
+
+        <div class="page-header">
+
+            <div>
+
+                <h1>Laboratory Test Requests</h1>
+
+                <p>
+                    Manage laboratory and diagnostic
+                    service requests.
+                </p>
+
+            </div>
+
+
+            <div class="actions">
+
+                {% if role in ['Patient', 'Admin'] %}
+
+                <a href="{{ url_for('request_laboratory_test') }}"
+                   class="btn btn-success">
+                    + Request Test
+                </a>
+
+                {% endif %}
+
+
+                <a href="{{ url_for('laboratory_tests') }}"
+                   class="btn btn-primary">
+                    Laboratory Tests
+                </a>
+
+
+                <a href="{{ url_for('laboratory') }}"
+                   class="btn btn-secondary">
+                    Laboratory Dashboard
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            {% if requests %}
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Request ID</th>
+
+                        {% if role != 'Patient' %}
+
+                        <th>Patient</th>
+
+                        {% endif %}
+
+                        <th>Test</th>
+
+                        <th>Category</th>
+
+                        <th>Request Date</th>
+
+                        <th>Status</th>
+
+                        <th>Notes</th>
+
+                        <th>Created By</th>
+
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for item in requests %}
+
+                    <tr>
+
+                        <td>
+
+                            <span class="request-id">
+
+                                LAB-{{ item['id'] }}
+
+                            </span>
+
+                        </td>
+
+
+                        {% if role != 'Patient' %}
+
+                        <td>
+
+                            <div class="patient-name">
+
+                                {{ item['patient_name'] }}
+
+                            </div>
+
+                            <small>
+                                Patient ID:
+                                {{ item['patient_id'] }}
+                            </small>
+
+                        </td>
+
+                        {% endif %}
+
+
+                        <td>
+
+                            <div class="test-name">
+
+                                {{ item['test_name'] }}
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ item['category'] or 'General' }}
+
+                        </td>
+
+
+                        <td>
+
+                            {{ item['request_date'] }}
+
+                        </td>
+
+
+                        <td>
+
+                            {% if item['status'] == 'Pending' %}
+
+                            <span class="status status-pending">
+                                Pending
+                            </span>
+
+                            {% elif item['status'] == 'Processing' %}
+
+                            <span class="status status-processing">
+                                Processing
+                            </span>
+
+                            {% elif item['status'] == 'Completed' %}
+
+                            <span class="status status-completed">
+                                Completed
+                            </span>
+
+                            {% elif item['status'] == 'Cancelled' %}
+
+                            <span class="status status-cancelled">
+                                Cancelled
+                            </span>
+
+                            {% else %}
+
+                            <span class="status">
+                                {{ item['status'] }}
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="notes">
+
+                                {{ item['notes']
+                                   or 'No notes' }}
+
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            {{ item['created_by']
+                               or '-' }}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="action-buttons">
+
+
+                                {% if role in ['Admin', 'Laboratory'] %}
+
+                                    {% if item['status'] == 'Pending' %}
+
+                                    <form method="POST"
+                                          action="{{ url_for(
+                                              'process_laboratory_request',
+                                              request_id=item['id']
+                                          ) }}">
+
+                                        <button type="submit"
+                                                class="btn btn-warning">
+                                            Process
+                                        </button>
+
+                                    </form>
+
+                                    {% endif %}
+
+
+                                    {% if item['status'] == 'Processing' %}
+
+                                    <a href="{{ url_for(
+                                        'enter_laboratory_result',
+                                        request_id=item['id']
+                                    ) }}"
+                                       class="btn btn-success">
+                                        Enter Result
+                                    </a>
+
+                                    {% endif %}
+
+
+                                    {% if item['status'] in ['Pending', 'Processing'] %}
+
+                                    <form method="POST"
+                                          action="{{ url_for(
+                                              'cancel_laboratory_request',
+                                              request_id=item['id']
+                                          ) }}"
+                                          onsubmit="return confirm(
+                                              'Are you sure you want to cancel this laboratory request?'
+                                          );">
+
+                                        <button type="submit"
+                                                class="btn btn-danger">
+                                            Cancel
+                                        </button>
+
+                                    </form>
+
+                                    {% endif %}
+
+                                {% endif %}
+
+
+                                {% if item['status'] == 'Completed' %}
+
+                                    {% if item['result_id'] %}
+
+                                    <a href="{{ url_for(
+                                        'view_laboratory_result',
+                                        result_id=item['result_id']
+                                    ) }}"
+                                       class="btn btn-primary">
+                                        View Result
+                                    </a>
+
+                                    {% endif %}
+
+                                {% endif %}
+
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="empty-state">
+
+                <h2>No Laboratory Requests</h2>
+
+                <p>
+                    There are currently no laboratory
+                    test requests.
+                </p>
+
+
+                {% if role in ['Patient', 'Admin'] %}
+
+                <a href="{{ url_for('request_laboratory_test') }}"
+                   class="btn btn-success">
+                    Request Laboratory Test
+                </a>
+
+                {% endif %}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</body>
+</html>

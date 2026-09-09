@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+
+<title>Edit User</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+
+</head>
+
+<body>
+
+
+<h1>Hospital Data Analytics System</h1>
+
+<h2>Edit User</h2>
+
+
+<form method="POST">
+
+    <label>
+        Username
+    </label>
+
+    <br>
+
+    <input
+        type="text"
+        name="username"
+        value="{{ user['username'] }}"
+        required
+    >
+
+    <br><br>
+
+
+    <label>
+        Password
+    </label>
+
+    <br>
+
+    <input
+        type="password"
+        name="password"
+        value="{{ user['password'] }}"
+        required
+    >
+
+    <br><br>
+
+
+    <label>
+        Role
+    </label>
+
+    <br>
+
+    <select name="role" id="role" required>
+
+        <option value="Admin"
+            {% if user['role'] == 'Admin' %}
+                selected
+            {% endif %}>
+            Admin
+        </option>
+
+        <option value="Doctor"
+            {% if user['role'] == 'Doctor' %}
+                selected
+            {% endif %}>
+            Doctor
+        </option>
+
+        <option value="Receptionist"
+            {% if user['role'] == 'Receptionist' %}
+                selected
+            {% endif %}>
+            Receptionist
+        </option>
+
+        <option value="Data Analyst"
+            {% if user['role'] == 'Data Analyst' %}
+                selected
+            {% endif %}>
+            Data Analyst
+        </option>
+
+    </select>
+
+    <br><br>
+
+
+    <!-- =================================================
+         DOCTOR PROFILE
+         ================================================= -->
+
+    <div id="doctor-profile-section">
+
+        <label>
+            Doctor Profile
+        </label>
+
+        <br>
+
+        <select name="doctor_id">
+
+            <option value="">
+                -- Select Doctor --
+            </option>
+
+            {% for doctor in doctors %}
+
+                <option
+                    value="{{ doctor['id'] }}"
+                    {% if user['doctor_id'] == doctor['id'] %}
+                        selected
+                    {% endif %}
+                >
+                    {{ doctor['full_name'] }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <br>
+
+
+    <button type="submit">
+        Update User
+    </button>
+
+</form>
+
+
+<br>
+
+<a href="{{ url_for('users') }}">
+    Back to User Management
+</a>
+
+
+|
+
+<a href="{{ url_for('home') }}">
+    Dashboard
+</a>
+
+
+<!-- =====================================================
+     SHOW DOCTOR PROFILE ONLY FOR DOCTOR ROLE
+     ===================================================== -->
+
+<script>
+
+    const roleSelect = document.getElementById("role");
+    const doctorProfileSection =
+        document.getElementById("doctor-profile-section");
+
+
+    function toggleDoctorProfile() {
+
+        if (roleSelect.value === "Doctor") {
+
+            doctorProfileSection.style.display = "block";
+
+        } else {
+
+            doctorProfileSection.style.display = "none";
+
+        }
+
+    }
+
+
+    roleSelect.addEventListener(
+        "change",
+        toggleDoctorProfile
+    );
+
+
+    toggleDoctorProfile();
+
+</script>
+
+
+</body>
+
+</html>
