@@ -1,31 +1,61 @@
 from io import BytesIO, StringIO
+
 from flask import send_file
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
+
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
     Spacer,
+    PageBreak,
     Table,
-    TableStyle,
-    PageBreak
+    TableStyle
 )
+
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
+
 import csv
 
-from flask import Flask, render_template, request, redirect, session, url_for
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    session,
+    url_for,
+    jsonify
+)
+
+from werkzeug.security import (
+    generate_password_hash,
+    check_password_hash
+)
+
 import sqlite3
+
 from functools import wraps
-from datetime import date, datetime, timedelta
+
+from datetime import (
+    date,
+    datetime,
+    timedelta
+)
+
 
 app = Flask(__name__)
 
 app.secret_key = "hospital_secret_key_2026"
 
+# Basic secure session-cookie settings.
+# HTTPS should be enabled before setting SESSION_COOKIE_SECURE=True.
 
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 # =========================================================
 # DATABASE CONNECTION
 # =========================================================
@@ -529,11 +559,37 @@ def init_db():
             VALUES (?, ?, ?, ?, ?)
         """, (
             "admin",
-            "admin123",
+            generate_password_hash("admin123"),
             "Admin",
             None,
             None
         ))
+
+    # =====================================================
+    # PASSWORD HASH MIGRATION
+    # =====================================================
+
+    # Convert existing plain-text passwords to secure hashes.
+    # This keeps existing users working while upgrading the database.
+    all_users = conn.execute("""
+        SELECT id, password
+        FROM users
+    """).fetchall()
+
+    for existing_user in all_users:
+
+        stored_password = existing_user["password"]
+
+        if stored_password and not stored_password.startswith(("scrypt:", "pbkdf2:")):
+
+            conn.execute("""
+                UPDATE users
+                SET password = ?
+                WHERE id = ?
+            """, (
+                generate_password_hash(stored_password),
+                existing_user["id"]
+            ))
 
     # =====================================================
     # OLD CONFIRMED STATUS
@@ -656,7 +712,7 @@ def login():
 
     if request.method == "POST":
 
-        username = request.form["username"]
+        username = request.form["username"].strip()
 
         password = request.form["password"]
 
@@ -666,15 +722,15 @@ def login():
             SELECT *
             FROM users
             WHERE username = ?
-            AND password = ?
         """, (
             username,
-            password
         )).fetchone()
 
-        conn.close()
+        if user and check_password_hash(user["password"], password):
 
-        if user:
+            conn.close()
+
+            session.clear()
 
             session["user_id"] = user["id"]
 
@@ -686,7 +742,12 @@ def login():
 
             session["patient_id"] = user["patient_id"]
 
+            if user["role"] == "Patient":
+                return redirect(url_for("patient_dashboard"))
+
             return redirect(url_for("home"))
+
+        conn.close()
 
         return render_template(
             "login.html",
@@ -694,6 +755,163 @@ def login():
         )
 
     return render_template("login.html")
+
+
+
+# =========================================================
+# PATIENT SELF REGISTRATION
+# =========================================================
+
+@app.route("/patient_register", methods=["GET", "POST"])
+def patient_register():
+
+    if request.method == "POST":
+
+        full_name = request.form["full_name"].strip()
+        age = request.form["age"]
+        gender = request.form["gender"]
+        phone = request.form["phone"].strip()
+        address = request.form.get("address", "").strip()
+        username = request.form["username"].strip()
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if password != confirm_password:
+            return render_template(
+                "patient_register.html",
+                error="Passwords do not match."
+            )
+
+        if len(password) < 6:
+            return render_template(
+                "patient_register.html",
+                error="Password must contain at least 6 characters."
+            )
+
+        conn = get_db_connection()
+
+        existing_user = conn.execute("""
+            SELECT id
+            FROM users
+            WHERE username = ?
+        """, (username,)).fetchone()
+
+        if existing_user:
+            conn.close()
+            return render_template(
+                "patient_register.html",
+                error="Username already exists. Please choose another username."
+            )
+
+        cursor = conn.execute("""
+            INSERT INTO patients
+            (
+                full_name,
+                age,
+                gender,
+                phone,
+                address
+            )
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            full_name,
+            age,
+            gender,
+            phone,
+            address
+        ))
+
+        patient_id = cursor.lastrowid
+
+        conn.execute("""
+            INSERT INTO users
+            (
+                username,
+                password,
+                role,
+                doctor_id,
+                patient_id
+            )
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            username,
+            generate_password_hash(password),
+            "Patient",
+            None,
+            patient_id
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("login", registered="1"))
+
+    return render_template("patient_register.html")
+
+
+# =========================================================
+# PATIENT DASHBOARD
+# =========================================================
+
+@app.route("/patient_dashboard")
+@role_required("Patient")
+def patient_dashboard():
+
+    patient_id = session.get("patient_id")
+
+    if not patient_id:
+        return """
+            <h1>Patient Profile Not Connected</h1>
+            <p>Your account is not connected to a Patient Profile.</p>
+            <a href="/logout">Logout</a>
+        """
+
+    conn = get_db_connection()
+
+    patient = conn.execute("""
+        SELECT *
+        FROM patients
+        WHERE id = ?
+    """, (patient_id,)).fetchone()
+
+    appointment_count = conn.execute("""
+        SELECT COUNT(*) AS count
+        FROM appointments
+        WHERE patient_id = ?
+    """, (patient_id,)).fetchone()["count"]
+
+    pending_appointments = conn.execute("""
+        SELECT COUNT(*) AS count
+        FROM appointments
+        WHERE patient_id = ?
+        AND status = 'Pending'
+    """, (patient_id,)).fetchone()["count"]
+
+    lab_requests = conn.execute("""
+        SELECT COUNT(*) AS count
+        FROM laboratory_requests
+        WHERE patient_id = ?
+    """, (patient_id,)).fetchone()["count"]
+
+    completed_labs = conn.execute("""
+        SELECT COUNT(*) AS count
+        FROM laboratory_requests
+        WHERE patient_id = ?
+        AND status = 'Completed'
+    """, (patient_id,)).fetchone()["count"]
+
+    conn.close()
+
+    return render_template(
+        "patient_dashboard.html",
+        patient=patient,
+        appointment_count=appointment_count,
+        pending_appointments=pending_appointments,
+        lab_requests=lab_requests,
+        completed_labs=completed_labs,
+        username=session.get("username"),
+        role=session.get("role")
+    )
 
 
 # =========================================================
@@ -811,9 +1029,81 @@ def users():
 
         username = request.form["username"]
 
-        password = request.form["password"]
+        password = request.form.get("password", "").strip()
+
+        if not password:
+
+            doctors = conn.execute("""
+                SELECT *
+                FROM doctors
+                ORDER BY full_name
+            """).fetchall()
+
+            patients = conn.execute("""
+                SELECT *
+                FROM patients
+                ORDER BY full_name
+            """).fetchall()
+
+            users_list = conn.execute("""
+                SELECT *
+                FROM users
+                ORDER BY id
+            """).fetchall()
+
+            conn.close()
+
+            return render_template(
+                "users.html",
+                users=users_list,
+                doctors=doctors,
+                patients=patients,
+                error="Password is required for a new user."
+            )
+
+        hashed_password = generate_password_hash(password)
 
         role = request.form["role"]
+
+        allowed_user_roles = [
+            "Admin",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst",
+            "Patient",
+            "Laboratorian",
+            "Pharmacist"
+        ]
+
+        if role not in allowed_user_roles:
+
+            doctors = conn.execute("""
+                SELECT *
+                FROM doctors
+                ORDER BY full_name
+            """).fetchall()
+
+            patients = conn.execute("""
+                SELECT *
+                FROM patients
+                ORDER BY full_name
+            """).fetchall()
+
+            users_list = conn.execute("""
+                SELECT *
+                FROM users
+                ORDER BY id
+            """).fetchall()
+
+            conn.close()
+
+            return render_template(
+                "users.html",
+                users=users_list,
+                doctors=doctors,
+                patients=patients,
+                error="Invalid user role selected."
+            )
 
         doctor_id = None
 
@@ -902,7 +1192,7 @@ def users():
                 VALUES (?, ?, ?, ?, ?)
             """, (
                 username,
-                password,
+                hashed_password,
                 role,
                 doctor_id,
                 patient_id
@@ -1012,9 +1302,51 @@ def edit_user(user_id):
 
         username = request.form["username"]
 
-        password = request.form["password"]
+        password = request.form.get("password", "").strip()
+
+        if not password:
+
+            hashed_password = user["password"]
+
+        else:
+
+            hashed_password = generate_password_hash(password)
 
         role = request.form["role"]
+
+        allowed_user_roles = [
+            "Admin",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst",
+            "Patient",
+            "Laboratorian",
+            "Pharmacist"
+        ]
+
+        if role not in allowed_user_roles:
+
+            doctors = conn.execute("""
+                SELECT *
+                FROM doctors
+                ORDER BY full_name
+            """).fetchall()
+
+            patients = conn.execute("""
+                SELECT *
+                FROM patients
+                ORDER BY full_name
+            """).fetchall()
+
+            conn.close()
+
+            return render_template(
+                "edit_user.html",
+                user=user,
+                doctors=doctors,
+                patients=patients,
+                error="Invalid user role selected."
+            )
 
         doctor_id = None
 
@@ -1096,7 +1428,7 @@ def edit_user(user_id):
                 WHERE id = ?
             """, (
                 username,
-                password,
+                hashed_password,
                 role,
                 doctor_id,
                 patient_id,
@@ -1194,7 +1526,6 @@ def delete_user(user_id):
 # =========================================================
 # PATIENTS - VIEW
 # =========================================================
-
 @app.route("/patients")
 @role_required(
     "Admin",
@@ -1216,9 +1547,10 @@ def patients():
 
     return render_template(
         "patients.html",
-        patients=patients_list
+        patients=patients_list,
+        username=session["username"],
+        role=session["role"]
     )
-
 
 # =========================================================
 # ADD PATIENT
@@ -1235,19 +1567,65 @@ def patients():
 )
 def add_patient():
 
-    full_name = request.form["full_name"]
+    full_name = request.form["full_name"].strip()
 
     age = request.form["age"]
 
     gender = request.form["gender"]
 
-    phone = request.form["phone"]
+    phone = request.form["phone"].strip()
 
-    address = request.form["address"]
+    address = request.form["address"].strip()
+
+    username = request.form.get("username", "").strip()
+
+    password = request.form.get("password", "").strip()
 
     conn = get_db_connection()
 
-    conn.execute("""
+    if not username or not password:
+
+        patients_list = conn.execute("""
+            SELECT *
+            FROM patients
+            ORDER BY id DESC
+        """).fetchall()
+
+        conn.close()
+
+        return render_template(
+            "patients.html",
+            patients=patients_list,
+            username=session.get("username"),
+            role=session.get("role"),
+            error="Patient username and password are required."
+        )
+
+    existing_user = conn.execute("""
+        SELECT id
+        FROM users
+        WHERE username = ?
+    """, (username,)).fetchone()
+
+    if existing_user:
+
+        patients_list = conn.execute("""
+            SELECT *
+            FROM patients
+            ORDER BY id DESC
+        """).fetchall()
+
+        conn.close()
+
+        return render_template(
+            "patients.html",
+            patients=patients_list,
+            username=session.get("username"),
+            role=session.get("role"),
+            error="Username already exists. Please choose another username."
+        )
+
+    cursor = conn.execute("""
         INSERT INTO patients
         (
             full_name,
@@ -1264,6 +1642,27 @@ def add_patient():
         gender,
         phone,
         address
+    ))
+
+    patient_id = cursor.lastrowid
+
+    conn.execute("""
+        INSERT INTO users
+        (
+            username,
+            password,
+            role,
+            doctor_id,
+            patient_id
+        )
+
+        VALUES (?, ?, ?, ?, ?)
+    """, (
+        username,
+        generate_password_hash(password),
+        "Patient",
+        None,
+        patient_id
     ))
 
     conn.commit()
@@ -1383,7 +1782,6 @@ def delete_patient(patient_id):
 # =========================================================
 # DOCTORS - VIEW
 # =========================================================
-
 @app.route("/doctors")
 @role_required(
     "Admin",
@@ -1405,10 +1803,10 @@ def doctors():
 
     return render_template(
         "doctors.html",
-        doctors=doctors_list
+        doctors=doctors_list,
+        username=session["username"],
+        role=session["role"]
     )
-
-
 # =========================================================
 # ADD DOCTOR
 # ADMIN ONLY
@@ -1704,6 +2102,90 @@ def appointments():
 
 
 # =========================================================
+# PATIENT REQUEST APPOINTMENT
+# =========================================================
+
+@app.route("/patient_request_appointment", methods=["GET", "POST"])
+@role_required("Patient")
+def patient_request_appointment():
+
+    patient_id = session.get("patient_id")
+
+    if not patient_id:
+        return """
+            <h1>Patient Profile Not Connected</h1>
+            <p>Your account is not connected to a Patient Profile.</p>
+            <a href="/patient_dashboard">Back to Patient Dashboard</a>
+        """
+
+    conn = get_db_connection()
+
+    if request.method == "POST":
+
+        doctor_id = request.form["doctor_id"]
+        appointment_date = request.form["appointment_date"]
+        appointment_time = request.form["appointment_time"]
+        reason = request.form.get("reason", "").strip()
+
+        doctor = conn.execute("""
+            SELECT id
+            FROM doctors
+            WHERE id = ?
+        """, (doctor_id,)).fetchone()
+
+        if doctor is None:
+            doctors = conn.execute("""
+                SELECT *
+                FROM doctors
+                ORDER BY full_name
+            """).fetchall()
+            conn.close()
+            return render_template(
+                "patient_request_appointment.html",
+                doctors=doctors,
+                error="Selected doctor was not found."
+            )
+
+        conn.execute("""
+            INSERT INTO appointments
+            (
+                patient_id,
+                doctor_id,
+                appointment_date,
+                appointment_time,
+                reason,
+                status
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            patient_id,
+            doctor_id,
+            appointment_date,
+            appointment_time,
+            reason,
+            "Pending"
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("patient_dashboard"))
+
+    doctors = conn.execute("""
+        SELECT *
+        FROM doctors
+        ORDER BY full_name
+    """).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "patient_request_appointment.html",
+        doctors=doctors
+    )
+
+
+# =========================================================
 # ADD APPOINTMENT
 # =========================================================
 
@@ -1755,7 +2237,330 @@ def add_appointment():
     conn.close()
 
     return redirect(url_for("appointments"))
+# =========================================================
+# CANCEL APPOINTMENT
+# =========================================================
 
+@app.route(
+    "/cancel_appointment/<int:appointment_id>",
+    methods=["POST"]
+)
+@role_required(
+    "Admin",
+    "Receptionist"
+)
+def cancel_appointment(appointment_id):
+
+    conn = get_db_connection()
+
+    appointment = conn.execute("""
+        SELECT *
+        FROM appointments
+        WHERE id = ?
+    """, (
+        appointment_id,
+    )).fetchone()
+
+    if appointment is None:
+
+        conn.close()
+
+        return """
+            <h1>Appointment Not Found</h1>
+
+            <p>
+                The selected appointment
+                does not exist.
+            </p>
+
+            <a href="/appointments">
+                Back to Appointments
+            </a>
+        """
+
+    if appointment["status"] in [
+        "Completed",
+        "Cancelled",
+        "Rejected"
+    ]:
+
+        conn.close()
+
+        return redirect(
+            url_for("appointments")
+        )
+
+    conn.execute("""
+        UPDATE appointments
+        SET status = 'Cancelled'
+        WHERE id = ?
+    """, (
+        appointment_id,
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return redirect(
+        url_for("appointments")
+    )
+
+
+
+# =========================================================
+# ACCEPT APPOINTMENT
+# DOCTOR ONLY
+# =========================================================
+
+@app.route(
+    "/accept_appointment/<int:appointment_id>",
+    methods=["POST"]
+)
+@role_required(
+    "Doctor"
+)
+def accept_appointment(appointment_id):
+
+    conn = get_db_connection()
+
+    appointment = conn.execute("""
+        SELECT *
+        FROM appointments
+        WHERE id = ?
+    """, (
+        appointment_id,
+    )).fetchone()
+
+    if appointment is None:
+
+        conn.close()
+
+        return """
+            <h1>Appointment Not Found</h1>
+
+            <p>
+                The selected appointment
+                does not exist.
+            </p>
+
+            <a href="/appointments">
+                Back to Appointments
+            </a>
+        """
+
+    if str(appointment["doctor_id"]) != str(
+        session.get("doctor_id")
+    ):
+
+        conn.close()
+
+        return """
+            <h1>Access Denied</h1>
+
+            <p>
+                You can only accept appointments
+                assigned to your Doctor Profile.
+            </p>
+
+            <a href="/appointments">
+                Back to Appointments
+            </a>
+        """
+
+    if appointment["status"] != "Pending":
+
+        conn.close()
+
+        return redirect(
+            url_for("appointments")
+        )
+
+    conn.execute("""
+        UPDATE appointments
+        SET status = 'Accepted'
+        WHERE id = ?
+    """, (
+        appointment_id,
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return redirect(
+        url_for("appointments")
+    )
+
+
+# =========================================================
+# REJECT APPOINTMENT
+# DOCTOR ONLY
+# =========================================================
+
+@app.route(
+    "/reject_appointment/<int:appointment_id>",
+    methods=["POST"]
+)
+@role_required(
+    "Doctor"
+)
+def reject_appointment(appointment_id):
+
+    conn = get_db_connection()
+
+    appointment = conn.execute("""
+        SELECT *
+        FROM appointments
+        WHERE id = ?
+    """, (
+        appointment_id,
+    )).fetchone()
+
+    if appointment is None:
+
+        conn.close()
+
+        return """
+            <h1>Appointment Not Found</h1>
+
+            <p>
+                The selected appointment
+                does not exist.
+            </p>
+
+            <a href="/appointments">
+                Back to Appointments
+            </a>
+        """
+
+    if str(appointment["doctor_id"]) != str(
+        session.get("doctor_id")
+    ):
+
+        conn.close()
+
+        return """
+            <h1>Access Denied</h1>
+
+            <p>
+                You can only reject appointments
+                assigned to your Doctor Profile.
+            </p>
+
+            <a href="/appointments">
+                Back to Appointments
+            </a>
+        """
+
+    if appointment["status"] != "Pending":
+
+        conn.close()
+
+        return redirect(
+            url_for("appointments")
+        )
+
+    conn.execute("""
+        UPDATE appointments
+        SET status = 'Rejected'
+        WHERE id = ?
+    """, (
+        appointment_id,
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return redirect(
+        url_for("appointments")
+    )
+
+
+# =========================================================
+# COMPLETE APPOINTMENT
+# DOCTOR ONLY
+# =========================================================
+
+@app.route(
+    "/complete_appointment/<int:appointment_id>",
+    methods=["POST"]
+)
+@role_required(
+    "Doctor"
+)
+def complete_appointment(appointment_id):
+
+    conn = get_db_connection()
+
+    appointment = conn.execute("""
+        SELECT *
+        FROM appointments
+        WHERE id = ?
+    """, (
+        appointment_id,
+    )).fetchone()
+
+    if appointment is None:
+
+        conn.close()
+
+        return """
+            <h1>Appointment Not Found</h1>
+
+            <p>
+                The selected appointment
+                does not exist.
+            </p>
+
+            <a href="/appointments">
+                Back to Appointments
+            </a>
+        """
+
+    if str(appointment["doctor_id"]) != str(
+        session.get("doctor_id")
+    ):
+
+        conn.close()
+
+        return """
+            <h1>Access Denied</h1>
+
+            <p>
+                You can only complete appointments
+                assigned to your Doctor Profile.
+            </p>
+
+            <a href="/appointments">
+                Back to Appointments
+            </a>
+        """
+
+    if appointment["status"] != "Accepted":
+
+        conn.close()
+
+        return redirect(
+            url_for("appointments")
+        )
+
+    conn.execute("""
+        UPDATE appointments
+        SET status = 'Completed'
+        WHERE id = ?
+    """, (
+        appointment_id,
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return redirect(
+        url_for("appointments")
+    )
 
 # =========================================================
 # MEDICAL RECORDS HELPER
@@ -1949,7 +2754,7 @@ def render_medical_records_page(filter_type="all"):
     return render_template(
         "medical_records.html",
 
-        records=records,
+        medical_records=records,
 
         patients=patients_list,
 
@@ -1967,7 +2772,6 @@ def render_medical_records_page(filter_type="all"):
 
         active_filter=active_filter
     )
-
 
 # =========================================================
 # MEDICAL RECORDS - ALL
@@ -2030,7 +2834,9 @@ def medical_records_diagnosed():
 )
 def medical_records_linked():
 
-    return render_medical_records_page("linked")
+    return 
+
+("linked")
 
 
 # =========================================================
@@ -2166,7 +2972,6 @@ def add_medical_record():
         url_for("medical_records")
     )
 
-
 # =========================================================
 # VIEW MEDICAL RECORD
 # =========================================================
@@ -2180,7 +2985,7 @@ def add_medical_record():
     "Receptionist",
     "Data Analyst"
 )
-def view_medical_record(record_id):
+def medical_record_details(record_id):
 
     conn = get_db_connection()
 
@@ -2263,7 +3068,6 @@ def view_medical_record(record_id):
 
         role=session.get("role")
     )
-
 
 # =========================================================
 # EDIT MEDICAL RECORD
@@ -2509,10 +3313,7 @@ def edit_medical_record(record_id):
         conn.close()
 
         return redirect(
-            url_for(
-                "view_medical_record",
-                record_id=record_id
-            )
+           url_for("medical_record_details", record_id=record_id)
         )
 
     patients_list = conn.execute("""
@@ -3644,7 +4445,7 @@ def pharmacy_report():
 @app.route("/laboratory")
 @role_required(
     "Admin",
-    "Laboratory",
+    "Laboratorian",
     "Patient",
     "Doctor",
     "Receptionist",
@@ -3762,7 +4563,7 @@ def laboratory():
 @app.route("/laboratory_tests")
 @role_required(
     "Admin",
-    "Laboratory",
+    "Laboratorian",
     "Data Analyst",
     "Patient",
     "Doctor",
@@ -3801,7 +4602,7 @@ def laboratory_tests():
 )
 @role_required(
     "Admin",
-    "Laboratory"
+    "Laboratorian"
 )
 def add_laboratory_test():
 
@@ -3887,7 +4688,7 @@ def add_laboratory_test():
 )
 @role_required(
     "Admin",
-    "Laboratory"
+    "Laboratorian"
 )
 def edit_laboratory_test(test_id):
 
@@ -3995,7 +4796,7 @@ def edit_laboratory_test(test_id):
 )
 @role_required(
     "Admin",
-    "Laboratory"
+    "Laboratorian"
 )
 def delete_laboratory_test(test_id):
 
@@ -4190,7 +4991,7 @@ def request_laboratory_test():
 @app.route("/laboratory_requests")
 @role_required(
     "Admin",
-    "Laboratory",
+    "Laboratorian",
     "Patient",
     "Doctor",
     "Receptionist",
@@ -4443,7 +5244,7 @@ def laboratory_requests():
 )
 @role_required(
     "Admin",
-    "Laboratory"
+    "Laboratorian"
 )
 def process_laboratory_request(request_id):
 
@@ -4500,7 +5301,7 @@ def process_laboratory_request(request_id):
 )
 @role_required(
     "Admin",
-    "Laboratory"
+    "Laboratorian"
 )
 def cancel_laboratory_request(request_id):
 
@@ -4551,7 +5352,7 @@ def cancel_laboratory_request(request_id):
 )
 @role_required(
     "Admin",
-    "Laboratory"
+    "Laboratorian"
 )
 def enter_laboratory_result(request_id):
 
@@ -4759,7 +5560,7 @@ def enter_laboratory_result(request_id):
 )
 @role_required(
     "Admin",
-    "Laboratory",
+    "Laboratorian",
     "Patient",
     "Doctor",
     "Receptionist",
@@ -4955,7 +5756,7 @@ def view_laboratory_result(result_id):
 )
 @role_required(
     "Admin",
-    "Laboratory"
+    "Laboratorian"
 )
 def assign_laboratory_result(result_id):
 
@@ -5023,7 +5824,7 @@ def assign_laboratory_result(result_id):
 @app.route("/laboratory_report")
 @role_required(
     "Admin",
-    "Laboratory",
+    "Laboratorian",
     "Data Analyst"
 )
 def laboratory_report():
@@ -7330,6 +8131,1104 @@ def csv_file(rows):
     memory_file.seek(0)
 
     return memory_file
+## =========================================================
+# ANALYTICS EXPORT HELPERS
+# =========================================================
+
+def get_analytics_export_data():
+
+    dataset = request.args.get(
+        "dataset",
+        "patients"
+    )
+
+    analysis = request.args.get(
+        "analysis",
+        "bar"
+    )
+
+    x_variable = request.args.get(
+        "x_variable",
+        "gender"
+    )
+
+    y_variable = request.args.get(
+        "y_variable",
+        "count"
+    )
+
+    date_from = request.args.get(
+        "date_from"
+    )
+
+    date_to = request.args.get(
+        "date_to"
+    )
+
+    conn = get_db_connection()
+
+    labels = []
+    values = []
+    title = ""
+
+    try:
+
+        # =====================================================
+        # PATIENTS
+        # =====================================================
+
+        if dataset == "patients":
+
+            title = "Patients Analytics"
+
+            if x_variable == "age":
+
+                rows = conn.execute("""
+                    SELECT
+                        age,
+                        COUNT(*) AS count
+                    FROM patients
+                    GROUP BY age
+                    ORDER BY age
+                """).fetchall()
+
+                labels = [
+                    row["age"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute("""
+                    SELECT
+                        gender,
+                        COUNT(*) AS count
+                    FROM patients
+                    GROUP BY gender
+                    ORDER BY gender
+                """).fetchall()
+
+                labels = [
+                    row["gender"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+        # =====================================================
+        # DOCTORS
+        # =====================================================
+
+        elif dataset == "doctors":
+
+            title = "Doctors Analytics"
+
+            if x_variable == "gender":
+
+                rows = conn.execute("""
+                    SELECT
+                        gender,
+                        COUNT(*) AS count
+                    FROM doctors
+                    GROUP BY gender
+                    ORDER BY gender
+                """).fetchall()
+
+                labels = [
+                    row["gender"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute("""
+                    SELECT
+                        specialization,
+                        COUNT(*) AS count
+                    FROM doctors
+                    GROUP BY specialization
+                    ORDER BY specialization
+                """).fetchall()
+
+                labels = [
+                    row["specialization"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+        # =====================================================
+        # APPOINTMENTS
+        # =====================================================
+
+        elif dataset == "appointments":
+
+            title = "Appointments Analytics"
+
+            where = []
+            params = []
+
+            if date_from:
+
+                where.append(
+                    "appointment_date >= ?"
+                )
+
+                params.append(date_from)
+
+            if date_to:
+
+                where.append(
+                    "appointment_date <= ?"
+                )
+
+                params.append(date_to)
+
+            where_sql = ""
+
+            if where:
+
+                where_sql = (
+                    "WHERE " +
+                    " AND ".join(where)
+                )
+
+            if x_variable == "status":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        status,
+                        COUNT(*) AS count
+                    FROM appointments
+                    {where_sql}
+                    GROUP BY status
+                    ORDER BY status
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["status"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "doctor":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            doctors.full_name,
+                            'Unknown Doctor'
+                        ) AS doctor,
+                        COUNT(*) AS count
+                    FROM appointments
+                    LEFT JOIN doctors
+                        ON doctors.id =
+                           appointments.doctor_id
+                    {where_sql}
+                    GROUP BY appointments.doctor_id
+                    ORDER BY doctor
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["doctor"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        appointment_date,
+                        COUNT(*) AS count
+                    FROM appointments
+                    {where_sql}
+                    GROUP BY appointment_date
+                    ORDER BY appointment_date
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["appointment_date"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+        # =====================================================
+        # MEDICAL RECORDS
+        # =====================================================
+
+        elif dataset == "medical_records":
+
+            title = "Medical Records Analytics"
+
+            where = []
+            params = []
+
+            if date_from:
+
+                where.append(
+                    "visit_date >= ?"
+                )
+
+                params.append(date_from)
+
+            if date_to:
+
+                where.append(
+                    "visit_date <= ?"
+                )
+
+                params.append(date_to)
+
+            where_sql = ""
+
+            if where:
+
+                where_sql = (
+                    "WHERE " +
+                    " AND ".join(where)
+                )
+
+            if x_variable == "diagnosis":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            NULLIF(diagnosis, ''),
+                            'Not Specified'
+                        ) AS diagnosis,
+                        COUNT(*) AS count
+                    FROM medical_records
+                    {where_sql}
+                    GROUP BY diagnosis
+                    ORDER BY count DESC
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["diagnosis"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "doctor":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            doctors.full_name,
+                            'Unknown Doctor'
+                        ) AS doctor,
+                        COUNT(*) AS count
+                    FROM medical_records
+                    LEFT JOIN doctors
+                        ON doctors.id =
+                           medical_records.doctor_id
+                    {where_sql}
+                    GROUP BY medical_records.doctor_id
+                    ORDER BY count DESC
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["doctor"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        visit_date,
+                        COUNT(*) AS count
+                    FROM medical_records
+                    {where_sql}
+                    GROUP BY visit_date
+                    ORDER BY visit_date
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["visit_date"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+        # =====================================================
+        # LABORATORY
+        # =====================================================
+
+        elif dataset == "laboratory":
+
+            title = "Laboratory Analytics"
+
+            where = []
+            params = []
+
+            if date_from:
+
+                where.append(
+                    "laboratory_requests.request_date >= ?"
+                )
+
+                params.append(date_from)
+
+            if date_to:
+
+                where.append(
+                    "laboratory_requests.request_date <= ?"
+                )
+
+                params.append(date_to)
+
+            where_sql = ""
+
+            if where:
+
+                where_sql = (
+                    "WHERE " +
+                    " AND ".join(where)
+                )
+
+            if x_variable == "status":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        laboratory_requests.status,
+                        COUNT(*) AS count
+                    FROM laboratory_requests
+                    {where_sql}
+                    GROUP BY laboratory_requests.status
+                    ORDER BY laboratory_requests.status
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["status"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "date":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        laboratory_requests.request_date,
+                        COUNT(*) AS count
+                    FROM laboratory_requests
+                    {where_sql}
+                    GROUP BY laboratory_requests.request_date
+                    ORDER BY laboratory_requests.request_date
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["request_date"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            laboratory_tests.test_name,
+                            'Unknown Test'
+                        ) AS test_name,
+                        COUNT(*) AS count
+                    FROM laboratory_requests
+                    LEFT JOIN laboratory_tests
+                        ON laboratory_tests.id =
+                           laboratory_requests.test_id
+                    {where_sql}
+                    GROUP BY laboratory_requests.test_id
+                    ORDER BY count DESC
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["test_name"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+        # =====================================================
+        # PHARMACY
+        # =====================================================
+
+        elif dataset == "pharmacy":
+
+            title = "Pharmacy Analytics"
+
+            if x_variable == "status":
+
+                rows = conn.execute("""
+                    SELECT
+                        status,
+                        COUNT(*) AS count
+                    FROM prescriptions
+                    GROUP BY status
+                    ORDER BY status
+                """).fetchall()
+
+                labels = [
+                    row["status"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "category":
+
+                rows = conn.execute("""
+                    SELECT
+                        COALESCE(
+                            category,
+                            'Uncategorized'
+                        ) AS category,
+                        SUM(quantity) AS quantity
+                    FROM medicines
+                    GROUP BY category
+                    ORDER BY category
+                """).fetchall()
+
+                labels = [
+                    row["category"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["quantity"] or 0
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute("""
+                    SELECT
+                        medicine_name,
+                        quantity
+                    FROM medicines
+                    ORDER BY medicine_name
+                """).fetchall()
+
+                labels = [
+                    row["medicine_name"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["quantity"] or 0
+                    for row in rows
+                ]
+
+        else:
+
+            conn.close()
+
+            return None
+
+        conn.close()
+
+        return {
+
+            "dataset": dataset,
+
+            "analysis": analysis,
+
+            "x_variable": x_variable,
+
+            "y_variable": y_variable,
+
+            "title": title,
+
+            "labels": labels,
+
+            "values": values,
+
+            "date_from": date_from,
+
+            "date_to": date_to
+
+        }
+
+    except Exception:
+
+        conn.close()
+
+        return None
+    # =====================================================
+    # PATIENTS
+    # =====================================================
+
+    if dataset == "patients":
+
+        rows = conn.execute("""
+            SELECT
+                gender,
+                COUNT(*) AS total
+            FROM patients
+            GROUP BY gender
+            ORDER BY gender
+        """).fetchall()
+
+        labels = [
+            row["gender"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Patients by Gender"
+
+    # =====================================================
+    # DOCTORS
+    # =====================================================
+
+    elif dataset == "doctors":
+
+        rows = conn.execute("""
+            SELECT
+                specialization,
+                COUNT(*) AS total
+            FROM doctors
+            GROUP BY specialization
+            ORDER BY total DESC
+        """).fetchall()
+
+        labels = [
+            row["specialization"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Doctors by Specialization"
+
+    # =====================================================
+    # APPOINTMENTS
+    # =====================================================
+
+    elif dataset == "appointments":
+
+        query = """
+            SELECT
+                status,
+                COUNT(*) AS total
+            FROM appointments
+        """
+
+        params = []
+        conditions = []
+
+        if date_from:
+
+            conditions.append(
+                "appointment_date >= ?"
+            )
+
+            params.append(
+                date_from
+            )
+
+        if date_to:
+
+            conditions.append(
+                "appointment_date <= ?"
+            )
+
+            params.append(
+                date_to
+            )
+
+        if conditions:
+
+            query += (
+                " WHERE "
+                +
+                " AND ".join(
+                    conditions
+                )
+            )
+
+        query += """
+            GROUP BY status
+            ORDER BY total DESC
+        """
+
+        rows = conn.execute(
+            query,
+            params
+        ).fetchall()
+
+        labels = [
+            row["status"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Appointments by Status"
+
+    # =====================================================
+    # MEDICAL RECORDS
+    # =====================================================
+
+    elif dataset == "medical_records":
+
+        query = """
+            SELECT
+                diagnosis,
+                COUNT(*) AS total
+            FROM medical_records
+        """
+
+        params = []
+        conditions = []
+
+        if date_from:
+
+            conditions.append(
+                "visit_date >= ?"
+            )
+
+            params.append(
+                date_from
+            )
+
+        if date_to:
+
+            conditions.append(
+                "visit_date <= ?"
+            )
+
+            params.append(
+                date_to
+            )
+
+        if conditions:
+
+            query += (
+                " WHERE "
+                +
+                " AND ".join(
+                    conditions
+                )
+            )
+
+        query += """
+            GROUP BY diagnosis
+            ORDER BY total DESC
+        """
+
+        rows = conn.execute(
+            query,
+            params
+        ).fetchall()
+
+        labels = [
+            row["diagnosis"] or "Not Diagnosed"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Medical Records by Diagnosis"
+
+    # =====================================================
+    # LABORATORY
+    # =====================================================
+
+    elif dataset == "laboratory":
+
+        rows = conn.execute("""
+            SELECT
+                status,
+                COUNT(*) AS total
+            FROM laboratory_requests
+            GROUP BY status
+            ORDER BY total DESC
+        """).fetchall()
+
+        labels = [
+            row["status"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Laboratory Requests by Status"
+
+    # =====================================================
+    # PHARMACY
+    # =====================================================
+
+    elif dataset == "pharmacy":
+
+        rows = conn.execute("""
+            SELECT
+                medicine_name,
+                quantity
+            FROM medicines
+            ORDER BY quantity ASC
+        """).fetchall()
+
+        labels = [
+            row["medicine_name"]
+            for row in rows
+        ]
+
+        values = [
+            row["quantity"]
+            for row in rows
+        ]
+
+        title = "Medicine Stock Quantity"
+
+    else:
+
+        conn.close()
+
+        return None
+
+    conn.close()
+
+    return {
+        "dataset": dataset,
+        "title": title,
+        "labels": labels,
+        "values": values,
+        "date_from": date_from,
+        "date_to": date_to
+    }
+
+
+# =========================================================
+# ANALYTICS PDF EXPORT
+# =========================================================
+
+@app.route("/analytics/export/pdf")
+@role_required(
+    "Admin",
+    "Doctor",
+    "Data Analyst"
+)
+def analytics_export_pdf():
+
+    data = get_analytics_export_data()
+
+    if data is None:
+
+        return "Invalid analytics dataset.", 400
+
+    buffer = BytesIO()
+
+    document = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(A4),
+        rightMargin=30,
+        leftMargin=30,
+        topMargin=30,
+        bottomMargin=30
+    )
+
+    story = []
+
+    story.append(
+        pdf_title(
+            "HOSPITAL DATA ANALYTICS SYSTEM"
+        )
+    )
+
+    story.append(
+        Paragraph(
+            data["title"],
+            getSampleStyleSheet()["Heading2"]
+        )
+    )
+
+    if data["date_from"] or data["date_to"]:
+
+        date_text = (
+            f"Date range: "
+            f"{data['date_from'] or 'Beginning'} "
+            f"to "
+            f"{data['date_to'] or 'Latest'}"
+        )
+
+        story.append(
+            Paragraph(
+                date_text,
+                getSampleStyleSheet()["Normal"]
+            )
+        )
+
+    story.append(
+        Spacer(1, 18)
+    )
+
+    rows = [
+        [
+            "Category",
+            "Value"
+        ]
+    ]
+
+    for label, value in zip(
+        data["labels"],
+        data["values"]
+    ):
+
+        rows.append([
+            label,
+            value
+        ])
+
+    if len(rows) == 1:
+
+        rows.append([
+            "No data",
+            0
+        ])
+
+    story.append(
+        pdf_table(
+            rows,
+            [350, 120]
+        )
+    )
+
+    story.append(
+        Spacer(1, 18)
+    )
+
+    story.append(
+        Paragraph(
+            f"Total categories: {len(data['labels'])}",
+            getSampleStyleSheet()["Normal"]
+        )
+    )
+
+    document.build(story)
+
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="analytics_report.pdf",
+        mimetype="application/pdf"
+    )
+
+
+# =========================================================
+# ANALYTICS EXCEL EXPORT
+# =========================================================
+
+@app.route("/analytics/export/excel")
+@role_required(
+    "Admin",
+    "Doctor",
+    "Data Analyst"
+)
+def analytics_export_excel():
+
+    data = get_analytics_export_data()
+
+    if data is None:
+
+        return "Invalid analytics dataset.", 400
+
+    rows = [
+        [
+            "Category",
+            "Value"
+        ]
+    ]
+
+    for label, value in zip(
+        data["labels"],
+        data["values"]
+    ):
+
+        rows.append([
+            label,
+            value
+        ])
+
+    if len(rows) == 1:
+
+        rows.append([
+            "No data",
+            0
+        ])
+
+    sheets = [
+        (
+            "Analytics",
+            rows
+        )
+    ]
+
+    output = excel_file(
+        sheets,
+        "analytics_report.xlsx"
+    )
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="analytics_report.xlsx",
+        mimetype=(
+            "application/vnd.openxmlformats-"
+            "officedocument.spreadsheetml.sheet"
+        )
+    )
+
+
+# =========================================================
+# ANALYTICS CSV EXPORT
+# =========================================================
+
+@app.route("/analytics/export/csv")
+@role_required(
+    "Admin",
+    "Doctor",
+    "Data Analyst"
+)
+def analytics_export_csv():
+
+    data = get_analytics_export_data()
+
+    if data is None:
+
+        return "Invalid analytics dataset.", 400
+
+    rows = [
+        [
+            "Category",
+            "Value"
+        ]
+    ]
+
+    for label, value in zip(
+        data["labels"],
+        data["values"]
+    ):
+
+        rows.append([
+            label,
+            value
+        ])
+
+    if len(rows) == 1:
+
+        rows.append([
+            "No data",
+            0
+        ])
+
+    output = csv_file(rows)
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name="analytics_report.csv",
+        mimetype="text/csv"
+    )
 
 
 # =========================================================
@@ -8909,7 +10808,976 @@ def analytics():
 
         laboratory_specialty_data=laboratory_specialty_data
 
+    )# =========================================================
+# ANALYTICS DATA API
+# =========================================================
+
+@app.route("/analytics/data")
+@role_required(
+    "Admin",
+    "Doctor",
+    "Data Analyst"
+)
+def analytics_data():
+
+    dataset = request.args.get(
+        "dataset",
+        "patients"
     )
+
+    analysis = request.args.get(
+        "analysis",
+        "bar"
+    )
+
+    x_variable = request.args.get(
+        "x_variable",
+        "gender"
+    )
+
+    y_variable = request.args.get(
+        "y_variable",
+        "count"
+    )
+
+    date_from = request.args.get(
+        "date_from"
+    )
+
+    date_to = request.args.get(
+        "date_to"
+    )
+
+    conn = get_db_connection()
+
+    labels = []
+    values = []
+    title = ""
+
+    try:
+
+        # =====================================================
+        # PATIENTS
+        # =====================================================
+
+        if dataset == "patients":
+
+            title = "Patients Analytics"
+
+            if x_variable == "age":
+
+                rows = conn.execute("""
+                    SELECT age, COUNT(*) AS count
+                    FROM patients
+                    GROUP BY age
+                    ORDER BY age
+                """).fetchall()
+
+                labels = [
+                    row["age"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "gender":
+
+                rows = conn.execute("""
+                    SELECT
+                        gender,
+                        COUNT(*) AS count
+                    FROM patients
+                    GROUP BY gender
+                    ORDER BY gender
+                """).fetchall()
+
+                labels = [
+                    row["gender"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute("""
+                    SELECT
+                        COUNT(*) AS count
+                    FROM patients
+                """).fetchone()
+
+                labels = ["Patients"]
+                values = [rows["count"]]
+
+        # =====================================================
+        # DOCTORS
+        # =====================================================
+
+        elif dataset == "doctors":
+
+            title = "Doctors Analytics"
+
+            if x_variable == "specialization":
+
+                rows = conn.execute("""
+                    SELECT
+                        specialization,
+                        COUNT(*) AS count
+                    FROM doctors
+                    GROUP BY specialization
+                    ORDER BY specialization
+                """).fetchall()
+
+                labels = [
+                    row["specialization"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "gender":
+
+                rows = conn.execute("""
+                    SELECT
+                        gender,
+                        COUNT(*) AS count
+                    FROM doctors
+                    GROUP BY gender
+                    ORDER BY gender
+                """).fetchall()
+
+                labels = [
+                    row["gender"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                row = conn.execute("""
+                    SELECT COUNT(*) AS count
+                    FROM doctors
+                """).fetchone()
+
+                labels = ["Doctors"]
+                values = [row["count"]]
+
+        # =====================================================
+        # APPOINTMENTS
+        # =====================================================
+
+        elif dataset == "appointments":
+
+            title = "Appointments Analytics"
+
+            where = []
+            params = []
+
+            if date_from:
+
+                where.append(
+                    "appointment_date >= ?"
+                )
+
+                params.append(date_from)
+
+            if date_to:
+
+                where.append(
+                    "appointment_date <= ?"
+                )
+
+                params.append(date_to)
+
+            where_sql = ""
+
+            if where:
+
+                where_sql = (
+                    "WHERE " +
+                    " AND ".join(where)
+                )
+
+            if x_variable == "status":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        status,
+                        COUNT(*) AS count
+                    FROM appointments
+                    {where_sql}
+                    GROUP BY status
+                    ORDER BY status
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["status"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "doctor":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            doctors.full_name,
+                            'Unknown Doctor'
+                        ) AS doctor,
+                        COUNT(*) AS count
+                    FROM appointments
+                    LEFT JOIN doctors
+                        ON doctors.id =
+                           appointments.doctor_id
+                    {where_sql}
+                    GROUP BY appointments.doctor_id
+                    ORDER BY doctor
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["doctor"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "date":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        appointment_date,
+                        COUNT(*) AS count
+                    FROM appointments
+                    {where_sql}
+                    GROUP BY appointment_date
+                    ORDER BY appointment_date
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["appointment_date"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                row = conn.execute(
+                    f"""
+                    SELECT COUNT(*) AS count
+                    FROM appointments
+                    {where_sql}
+                    """,
+                    params
+                ).fetchone()
+
+                labels = ["Appointments"]
+                values = [row["count"]]
+
+        # =====================================================
+        # MEDICAL RECORDS
+        # =====================================================
+
+        elif dataset == "medical_records":
+
+            title = "Medical Records Analytics"
+
+            where = []
+            params = []
+
+            if date_from:
+
+                where.append(
+                    "visit_date >= ?"
+                )
+
+                params.append(date_from)
+
+            if date_to:
+
+                where.append(
+                    "visit_date <= ?"
+                )
+
+                params.append(date_to)
+
+            where_sql = ""
+
+            if where:
+
+                where_sql = (
+                    "WHERE " +
+                    " AND ".join(where)
+                )
+
+            if x_variable == "diagnosis":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            NULLIF(diagnosis, ''),
+                            'Not Specified'
+                        ) AS diagnosis,
+                        COUNT(*) AS count
+                    FROM medical_records
+                    {where_sql}
+                    GROUP BY diagnosis
+                    ORDER BY count DESC
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["diagnosis"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "doctor":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            doctors.full_name,
+                            'Unknown Doctor'
+                        ) AS doctor,
+                        COUNT(*) AS count
+                    FROM medical_records
+                    LEFT JOIN doctors
+                        ON doctors.id =
+                           medical_records.doctor_id
+                    {where_sql}
+                    GROUP BY medical_records.doctor_id
+                    ORDER BY count DESC
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["doctor"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "date":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        visit_date,
+                        COUNT(*) AS count
+                    FROM medical_records
+                    {where_sql}
+                    GROUP BY visit_date
+                    ORDER BY visit_date
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["visit_date"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                row = conn.execute(
+                    f"""
+                    SELECT COUNT(*) AS count
+                    FROM medical_records
+                    {where_sql}
+                    """,
+                    params
+                ).fetchone()
+
+                labels = ["Medical Records"]
+                values = [row["count"]]
+
+        # =====================================================
+        # LABORATORY
+        # =====================================================
+
+        elif dataset == "laboratory":
+
+            title = "Laboratory Analytics"
+
+            where = []
+            params = []
+
+            if date_from:
+
+                where.append(
+                    "laboratory_requests.request_date >= ?"
+                )
+
+                params.append(date_from)
+
+            if date_to:
+
+                where.append(
+                    "laboratory_requests.request_date <= ?"
+                )
+
+                params.append(date_to)
+
+            where_sql = ""
+
+            if where:
+
+                where_sql = (
+                    "WHERE " +
+                    " AND ".join(where)
+                )
+
+            if x_variable == "status":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        laboratory_requests.status,
+                        COUNT(*) AS count
+                    FROM laboratory_requests
+                    {where_sql}
+                    GROUP BY laboratory_requests.status
+                    ORDER BY laboratory_requests.status
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["status"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            elif x_variable == "date":
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        laboratory_requests.request_date,
+                        COUNT(*) AS count
+                    FROM laboratory_requests
+                    {where_sql}
+                    GROUP BY laboratory_requests.request_date
+                    ORDER BY laboratory_requests.request_date
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["request_date"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute(
+                    f"""
+                    SELECT
+                        COALESCE(
+                            laboratory_tests.test_name,
+                            'Unknown Test'
+                        ) AS test_name,
+                        COUNT(*) AS count
+                    FROM laboratory_requests
+                    LEFT JOIN laboratory_tests
+                        ON laboratory_tests.id =
+                           laboratory_requests.test_id
+                    {where_sql}
+                    GROUP BY laboratory_requests.test_id
+                    ORDER BY count DESC
+                    """,
+                    params
+                ).fetchall()
+
+                labels = [
+                    row["test_name"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+        # =====================================================
+        # PHARMACY
+        # =====================================================
+
+        elif dataset == "pharmacy":
+
+            title = "Pharmacy Analytics"
+
+            if x_variable == "category":
+
+                rows = conn.execute("""
+                    SELECT
+                        COALESCE(
+                            category,
+                            'Uncategorized'
+                        ) AS category,
+                        SUM(quantity) AS quantity
+                    FROM medicines
+                    GROUP BY category
+                    ORDER BY category
+                """).fetchall()
+
+                labels = [
+                    row["category"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["quantity"] or 0
+                    for row in rows
+                ]
+
+            elif x_variable == "medicine":
+
+                rows = conn.execute("""
+                    SELECT
+                        medicine_name,
+                        quantity
+                    FROM medicines
+                    ORDER BY medicine_name
+                """).fetchall()
+
+                labels = [
+                    row["medicine_name"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["quantity"] or 0
+                    for row in rows
+                ]
+
+            elif x_variable == "status":
+
+                rows = conn.execute("""
+                    SELECT
+                        status,
+                        COUNT(*) AS count
+                    FROM prescriptions
+                    GROUP BY status
+                    ORDER BY status
+                """).fetchall()
+
+                labels = [
+                    row["status"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["count"]
+                    for row in rows
+                ]
+
+            else:
+
+                rows = conn.execute("""
+                    SELECT
+                        medicine_name,
+                        quantity
+                    FROM medicines
+                    ORDER BY medicine_name
+                """).fetchall()
+
+                labels = [
+                    row["medicine_name"]
+                    for row in rows
+                ]
+
+                values = [
+                    row["quantity"] or 0
+                    for row in rows
+                ]
+
+        # =====================================================
+        # INVALID DATASET
+        # =====================================================
+
+        else:
+
+            conn.close()
+
+            return jsonify({
+                "success": False,
+                "message": "Invalid analytics dataset."
+            }), 400
+
+        conn.close()
+
+        # =====================================================
+        # EMPTY RESULT
+        # =====================================================
+
+        if not labels and not values:
+
+            return jsonify({
+                "success": False,
+                "message":
+                    "No data found for the selected dataset and filters."
+            })
+
+        return jsonify({
+
+            "success": True,
+
+            "dataset": dataset,
+
+            "analysis": analysis,
+
+            "x_variable": x_variable,
+
+            "y_variable": y_variable,
+
+            "title": title,
+
+            "labels": labels,
+
+            "values": values,
+
+            "date_from": date_from,
+
+            "date_to": date_to
+
+        })
+
+    except Exception as e:
+
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+    # =====================================================
+    # PATIENTS
+    # =====================================================
+
+    if dataset == "patients":
+
+        rows = conn.execute("""
+            SELECT
+                gender,
+                COUNT(*) AS total
+            FROM patients
+            GROUP BY gender
+            ORDER BY gender
+        """).fetchall()
+
+        labels = [
+            row["gender"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Patients by Gender"
+
+    # =====================================================
+    # DOCTORS
+    # =====================================================
+
+    elif dataset == "doctors":
+
+        rows = conn.execute("""
+            SELECT
+                specialization,
+                COUNT(*) AS total
+            FROM doctors
+            GROUP BY specialization
+            ORDER BY total DESC
+        """).fetchall()
+
+        labels = [
+            row["specialization"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Doctors by Specialization"
+
+    # =====================================================
+    # APPOINTMENTS
+    # =====================================================
+
+    elif dataset == "appointments":
+
+        query = """
+            SELECT
+                status,
+                COUNT(*) AS total
+            FROM appointments
+        """
+
+        params = []
+
+        conditions = []
+
+        if date_from:
+
+            conditions.append(
+                "appointment_date >= ?"
+            )
+
+            params.append(
+                date_from
+            )
+
+        if date_to:
+
+            conditions.append(
+                "appointment_date <= ?"
+            )
+
+            params.append(
+                date_to
+            )
+
+        if conditions:
+
+            query += (
+                " WHERE "
+                +
+                " AND ".join(
+                    conditions
+                )
+            )
+
+        query += """
+            GROUP BY status
+            ORDER BY total DESC
+        """
+
+        rows = conn.execute(
+            query,
+            params
+        ).fetchall()
+
+        labels = [
+            row["status"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Appointments by Status"
+
+    # =====================================================
+    # MEDICAL RECORDS
+    # =====================================================
+
+    elif dataset == "medical_records":
+
+        query = """
+            SELECT
+                diagnosis,
+                COUNT(*) AS total
+            FROM medical_records
+        """
+
+        params = []
+
+        conditions = []
+
+        if date_from:
+
+            conditions.append(
+                "visit_date >= ?"
+            )
+
+            params.append(
+                date_from
+            )
+
+        if date_to:
+
+            conditions.append(
+                "visit_date <= ?"
+            )
+
+            params.append(
+                date_to
+            )
+
+        if conditions:
+
+            query += (
+                " WHERE "
+                +
+                " AND ".join(
+                    conditions
+                )
+            )
+
+        query += """
+            GROUP BY diagnosis
+            ORDER BY total DESC
+        """
+
+        rows = conn.execute(
+            query,
+            params
+        ).fetchall()
+
+        labels = [
+            row["diagnosis"] or "Not Diagnosed"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Medical Records by Diagnosis"
+
+    # =====================================================
+    # LABORATORY
+    # =====================================================
+
+    elif dataset == "laboratory":
+
+        rows = conn.execute("""
+            SELECT
+                status,
+                COUNT(*) AS total
+            FROM laboratory_requests
+            GROUP BY status
+            ORDER BY total DESC
+        """).fetchall()
+
+        labels = [
+            row["status"] or "Not Specified"
+            for row in rows
+        ]
+
+        values = [
+            row["total"]
+            for row in rows
+        ]
+
+        title = "Laboratory Requests by Status"
+
+    # =====================================================
+    # PHARMACY
+    # =====================================================
+
+    elif dataset == "pharmacy":
+
+        rows = conn.execute("""
+            SELECT
+                medicine_name,
+                quantity
+            FROM medicines
+            ORDER BY quantity ASC
+        """).fetchall()
+
+        labels = [
+            row["medicine_name"]
+            for row in rows
+        ]
+
+        values = [
+            row["quantity"]
+            for row in rows
+        ]
+
+        title = "Medicine Stock Quantity"
+
+    # =====================================================
+    # UNKNOWN DATASET
+    # =====================================================
+
+    else:
+
+        conn.close()
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid analytics dataset."
+        }), 400
+
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "dataset": dataset,
+        "title": title,
+        "labels": labels,
+        "values": values,
+        "date_from": date_from,
+        "date_to": date_to
+    })
 
 
 # =========================================================

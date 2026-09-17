@@ -1,441 +1,540 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>Request Laboratory Test</title>
+<title>
+    Request Laboratory Test
+</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
 
-    <style>
+<style>
 
-        .request-page {
-            width: 95%;
-            max-width: 900px;
-            margin: 30px auto;
-        }
+    .request-page {
+        width: 95%;
+        max-width: 900px;
+        margin: 30px auto;
+    }
 
-        .request-header {
-            margin-bottom: 25px;
-        }
+    .request-header {
+        margin-bottom: 25px;
+    }
 
-        .request-header h1 {
-            margin-bottom: 8px;
-        }
+    .request-header h1 {
+        margin-bottom: 8px;
+    }
 
-        .request-header p {
-            color: #64748b;
-        }
+    .request-header p {
+        color: #64748b;
+    }
 
-        .request-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        }
+    .patient-notice {
+        margin-bottom: 20px;
+        padding: 15px 18px;
+        border-radius: 8px;
+        background: #eff6ff;
+        border-left: 4px solid #2563eb;
+        color: #1e3a8a;
+    }
+
+    .request-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .full-width {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #334155;
+    }
+
+    select,
+    textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        font-size: 14px;
+        box-sizing: border-box;
+        background: white;
+    }
+
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .test-info {
+        margin-top: 20px;
+        padding: 18px;
+        border-radius: 8px;
+        background: #f8fafc;
+        border-left: 4px solid #2563eb;
+    }
+
+    .test-info h3 {
+        margin-top: 0;
+    }
+
+    .test-info p {
+        margin: 7px 0;
+        color: #475569;
+    }
+
+    .price-display {
+        font-weight: 700;
+        color: #15803d;
+    }
+
+    .form-actions {
+        margin-top: 25px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 11px 18px;
+        border-radius: 7px;
+        border: none;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: #475569;
+        color: white;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .error-message {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        background: #fef2f2;
+        border-left: 4px solid #dc2626;
+        color: #991b1b;
+    }
+
+    @media (max-width: 700px) {
 
         .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: 1fr;
         }
 
         .full-width {
-            grid-column: 1 / -1;
+            grid-column: auto;
         }
 
-        label {
-            font-weight: 600;
-            margin-bottom: 7px;
-            color: #334155;
+        .request-card {
+            padding: 20px;
         }
 
-        select,
-        textarea {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 7px;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: white;
-        }
+    }
 
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .test-info {
-            margin-top: 20px;
-            padding: 18px;
-            border-radius: 8px;
-            background: #f8fafc;
-            border-left: 4px solid #2563eb;
-        }
-
-        .test-info h3 {
-            margin-top: 0;
-        }
-
-        .test-info p {
-            margin: 7px 0;
-            color: #475569;
-        }
-
-        .price-display {
-            font-weight: 700;
-            color: #15803d;
-        }
-
-        .form-actions {
-            margin-top: 25px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 11px 18px;
-            border-radius: 7px;
-            border: none;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #475569;
-            color: white;
-        }
-
-        .required {
-            color: #dc2626;
-        }
-
-        @media (max-width: 700px) {
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full-width {
-                grid-column: auto;
-            }
-
-            .request-card {
-                padding: 20px;
-            }
-
-        }
-
-    </style>
+</style>
 
 </head>
 
 <body>
 
-    <div class="request-page">
+<div class="request-page">
 
-        <div class="request-header">
+    <div class="request-header">
 
-            <h1>Request Laboratory Test</h1>
+        <h1>
+            🧪 Request Laboratory Test
+        </h1>
 
-            <p>
-                Select the laboratory or diagnostic
-                service you need.
-            </p>
-
-        </div>
-
-
-        <div class="request-card">
-
-            <form method="POST"
-                  action="{{ url_for('request_laboratory_test') }}">
-
-
-                <div class="form-grid">
-
-
-                    {% if role == 'Admin' %}
-
-                    <div class="form-group">
-
-                        <label for="patient_id">
-
-                            Patient
-                            <span class="required">*</span>
-
-                        </label>
-
-                        <select id="patient_id"
-                                name="patient_id"
-                                required>
-
-                            <option value="">
-                                Select Patient
-                            </option>
-
-                            {% for patient in patients %}
-
-                            <option value="{{ patient['id'] }}">
-
-                                {{ patient['full_name'] }}
-
-                                —
-                                ID: {{ patient['id'] }}
-
-                            </option>
-
-                            {% endfor %}
-
-                        </select>
-
-                    </div>
-
-                    {% endif %}
-
-
-                    <div class="form-group">
-
-                        <label for="test_id">
-
-                            Laboratory Test
-                            <span class="required">*</span>
-
-                        </label>
-
-                        <select id="test_id"
-                                name="test_id"
-                                required
-                                onchange="showTestInformation()">
-
-                            <option value="">
-                                Select Laboratory Test
-                            </option>
-
-                            {% for test in tests %}
-
-                            <option value="{{ test['id'] }}"
-                                    data-description="{{ test['description'] or '' }}"
-                                    data-price="{{ test['price'] or 0 }}"
-                                    data-specialty="{{ test['recommended_specialty'] or 'Not Assigned' }}"
-                                    data-category="{{ test['category'] or 'General' }}"
-                                    data-normal="{{ test['normal_range'] or 'Report based' }}">
-
-                                {{ test['test_name'] }}
-
-                            </option>
-
-                            {% endfor %}
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group full-width">
-
-                        <label for="notes">
-                            Notes
-                        </label>
-
-                        <textarea id="notes"
-                                  name="notes"
-                                  placeholder="Enter any relevant information about the test request..."></textarea>
-
-                    </div>
-
-
-                </div>
-
-
-                <div id="testInformation"
-                     class="test-info"
-                     style="display: none;">
-
-                    <h3>
-                        Selected Test Information
-                    </h3>
-
-                    <p>
-                        <strong>Category:</strong>
-                        <span id="testCategory">
-                            -
-                        </span>
-                    </p>
-
-                    <p>
-                        <strong>Description:</strong>
-                        <span id="testDescription">
-                            -
-                        </span>
-                    </p>
-
-                    <p>
-                        <strong>Normal Range:</strong>
-                        <span id="testNormalRange">
-                            -
-                        </span>
-                    </p>
-
-                    <p>
-                        <strong>Recommended Specialty:</strong>
-                        <span id="testSpecialty">
-                            -
-                        </span>
-                    </p>
-
-                    <p>
-                        <strong>Price:</strong>
-
-                        <span class="price-display">
-                            TZS
-                            <span id="testPrice">
-                                0.00
-                            </span>
-                        </span>
-
-                    </p>
-
-                </div>
-
-
-                <div class="form-actions">
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Submit Test Request
-                    </button>
-
-                    <a href="{{ url_for('laboratory') }}"
-                       class="btn btn-secondary">
-                        Cancel
-                    </a>
-
-                </div>
-
-
-            </form>
-
-        </div>
+        <p>
+            Select the laboratory or diagnostic
+            service you need.
+        </p>
 
     </div>
 
 
-    <script>
+    {% if error %}
 
-        function showTestInformation() {
+    <div class="error-message">
 
-            const select =
-                document.getElementById("test_id");
+        ❌ {{ error }}
 
-            const information =
-                document.getElementById("testInformation");
+    </div>
 
-            const selectedOption =
-                select.options[select.selectedIndex];
+    {% endif %}
 
 
-            if (!selectedOption.value) {
+    {% if role == "Patient" %}
 
-                information.style.display = "none";
+    <div class="patient-notice">
 
-                return;
-            }
+        <strong>
+            👤 Patient Request
+        </strong>
 
+        <br>
 
-            const description =
-                selectedOption.getAttribute(
-                    "data-description"
-                ) || "No description available.";
+        You are requesting a laboratory test
+        for your own Patient Profile.
 
+        Your request will be sent to the
+        laboratory for processing.
 
-            const price =
-                parseFloat(
-                    selectedOption.getAttribute(
-                        "data-price"
-                    ) || 0
-                );
+    </div>
 
-
-            const specialty =
-                selectedOption.getAttribute(
-                    "data-specialty"
-                ) || "Not Assigned";
+    {% endif %}
 
 
-            const category =
-                selectedOption.getAttribute(
-                    "data-category"
-                ) || "General";
+    <div class="request-card">
+
+        <form method="POST"
+              action="{{ url_for('request_laboratory_test') }}">
 
 
-            const normalRange =
-                selectedOption.getAttribute(
-                    "data-normal"
-                ) || "Report based";
+            <div class="form-grid">
 
 
-            document.getElementById(
-                "testDescription"
-            ).textContent = description;
+                {% if role == "Admin" %}
+
+                <div class="form-group">
+
+                    <label for="patient_id">
+
+                        Patient
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <select id="patient_id"
+                            name="patient_id"
+                            required>
+
+                        <option value="">
+                            Select Patient
+                        </option>
+
+                        {% for patient in patients %}
+
+                        <option value="{{ patient['id'] }}">
+
+                            {{ patient['full_name'] }}
+
+                            —
+                            ID: {{ patient['id'] }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                {% endif %}
 
 
-            document.getElementById(
-                "testPrice"
-            ).textContent =
-                price.toLocaleString(
-                    "en-US",
-                    {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    }
-                );
+                <div class="form-group
+                            {% if role == 'Patient' %}
+                            full-width
+                            {% endif %}">
+
+                    <label for="test_id">
+
+                        Laboratory Test
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <select id="test_id"
+                            name="test_id"
+                            required
+                            onchange="showTestInformation()">
+
+                        <option value="">
+                            Select Laboratory Test
+                        </option>
+
+                        {% for test in tests %}
+
+                        <option value="{{ test['id'] }}"
+                                data-description="{{ test['description'] or '' }}"
+                                data-price="{{ test['price'] or 0 }}"
+                                data-specialty="{{ test['recommended_specialty'] or 'Not Assigned' }}"
+                                data-category="{{ test['category'] or 'General' }}"
+                                data-normal="{{ test['normal_range'] or 'Report based' }}">
+
+                            {{ test['test_name'] }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
 
 
-            document.getElementById(
-                "testSpecialty"
-            ).textContent = specialty;
+                <div class="form-group full-width">
+
+                    <label for="notes">
+
+                        Notes
+
+                    </label>
+
+                    <textarea id="notes"
+                              name="notes"
+                              placeholder="Enter any relevant information about the test request..."></textarea>
+
+                </div>
 
 
-            document.getElementById(
-                "testCategory"
-            ).textContent = category;
+            </div>
 
 
-            document.getElementById(
-                "testNormalRange"
-            ).textContent = normalRange;
+            <div id="testInformation"
+                 class="test-info"
+                 style="display: none;">
+
+                <h3>
+                    🔬 Selected Test Information
+                </h3>
+
+                <p>
+
+                    <strong>
+                        Category:
+                    </strong>
+
+                    <span id="testCategory">
+                        -
+                    </span>
+
+                </p>
 
 
-            information.style.display = "block";
+                <p>
+
+                    <strong>
+                        Description:
+                    </strong>
+
+                    <span id="testDescription">
+                        -
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Normal Range:
+                    </strong>
+
+                    <span id="testNormalRange">
+                        -
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Recommended Specialty:
+                    </strong>
+
+                    <span id="testSpecialty">
+                        -
+                    </span>
+
+                </p>
+
+
+                <p>
+
+                    <strong>
+                        Price:
+                    </strong>
+
+                    <span class="price-display">
+
+                        TZS
+
+                        <span id="testPrice">
+                            0.00
+                        </span>
+
+                    </span>
+
+                </p>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn btn-primary">
+
+                    🧪 Submit Test Request
+
+                </button>
+
+
+                <a href="{{ url_for('laboratory') }}"
+                   class="btn btn-secondary">
+
+                    ← Back to Laboratory
+
+                </a>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function showTestInformation() {
+
+        const select =
+            document.getElementById("test_id");
+
+        const information =
+            document.getElementById("testInformation");
+
+        const selectedOption =
+            select.options[select.selectedIndex];
+
+
+        if (!selectedOption.value) {
+
+            information.style.display = "none";
+
+            return;
+
         }
 
-    </script>
+
+        const description =
+            selectedOption.getAttribute(
+                "data-description"
+            ) || "No description available.";
+
+
+        const price =
+            parseFloat(
+                selectedOption.getAttribute(
+                    "data-price"
+                ) || 0
+            );
+
+
+        const specialty =
+            selectedOption.getAttribute(
+                "data-specialty"
+            ) || "Not Assigned";
+
+
+        const category =
+            selectedOption.getAttribute(
+                "data-category"
+            ) || "General";
+
+
+        const normalRange =
+            selectedOption.getAttribute(
+                "data-normal"
+            ) || "Report based";
+
+
+        document.getElementById(
+            "testDescription"
+        ).textContent = description;
+
+
+        document.getElementById(
+            "testPrice"
+        ).textContent =
+            price.toLocaleString(
+                "en-US",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }
+            );
+
+
+        document.getElementById(
+            "testSpecialty"
+        ).textContent = specialty;
+
+
+        document.getElementById(
+            "testCategory"
+        ).textContent = category;
+
+
+        document.getElementById(
+            "testNormalRange"
+        ).textContent = normalRange;
+
+
+        information.style.display = "block";
+
+    }
+
+</script>
 
 </body>
+
 </html>

@@ -4,7 +4,6 @@
 
 <head>
 
-```
 <meta charset="UTF-8">
 
 <meta name="viewport"
@@ -19,11 +18,6 @@
     * {
         box-sizing: border-box;
     }
-
-
-    /* =====================================================
-       PAGE BACKGROUND
-    ===================================================== */
 
     body {
 
@@ -61,12 +55,6 @@
     }
 
 
-    /* =====================================================
-       MAIN LOGIN CARD
-       TANZANIA FLAG WATERMARK IS APPLIED TO THIS
-       WHOLE CARD
-    ===================================================== */
-
     .login-container {
 
         width: 100%;
@@ -88,11 +76,6 @@
     }
 
 
-    /* =====================================================
-       TANZANIA FLAG WATERMARK
-       COVERS THE WHOLE LOGIN CARD
-    ===================================================== */
-
     .login-container::before {
 
         content: "";
@@ -102,7 +85,7 @@
         inset: 0;
 
         background-image:
-            url("https://upload.wikimedia.org/wikipedia/commons/3/38/Flag_of_Tanzania.svg");
+            url("/static/chopa.jpg");
 
         background-size: cover;
 
@@ -117,11 +100,6 @@
         pointer-events: none;
     }
 
-
-    /* =====================================================
-       SOFT WHITE OVERLAY
-       KEEPS THE FLAG AS A WATERMARK
-    ===================================================== */
 
     .login-container::after {
 
@@ -139,11 +117,6 @@
     }
 
 
-    /* =====================================================
-       ALL LOGIN CARD CONTENT
-       STAYS ABOVE WATERMARK
-    ===================================================== */
-
     .login-content {
 
         position: relative;
@@ -151,10 +124,6 @@
         z-index: 1;
     }
 
-
-    /* =====================================================
-       SYSTEM HEADER
-    ===================================================== */
 
     .system-header {
 
@@ -196,10 +165,6 @@
     }
 
 
-    /* =====================================================
-       LOGIN SECTION
-    ===================================================== */
-
     .login-section {
 
         width: 100%;
@@ -232,10 +197,6 @@
     }
 
 
-    /* =====================================================
-       ERROR MESSAGE
-    ===================================================== */
-
     .error-message {
 
         background: rgba(254, 226, 226, 0.92);
@@ -256,9 +217,27 @@
     }
 
 
-    /* =====================================================
-       FORM
-    ===================================================== */
+    .success-message {
+
+        background: rgba(220, 252, 231, 0.95);
+
+        color: #166534;
+
+        border: 1px solid #bbf7d0;
+
+        border-radius: 10px;
+
+        padding: 12px 14px;
+
+        margin-bottom: 18px;
+
+        text-align: center;
+
+        font-size: 14px;
+
+        font-weight: 600;
+    }
+
 
     form {
 
@@ -346,8 +325,54 @@
 
 
     /* =====================================================
-       DEVELOPER INFORMATION
+       PATIENT REGISTRATION
     ===================================================== */
+
+    .patient-register {
+
+        text-align: center;
+
+        margin-top: 18px;
+
+        padding: 15px;
+
+        background: rgba(239, 246, 255, 0.78);
+
+        border: 1px solid rgba(37, 99, 235, 0.15);
+
+        border-radius: 10px;
+    }
+
+
+    .patient-register p {
+
+        margin: 0 0 8px 0;
+
+        color: #475569;
+
+        font-size: 14px;
+    }
+
+
+    .patient-register a {
+
+        color: #1d4ed8;
+
+        font-weight: 700;
+
+        text-decoration: none;
+
+        font-size: 14px;
+    }
+
+
+    .patient-register a:hover {
+
+        text-decoration: underline;
+
+        color: #1e40af;
+    }
+
 
     .developer-section {
 
@@ -402,10 +427,6 @@
         gap: 20px;
     }
 
-
-    /* =====================================================
-       DEVELOPER DETAILS
-    ===================================================== */
 
     .developer-details {
 
@@ -465,10 +486,6 @@
     }
 
 
-    /* =====================================================
-       PROFILE PHOTO
-    ===================================================== */
-
     .developer-photo {
 
         width: 95px;
@@ -488,10 +505,6 @@
     }
 
 
-    /* =====================================================
-       FOOTER
-    ===================================================== */
-
     .login-footer {
 
         text-align: center;
@@ -503,10 +516,6 @@
         color: #64748b;
     }
 
-
-    /* =====================================================
-       MOBILE RESPONSIVE
-    ===================================================== */
 
     @media (max-width: 600px) {
 
@@ -557,26 +566,18 @@
     }
 
 </style>
-```
 
 </head>
 
+
 <body>
 
-```
-<!-- =====================================================
-     MAIN LOGIN CARD
-===================================================== -->
 
 <div class="login-container">
 
 
     <div class="login-content">
 
-
-        <!-- =================================================
-             SYSTEM HEADER
-        ================================================== -->
 
         <div class="system-header">
 
@@ -595,9 +596,6 @@
         </div>
 
 
-        <!-- =================================================
-             LOGIN
-        ================================================== -->
 
         <div class="login-section">
 
@@ -619,6 +617,19 @@
                 </div>
 
             {% endif %}
+
+
+            {% if request.args.get('registered') == '1' %}
+
+                <div class="success-message">
+
+                    Patient account created successfully.
+                    You can now login using your username and password.
+
+                </div>
+
+            {% endif %}
+
 
 
             <form method="POST">
@@ -657,12 +668,26 @@
 
             </form>
 
+
+
+            <div class="patient-register">
+
+                <p>
+                    Are you a new patient?
+                </p>
+
+                <a
+                    href="{{ url_for('patient_register') }}"
+                >
+                    Register as a Patient
+                </a>
+
+            </div>
+
+
         </div>
 
 
-        <!-- =================================================
-             DEVELOPER INFORMATION
-        ================================================== -->
 
         <div class="developer-section">
 
@@ -676,8 +701,6 @@
 
             <div class="developer-content">
 
-
-                <!-- DEVELOPER DETAILS -->
 
                 <div class="developer-details">
 
@@ -715,7 +738,6 @@
                 </div>
 
 
-                <!-- PROFILE PHOTO -->
 
                 <img
                     class="developer-photo"
@@ -729,9 +751,6 @@
         </div>
 
 
-        <!-- =================================================
-             FOOTER
-        ================================================== -->
 
         <div class="login-footer">
 
@@ -744,7 +763,7 @@
 
 
 </div>
-```
+
 
 </body>
 

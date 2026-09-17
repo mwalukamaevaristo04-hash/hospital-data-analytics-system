@@ -4,1314 +4,2675 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<title>Hospital Analytics</title>
+    <title>
+        Analytics Workspace - Hospital Data Analytics System
+    </title>
 
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+        }
+
+        .analytics-container {
+            max-width: 1250px;
+            margin: 0 auto;
+            padding: 30px 20px 50px;
+        }
+
+        .analytics-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .analytics-header h1 {
+            margin: 0 0 10px;
+            font-size: 32px;
+        }
+
+        .analytics-header p {
+            margin: 0 auto;
+            max-width: 750px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .analyst-badge {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 7px 15px;
+            border-radius: 20px;
+            background: #eef5ff;
+            color: #1769aa;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .section-title {
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            margin: 0 0 5px;
+        }
+
+        .section-title p {
+            margin: 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 35px;
+        }
+
+        .analysis-card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px 18px;
+            text-align: center;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 2px solid transparent;
+            min-height: 190px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .analysis-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 9px 22px rgba(0,0,0,0.13);
+            border-color: #007bff;
+        }
+
+        .analysis-card.selected {
+            border-color: #007bff;
+            background: #f5f9ff;
+            transform: translateY(-3px);
+        }
+
+        .analysis-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        .analysis-card h3 {
+            margin: 5px 0 8px;
+            font-size: 18px;
+        }
+
+        .analysis-card p {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .workspace {
+            background: white;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .workspace-header h2 {
+            margin: 0 0 7px;
+        }
+
+        .workspace-header p {
+            margin: 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        .step-badge {
+            background: #f1f3f5;
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+
+        .step {
+            padding: 12px;
+            border-radius: 8px;
+            background: #f4f5f7;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #777;
+        }
+
+        .step.active {
+            background: #eaf3ff;
+            color: #0069d9;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-help {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #d2d6da;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            border-color: #007bff;
+            box-shadow:
+                0 0 0 3px rgba(0,123,255,0.10);
+        }
+
+        .filter-panel {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border: 1px solid #e4e6e8;
+        }
+
+        .filter-panel h3 {
+            margin: 0 0 15px;
+            font-size: 16px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .button-row {
+            margin-top: 25px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .analysis-button {
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .analysis-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .primary-button {
+            background: #007bff;
+            color: white;
+        }
+
+        .secondary-button {
+            background: #6c757d;
+            color: white;
+        }
+
+        .light-button {
+            background: #eef1f4;
+            color: #333;
+        }
+
+        /* =========================
+           CHART AREA
+        ========================== */
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            min-height: 420px;
+            padding: 20px;
+            border: 1px solid #e5e7ea;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        #analyticsChart {
+            width: 100% !important;
+            height: 380px !important;
+        }
+
+        .chart-info {
+            margin-bottom: 15px;
+            padding: 13px 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #e5e7e9;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .chart-loading {
+            display: none;
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        /* =========================
+           DOWNLOAD SECTION
+        ========================== */
+
+        .download-panel {
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            border: 1px solid #e1e5e8;
+        }
+
+        .download-header {
+            margin-bottom: 18px;
+        }
+
+        .download-header h3 {
+            margin: 0 0 6px;
+        }
+
+        .download-header p {
+            margin: 0;
+            color: #777;
+            font-size: 13px;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .download-button {
+            border: none;
+            padding: 13px 15px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: 0.2s;
+            background: white;
+            border: 1px solid #d9dde1;
+            color: #333;
+        }
+
+        .download-button:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 5px 12px rgba(0,0,0,0.08);
+        }
+
+        .download-button.pdf {
+            border-left: 4px solid #dc3545;
+        }
+
+        .download-button.excel {
+            border-left: 4px solid #198754;
+        }
+
+        .download-button.csv {
+            border-left: 4px solid #0d6efd;
+        }
+
+        .download-button.png {
+            border-left: 4px solid #6f42c1;
+        }
+
+        .download-status {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 13px;
+        }
+
+        .preview-box {
+            min-height: 180px;
+            border: 2px dashed #d7dce1;
+            border-radius: 12px;
+            padding: 30px;
+            color: #777;
+        }
+
+        .preview-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+        }
+
+        .preview-content {
+            text-align: center;
+        }
+
+        .preview-content h3 {
+            margin: 0 0 8px;
+            color: #333;
+        }
+
+        .preview-content p {
+            margin: 7px 0;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .statistics-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(6, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: #f6f7f9;
+            border-radius: 10px;
+            padding: 18px 10px;
+            text-align: center;
+            border: 1px solid #e5e7ea;
+        }
+
+        .stat-box span {
+            display: block;
+            font-size: 12px;
+            color: #777;
+            margin-bottom: 8px;
+        }
+
+        .stat-box strong {
+            display: block;
+            font-size: 22px;
+            color: #222;
+        }
+
+        .old-analytics {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid #e5e7e9;
+        }
+
+        .old-analytics h3 {
+            margin-top: 0;
+        }
+
+        .old-analytics p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .old-analytics a {
+            display: inline-block;
+            margin-top: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1000px) {
+
+            .analytics-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .download-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .statistics-grid {
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+
+        }
+
+        @media (max-width: 700px) {
+
+            .analytics-container {
+                padding: 20px 12px 40px;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid,
+            .filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: auto;
+            }
+
+            .workspace {
+                padding: 20px;
+            }
+
+            .workspace-header {
+                flex-direction: column;
+            }
+
+            .steps {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .download-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .statistics-grid {
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+            .button-row {
+                flex-direction: column;
+            }
+
+            .analysis-button {
+                width: 100%;
+            }
+
+        }
+
+        @media (max-width: 450px) {
+
+            .analytics-header h1 {
+                font-size: 25px;
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .statistics-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
 
 </head>
 
 <body>
 
+<header class="main-header">
 
-<!-- =====================================================
-     HEADER
-     ===================================================== -->
+    <div>
 
-<header>
+        <h1>
+            🏥 Hospital Data Analytics System
+        </h1>
 
-    <h1>🏥 Hospital Data Analytics System</h1>
+        <p>
+            Hospital Management &amp;
+            Data Analytics Platform
+        </p>
 
-    <p>
-        Hospital Management & Data Analytics Platform
-    </p>
+    </div>
+
+    <div class="user-info">
+
+        <strong>
+            Welcome, {{ session.get('username') }}
+        </strong>
+
+        <span>
+            Role: {{ session.get('role') }}
+        </span>
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
 
 </header>
 
+<nav class="navbar">
 
-<!-- =====================================================
-     NAVIGATION
-     ===================================================== -->
-
-<nav>
-
-    <a href="{{ url_for('home') }}">
-        🏠 Dashboard
+    <a href="/">
+        Dashboard
     </a>
 
     <a href="{{ url_for('patients') }}">
-        👥 Patients
+        Patients
     </a>
 
     <a href="{{ url_for('doctors') }}">
-        👨‍⚕️ Doctors
+        Doctors
     </a>
 
     <a href="{{ url_for('appointments') }}">
-        📅 Appointments
+        Appointments
     </a>
 
+    {% if session.get('role') in
+          ['Admin', 'Doctor', 'Data Analyst'] %}
 
-    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
-
-    <a href="{{ url_for('analytics') }}">
-        📊 Analytics
+    <a href="{{ url_for('analytics') }}"
+       class="active">
+        Analytics
     </a>
 
     {% endif %}
 
-
-    {% if role == "Admin" %}
+    {% if session.get('role') == 'Admin' %}
 
     <a href="{{ url_for('users') }}">
-        👤 Users
+        Users
     </a>
 
     {% endif %}
-
-
-    <a href="{{ url_for('logout') }}">
-        🚪 Logout
-    </a>
 
 </nav>
 
+<main class="analytics-container">
 
-<!-- =====================================================
-     USER INFORMATION
-     ===================================================== -->
+    <section class="analytics-header">
 
-<div class="user-info">
+        <h1>
+            📊 Analytics Workspace
+        </h1>
 
-    <p>
-        Welcome,
-        <strong>{{ session["username"] }}</strong>
-    </p>
+        <p>
+            Explore hospital data, select an analysis
+            method, configure variables and generate
+            analytical results directly from the hospital database.
+        </p>
 
-    <p>
-        Role:
-        <strong>{{ session["role"] }}</strong>
-    </p>
+        <div class="analyst-badge">
+            👨‍💻 Data Analyst Workspace
+        </div>
 
-</div>
+    </section>
 
 
-<!-- =====================================================
-     PAGE TITLE
-     ===================================================== -->
+    <!-- =================================================
+         QUICK ANALYSIS
+    ================================================== -->
 
-<h2>📊 Hospital Analytics</h2>
+    <section>
 
-<p>
-    This page provides statistical summaries and visual
-    analysis of hospital patients, doctors and appointments.
-</p>
+        <div class="section-title">
 
+            <h2>
+                ⚡ Quick Analysis
+            </h2>
 
-<!-- =====================================================
-     1. PATIENT COUNT BY GENDER
-     ===================================================== -->
+            <p>
+                Select an analysis method to quickly
+                configure the workspace.
+            </p>
 
-<div class="analytics-section">
+        </div>
 
-    <h2>1. Patient Count by Gender</h2>
 
-    <table>
+        <div class="analytics-grid">
 
-        <thead>
 
-            <tr>
-                <th>Gender</th>
-                <th>Total Patients</th>
-            </tr>
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Pie Chart', this)">
 
-        </thead>
+                <div class="analysis-icon">
+                    🥧
+                </div>
 
-        <tbody>
+                <h3>
+                    Pie Chart
+                </h3>
 
-            {% for row in gender_data %}
+                <p>
+                    Analyze proportions and
+                    categorical distributions.
+                </p>
 
-            <tr>
+            </div>
 
-                <td>
-                    {{ row["gender"] }}
-                </td>
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Bar Chart', this)">
 
-            </tr>
+                <div class="analysis-icon">
+                    📊
+                </div>
 
-            {% endfor %}
+                <h3>
+                    Bar Chart
+                </h3>
 
-        </tbody>
+                <p>
+                    Compare values between
+                    different categories.
+                </p>
 
-    </table>
+            </div>
 
 
-    <div class="chart-container">
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Histogram', this)">
 
-        <canvas id="genderChart"></canvas>
+                <div class="analysis-icon">
+                    📈
+                </div>
 
-    </div>
+                <h3>
+                    Histogram
+                </h3>
 
-</div>
+                <p>
+                    Analyze the distribution
+                    of numerical data.
+                </p>
 
+            </div>
 
-<!-- =====================================================
-     2. PATIENT COUNT BY AGE GROUP
-     ===================================================== -->
 
-<div class="analytics-section">
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Line Chart', this)">
 
-    <h2>2. Patient Count by Age Group</h2>
+                <div class="analysis-icon">
+                    📉
+                </div>
 
-    <table>
+                <h3>
+                    Line Chart
+                </h3>
 
-        <thead>
+                <p>
+                    Analyze trends and changes
+                    over time.
+                </p>
 
-            <tr>
-                <th>Age Group</th>
-                <th>Total Patients</th>
-            </tr>
+            </div>
 
-        </thead>
 
-        <tbody>
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Scatter Plot', this)">
 
-            {% for row in age_group_data %}
+                <div class="analysis-icon">
+                    🔵
+                </div>
 
-            <tr>
+                <h3>
+                    Scatter Plot
+                </h3>
 
-                <td>
-                    {{ row["age_group"] }}
-                </td>
+                <p>
+                    Explore relationships between
+                    data observations.
+                </p>
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+            </div>
 
-            </tr>
 
-            {% endfor %}
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Doughnut Chart', this)">
 
-        </tbody>
+                <div class="analysis-icon">
+                    🍩
+                </div>
 
-    </table>
+                <h3>
+                    Doughnut Chart
+                </h3>
 
+                <p>
+                    Display categorical data
+                    in circular format.
+                </p>
 
-    <div class="chart-container">
+            </div>
 
-        <canvas id="ageGroupChart"></canvas>
 
-    </div>
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Area Chart', this)">
 
-</div>
+                <div class="analysis-icon">
+                    📊
+                </div>
 
+                <h3>
+                    Area Chart
+                </h3>
 
-<!-- =====================================================
-     3. APPOINTMENT COUNT BY STATUS
-     ===================================================== -->
+                <p>
+                    Visualize changes and
+                    cumulative trends.
+                </p>
 
-<div class="analytics-section">
+            </div>
 
-    <h2>3. Appointment Count by Status</h2>
 
-    <table>
+            <div class="analysis-card"
+                 onclick="selectAnalysis('Statistics', this)">
 
-        <thead>
+                <div class="analysis-icon">
+                    🧮
+                </div>
 
-            <tr>
-                <th>Status</th>
-                <th>Total Appointments</th>
-            </tr>
+                <h3>
+                    Statistics
+                </h3>
 
-        </thead>
+                <p>
+                    Calculate descriptive statistics
+                    from the returned data.
+                </p>
 
-        <tbody>
+            </div>
 
-            {% for row in status_data %}
+        </div>
 
-            <tr>
+    </section>
 
-                <td>
-                    {{ row["status"] }}
-                </td>
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+    <!-- =================================================
+         BUILD ANALYSIS
+    ================================================== -->
 
-            </tr>
+    <section class="workspace">
 
-            {% endfor %}
+        <div class="workspace-header">
 
-        </tbody>
+            <div>
 
-    </table>
+                <h2>
+                    🔬 Build Your Analysis
+                </h2>
 
+                <p>
+                    Configure your dataset, analysis
+                    method and variables.
+                </p>
 
-    <div class="chart-container">
+            </div>
 
-        <canvas id="statusChart"></canvas>
+            <div class="step-badge">
+                Step 1 of 4
+            </div>
 
-    </div>
+        </div>
 
-</div>
 
+        <div class="steps">
 
-<!-- =====================================================
-     4. DOCTOR COUNT BY SPECIALIZATION
-     ===================================================== -->
+            <div class="step active">
+                1. Dataset
+            </div>
 
-<div class="analytics-section">
+            <div class="step">
+                2. Analysis
+            </div>
 
-    <h2>4. Doctor Count by Specialization</h2>
+            <div class="step">
+                3. Variables
+            </div>
 
-    <table>
+            <div class="step">
+                4. Generate
+            </div>
 
-        <thead>
+        </div>
 
-            <tr>
-                <th>Specialization</th>
-                <th>Total Doctors</th>
-            </tr>
 
-        </thead>
+        <div class="form-grid">
 
-        <tbody>
 
-            {% for row in specialization_data %}
+            <div class="form-group">
 
-            <tr>
+                <label for="dataset">
+                    🗂️ Select Dataset
+                </label>
 
-                <td>
-                    {{ row["specialization"] }}
-                </td>
+                <select id="dataset"
+                        onchange="updateWorkspace()">
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+                    <option value="">
+                        -- Select Dataset --
+                    </option>
 
-            </tr>
+                    <option value="patients">
+                        Patients
+                    </option>
 
-            {% endfor %}
+                    <option value="doctors">
+                        Doctors
+                    </option>
 
-        </tbody>
+                    <option value="appointments">
+                        Appointments
+                    </option>
 
-    </table>
+                    <option value="medical_records">
+                        Medical Records
+                    </option>
 
+                    <option value="laboratory">
+                        Laboratory
+                    </option>
 
-    <div class="chart-container">
+                    <option value="pharmacy">
+                        Pharmacy
+                    </option>
 
-        <canvas id="specializationChart"></canvas>
+                </select>
 
-    </div>
+                <span class="form-help">
+                    Choose the hospital data you want to analyze.
+                </span>
 
-</div>
+            </div>
 
 
-<!-- =====================================================
-     5. DOCTOR COUNT BY DEPARTMENT
-     ===================================================== -->
+            <div class="form-group">
 
-<div class="analytics-section">
+                <label for="analysis_type">
+                    📊 Analysis Type
+                </label>
 
-    <h2>5. Doctor Count by Department</h2>
+                <select id="analysis_type"
+                        onchange="updateWorkspace()">
 
-    <table>
+                    <option value="">
+                        -- Select Analysis --
+                    </option>
 
-        <thead>
+                    <option value="pie">
+                        Pie Chart
+                    </option>
 
-            <tr>
-                <th>Department</th>
-                <th>Total Doctors</th>
-            </tr>
+                    <option value="bar">
+                        Bar Chart
+                    </option>
 
-        </thead>
+                    <option value="histogram">
+                        Histogram
+                    </option>
 
-        <tbody>
+                    <option value="line">
+                        Line Chart
+                    </option>
 
-            {% for row in department_data %}
+                    <option value="scatter">
+                        Scatter Plot
+                    </option>
 
-            <tr>
+                    <option value="doughnut">
+                        Doughnut Chart
+                    </option>
 
-                <td>
-                    {{ row["department"] }}
-                </td>
+                    <option value="area">
+                        Area Chart
+                    </option>
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+                    <option value="statistics">
+                        Statistical Analysis
+                    </option>
 
-            </tr>
+                </select>
 
-            {% endfor %}
+                <span class="form-help">
+                    Choose how you want to visualize or analyze the data.
+                </span>
 
-        </tbody>
+            </div>
 
-    </table>
 
+            <div class="form-group">
 
-    <div class="chart-container">
+                <label for="x_variable">
+                    ↔️ X-Axis / Category
+                </label>
 
-        <canvas id="departmentChart"></canvas>
+                <select id="x_variable">
 
-    </div>
+                    <option value="">
+                        -- Select Variable --
+                    </option>
 
-</div>
+                    <option value="age">
+                        Age
+                    </option>
 
+                    <option value="gender">
+                        Gender
+                    </option>
 
-<!-- =====================================================
-     6. DOCTOR APPOINTMENT WORKLOAD
-     ===================================================== -->
+                    <option value="doctor">
+                        Doctor
+                    </option>
 
-<div class="analytics-section">
+                    <option value="specialization">
+                        Specialization
+                    </option>
 
-    <h2>6. Doctor Appointment Workload</h2>
+                    <option value="status">
+                        Status
+                    </option>
 
-    <table>
+                    <option value="date">
+                        Date
+                    </option>
 
-        <thead>
+                    <option value="diagnosis">
+                        Diagnosis
+                    </option>
 
-            <tr>
-                <th>Doctor</th>
-                <th>Total Appointments</th>
-            </tr>
+                </select>
 
-        </thead>
+                <span class="form-help">
+                    Select the category or field to analyze.
+                </span>
 
-        <tbody>
+            </div>
 
-            {% for row in doctor_workload %}
 
-            <tr>
+            <div class="form-group">
 
-                <td>
-                    {{ row["doctor_name"] }}
-                </td>
+                <label for="y_variable">
+                    ↕️ Y-Axis / Value
+                </label>
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+                <select id="y_variable">
 
-            </tr>
+                    <option value="">
+                        -- Select Variable --
+                    </option>
 
-            {% endfor %}
+                    <option value="count">
+                        Count
+                    </option>
 
-        </tbody>
+                    <option value="age">
+                        Age
+                    </option>
 
-    </table>
+                    <option value="quantity">
+                        Quantity
+                    </option>
 
+                    <option value="price">
+                        Price
+                    </option>
 
-    <div class="chart-container">
+                    <option value="appointments">
+                        Number of Appointments
+                    </option>
 
-        <canvas id="doctorWorkloadChart"></canvas>
+                    <option value="patients">
+                        Number of Patients
+                    </option>
 
-    </div>
+                </select>
 
-</div>
+                <span class="form-help">
+                    Select the value that should be measured.
+                </span>
 
+            </div>
 
-<!-- =====================================================
-     7. PATIENT APPOINTMENT FREQUENCY
-     ===================================================== -->
+        </div>
 
-<div class="analytics-section">
 
-    <h2>7. Patient Appointment Frequency</h2>
+        <div class="filter-panel">
 
-    <table>
+            <h3>
+                🔎 Optional Filters
+            </h3>
 
-        <thead>
+            <div class="filter-grid">
 
-            <tr>
-                <th>Patient</th>
-                <th>Total Appointments</th>
-            </tr>
+                <div class="form-group">
 
-        </thead>
+                    <label for="date_from">
+                        Date From
+                    </label>
 
-        <tbody>
+                    <input type="date"
+                           id="date_from">
 
-            {% for row in patient_frequency %}
+                </div>
 
-            <tr>
 
-                <td>
-                    {{ row["patient_name"] }}
-                </td>
+                <div class="form-group">
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+                    <label for="date_to">
+                        Date To
+                    </label>
 
-            </tr>
+                    <input type="date"
+                           id="date_to">
 
-            {% endfor %}
+                </div>
 
-        </tbody>
+            </div>
 
-    </table>
+        </div>
 
 
-    <div class="chart-container">
+        <div class="button-row">
 
-        <canvas id="patientFrequencyChart"></canvas>
+            <button type="button"
+                    class="analysis-button primary-button"
+                    onclick="generateAnalysis()">
 
-    </div>
+                🚀 Generate Analysis
 
-</div>
+            </button>
 
 
-<!-- =====================================================
-     8. APPOINTMENTS BY DATE
-     ===================================================== -->
+            <button type="button"
+                    class="analysis-button secondary-button"
+                    onclick="resetAnalysis()">
 
-<div class="analytics-section">
+                🔄 Reset
 
-    <h2>8. Appointments by Date</h2>
+            </button>
 
-    <table>
 
-        <thead>
+            <button type="button"
+                    class="analysis-button light-button"
+                    onclick="scrollToPreview()">
 
-            <tr>
-                <th>Appointment Date</th>
-                <th>Total Appointments</th>
-            </tr>
+                👁️ Preview
 
-        </thead>
+            </button>
 
-        <tbody>
+        </div>
 
-            {% for row in appointments_by_date %}
+    </section>
 
-            <tr>
 
-                <td>
-                    {{ row["appointment_date"] }}
-                </td>
+    <!-- =================================================
+         ANALYSIS PREVIEW
+    ================================================== -->
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+    <section class="workspace"
+             id="chartSection">
 
-            </tr>
+        <div class="workspace-header">
 
-            {% endfor %}
+            <div>
 
-        </tbody>
+                <h2>
+                    📊 Analysis Preview
+                </h2>
 
-    </table>
+                <p id="chartDescription">
+                    Your selected analysis will appear here.
+                </p>
 
+            </div>
 
-    <div class="chart-container">
+            <div class="step-badge">
+                Preview
+            </div>
 
-        <canvas id="appointmentsDateChart"></canvas>
+        </div>
 
-    </div>
 
-</div>
+        <div id="analysisMessage"
+             class="preview-box">
 
+            <div class="preview-content">
 
-<!-- =====================================================
-     9. APPOINTMENTS BY MONTH
-     ===================================================== -->
+                <div class="preview-icon">
+                    📊
+                </div>
 
-<div class="analytics-section">
+                <h3>
+                    Ready for Analysis
+                </h3>
 
-    <h2>9. Appointments by Month</h2>
+                <p>
+                    Select a dataset and analysis method,
+                    then click Generate Analysis.
+                </p>
 
-    <table>
+            </div>
 
-        <thead>
+        </div>
 
-            <tr>
-                <th>Month</th>
-                <th>Total Appointments</th>
-            </tr>
 
-        </thead>
+        <div id="chartLoading"
+             class="chart-loading">
 
-        <tbody>
+            ⏳ Loading real hospital data...
 
-            {% for row in appointments_by_month %}
+        </div>
 
-            <tr>
 
-                <td>
-                    {{ row["month"] }}
-                </td>
+        <div id="chartWrapper"
+             class="chart-container"
+             style="display:none;">
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+            <div id="chartInfo"
+                 class="chart-info">
+            </div>
 
-            </tr>
+            <canvas id="analyticsChart"></canvas>
 
-            {% endfor %}
+        </div>
 
-        </tbody>
 
-    </table>
+        <!-- =================================================
+             DOWNLOAD ANALYSIS
+        ================================================== -->
 
+        <div class="download-panel">
 
-    <div class="chart-container">
+            <div class="download-header">
 
-        <canvas id="appointmentsMonthChart"></canvas>
+                <h3>
+                    📥 Download Analysis
+                </h3>
 
-    </div>
+                <p>
+                    Download the generated analysis
+                    and chart.
+                </p>
 
-</div>
+            </div>
 
 
-<!-- =====================================================
-     10. APPOINTMENTS BY DAY OF WEEK
-     ===================================================== -->
+            <div class="download-grid">
 
-<div class="analytics-section">
+                <button type="button"
+                        class="download-button pdf"
+                        onclick="downloadAnalysis('PDF')">
 
-    <h2>10. Appointments by Day of Week</h2>
+                    📄 Download PDF
 
-    <table>
+                </button>
 
-        <thead>
 
-            <tr>
-                <th>Day</th>
-                <th>Total Appointments</th>
-            </tr>
+                <button type="button"
+                        class="download-button excel"
+                        onclick="downloadAnalysis('Excel')">
 
-        </thead>
+                    📊 Download Excel
 
-        <tbody>
+                </button>
 
-            {% for row in appointments_by_day %}
 
-            <tr>
+                <button type="button"
+                        class="download-button csv"
+                        onclick="downloadAnalysis('CSV')">
 
-                <td>
-                    {{ row["day_name"] }}
-                </td>
+                    📑 Download CSV
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+                </button>
 
-            </tr>
 
-            {% endfor %}
+                <button type="button"
+                        class="download-button png"
+                        onclick="downloadAnalysis('PNG')">
 
-        </tbody>
+                    🖼️ Download Chart
 
-    </table>
+                </button>
 
+            </div>
 
-    <div class="chart-container">
 
-        <canvas id="dayOfWeekChart"></canvas>
+            <div id="downloadStatus"
+                 class="download-status">
+            </div>
 
-    </div>
+        </div>
 
-</div>
+    </section>
 
 
-<!-- =====================================================
-     11. DOCTOR WORKLOAD BY DATE
-     ===================================================== -->
+    <!-- =================================================
+         STATISTICS
+    ================================================== -->
 
-<div class="analytics-section">
+    <section class="workspace"
+             id="statisticsSection"
+             style="display:none;">
 
-    <h2>11. Doctor Workload by Date</h2>
+        <div class="workspace-header">
 
-    <table>
+            <div>
 
-        <thead>
+                <h2>
+                    🧮 Statistical Summary
+                </h2>
 
-            <tr>
-                <th>Date</th>
-                <th>Doctor</th>
-                <th>Total Appointments</th>
-            </tr>
+                <p>
+                    Descriptive statistics calculated
+                    from the data returned by the hospital database.
+                </p>
 
-        </thead>
+            </div>
 
-        <tbody>
+        </div>
 
-            {% for row in doctor_workload_by_date %}
 
-            <tr>
+        <div class="statistics-grid">
 
-                <td>
-                    {{ row["appointment_date"] }}
-                </td>
+            <div class="stat-box">
+                <span>Mean</span>
+                <strong id="meanValue">-</strong>
+            </div>
 
-                <td>
-                    {{ row["doctor_name"] }}
-                </td>
+            <div class="stat-box">
+                <span>Median</span>
+                <strong id="medianValue">-</strong>
+            </div>
 
-                <td>
-                    {{ row["total"] }}
-                </td>
+            <div class="stat-box">
+                <span>Mode</span>
+                <strong id="modeValue">-</strong>
+            </div>
 
-            </tr>
+            <div class="stat-box">
+                <span>Minimum</span>
+                <strong id="minValue">-</strong>
+            </div>
 
-            {% endfor %}
+            <div class="stat-box">
+                <span>Maximum</span>
+                <strong id="maxValue">-</strong>
+            </div>
 
-        </tbody>
+            <div class="stat-box">
+                <span>Std. Deviation</span>
+                <strong id="stdValue">-</strong>
+            </div>
 
-    </table>
+        </div>
 
+    </section>
 
-    <div class="chart-container">
 
-        <canvas id="doctorDateWorkloadChart"></canvas>
+    <section class="old-analytics">
 
-    </div>
+        <h3>
+            📌 Existing Hospital Analytics
+        </h3>
 
-</div>
+        <p>
+            The predefined hospital analytics remain
+            available while the Data Analyst workspace
+            provides configurable analysis.
+        </p>
 
+        <a href="{{ url_for('analytics') }}">
+            🔄 Refresh Analytics Workspace
+        </a>
 
-<!-- =====================================================
-     12. PATIENT VISITS BY DATE
-     ===================================================== -->
+    </section>
 
-<div class="analytics-section">
-
-    <h2>12. Patient Visits by Date</h2>
-
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>Date</th>
-                <th>Patient</th>
-                <th>Total Visits</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            {% for row in patient_visits_by_date %}
-
-            <tr>
-
-                <td>
-                    {{ row["appointment_date"] }}
-                </td>
-
-                <td>
-                    {{ row["patient_name"] }}
-                </td>
-
-                <td>
-                    {{ row["total"] }}
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-
-    <div class="chart-container">
-
-        <canvas id="patientVisitsDateChart"></canvas>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     13. APPOINTMENT STATUS BY DATE
-     ===================================================== -->
-
-<div class="analytics-section">
-
-    <h2>13. Appointment Status by Date</h2>
-
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Total Appointments</th>
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-            {% for row in appointment_status_by_date %}
-
-            <tr>
-
-                <td>
-                    {{ row["appointment_date"] }}
-                </td>
-
-                <td>
-                    {{ row["status"] }}
-                </td>
-
-                <td>
-                    {{ row["total"] }}
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-
-    <div class="chart-container">
-
-        <canvas id="statusDateChart"></canvas>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     JAVASCRIPT / CHARTS
-     ===================================================== -->
+</main>
 
 <script>
 
-    /* =====================================================
-       1. PATIENT COUNT BY GENDER
-       ===================================================== */
+    /*
+    =========================================================
+    GLOBAL CHART VARIABLE
+    =========================================================
+    */
 
-    const genderData =
-        {{ gender_data | map(attribute="gender") | list | tojson }};
+    let analyticsChart = null;
 
-    const genderTotals =
-        {{ gender_data | map(attribute="total") | list | tojson }};
+    let currentAnalyticsData = null;
 
 
-    new Chart(
-        document.getElementById("genderChart"),
-        {
-            type: "pie",
+    /*
+    =========================================================
+    ANALYSIS MAPPING
+    =========================================================
+    */
 
-            data: {
+    const analysisMapping = {
 
-                labels: genderData,
+        "Pie Chart": "pie",
+        "Bar Chart": "bar",
+        "Histogram": "histogram",
+        "Line Chart": "line",
+        "Scatter Plot": "scatter",
+        "Doughnut Chart": "doughnut",
+        "Area Chart": "area",
+        "Statistics": "statistics"
+
+    };
+
+
+    /*
+    =========================================================
+    SELECT QUICK ANALYSIS
+    =========================================================
+    */
+
+    function selectAnalysis(type, card) {
+
+        const analysisSelect =
+            document.getElementById("analysis_type");
+
+
+        analysisSelect.value =
+            analysisMapping[type];
+
+
+        document
+            .querySelectorAll(".analysis-card")
+            .forEach(function(item) {
+
+                item.classList.remove("selected");
+
+            });
+
+
+        if (card) {
+
+            card.classList.add("selected");
+
+        }
+
+
+        document
+            .querySelector(".workspace")
+            .scrollIntoView({
+
+                behavior: "smooth",
+                block: "start"
+
+            });
+
+
+        updateWorkspace();
+
+    }
+
+
+    /*
+    =========================================================
+    UPDATE WORKSPACE
+    =========================================================
+    */
+
+    function updateWorkspace() {
+
+        const dataset =
+            document.getElementById("dataset").value;
+
+        const analysis =
+            document.getElementById("analysis_type").value;
+
+        const badge =
+            document.querySelector(".step-badge");
+
+
+        if (!dataset && !analysis) {
+
+            badge.textContent =
+                "Step 1 of 4";
+
+        }
+
+        else if (dataset && !analysis) {
+
+            badge.textContent =
+                "Step 2 of 4";
+
+        }
+
+        else if (dataset && analysis) {
+
+            badge.textContent =
+                "Step 3 of 4";
+
+        }
+
+
+        if (analysis === "statistics") {
+
+            document.getElementById(
+                "statisticsSection"
+            ).style.display = "block";
+
+        }
+
+        else {
+
+            document.getElementById(
+                "statisticsSection"
+            ).style.display = "none";
+
+        }
+
+    }
+
+
+    /*
+    =========================================================
+    GENERATE ANALYSIS
+    =========================================================
+    */
+
+    async function generateAnalysis() {
+
+        const dataset =
+            document.getElementById("dataset").value;
+
+        const analysis =
+            document.getElementById("analysis_type").value;
+
+        const xVariable =
+            document.getElementById("x_variable").value;
+
+        const yVariable =
+            document.getElementById("y_variable").value;
+
+        const dateFrom =
+            document.getElementById("date_from").value;
+
+        const dateTo =
+            document.getElementById("date_to").value;
+
+
+        if (!dataset) {
+
+            alert(
+                "Please select a dataset first."
+            );
+
+            return;
+
+        }
+
+
+        if (!analysis) {
+
+            alert(
+                "Please select an analysis type first."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            analysis !== "statistics" &&
+            !xVariable
+        ) {
+
+            alert(
+                "Please select the X-axis or category."
+            );
+
+            return;
+
+        }
+
+
+        const analysisSelect =
+            document.getElementById("analysis_type");
+
+
+        const analysisName =
+            analysisSelect.options[
+                analysisSelect.selectedIndex
+            ].text;
+
+
+        const message =
+            document.getElementById("analysisMessage");
+
+        const loading =
+            document.getElementById("chartLoading");
+
+        const chartWrapper =
+            document.getElementById("chartWrapper");
+
+        const chartInfo =
+            document.getElementById("chartInfo");
+
+
+        message.style.display = "none";
+
+        chartWrapper.style.display = "none";
+
+        loading.style.display = "block";
+
+
+        try {
+
+            /*
+            =================================================
+            API REQUEST
+            =================================================
+            */
+
+            let apiUrl =
+                `/analytics/data?dataset=${encodeURIComponent(dataset)}` +
+                `&analysis=${encodeURIComponent(analysis)}` +
+                `&x_variable=${encodeURIComponent(xVariable)}` +
+                `&y_variable=${encodeURIComponent(yVariable)}`;
+
+
+            if (dateFrom) {
+
+                apiUrl +=
+                    `&date_from=${encodeURIComponent(dateFrom)}`;
+
+            }
+
+
+            if (dateTo) {
+
+                apiUrl +=
+                    `&date_to=${encodeURIComponent(dateTo)}`;
+
+            }
+
+
+            const response =
+                await fetch(apiUrl);
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Analytics server returned an error."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /*
+            =================================================
+            API VALIDATION
+            =================================================
+            */
+
+            if (
+                data.success === false
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "Unable to load analytics data."
+                );
+
+            }
+
+
+            /*
+            =================================================
+            NORMALIZE RESPONSE
+            =================================================
+            */
+
+            const labels =
+                Array.isArray(data.labels)
+                    ? data.labels
+                    : [];
+
+
+            const values =
+                Array.isArray(data.values)
+                    ? data.values
+                    : [];
+
+
+            if (
+                labels.length === 0 &&
+                values.length === 0
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    "No analytics data was returned for the selected filters."
+                );
+
+            }
+
+
+            currentAnalyticsData = {
+
+                dataset: dataset,
+
+                analysis: analysis,
+
+                analysisName: analysisName,
+
+                xVariable: xVariable,
+
+                yVariable: yVariable,
+
+                dateFrom: dateFrom,
+
+                dateTo: dateTo,
+
+                data: data
+
+            };
+
+
+            chartInfo.innerHTML = `
+
+                <strong>
+                    ${escapeHtml(
+                        data.title ||
+                        "Hospital Analytics"
+                    )}
+                </strong>
+
+                <br>
+
+                Dataset:
+                <strong>
+                    ${escapeHtml(dataset)}
+                </strong>
+
+                &nbsp; | &nbsp;
+
+                Analysis:
+                <strong>
+                    ${escapeHtml(analysisName)}
+                </strong>
+
+                &nbsp; | &nbsp;
+
+                Records:
+                <strong>
+                    ${values.length}
+                </strong>
+
+            `;
+
+
+            loading.style.display = "none";
+
+
+            /*
+            =================================================
+            STATISTICS
+            =================================================
+            */
+
+            if (analysis === "statistics") {
+
+                updateStatistics(values);
+
+
+                document.getElementById(
+                    "statisticsSection"
+                ).style.display = "block";
+
+
+                chartWrapper.style.display = "none";
+
+            }
+
+
+            /*
+            =================================================
+            NORMAL CHART
+            =================================================
+            */
+
+            else {
+
+                document.getElementById(
+                    "statisticsSection"
+                ).style.display = "none";
+
+
+                chartWrapper.style.display = "block";
+
+
+                renderChart(
+                    {
+                        labels: labels,
+                        values: values,
+                        title:
+                            data.title ||
+                            "Hospital Analytics"
+                    },
+                    analysis
+                );
+
+            }
+
+
+            document.getElementById(
+                "chartDescription"
+            ).textContent =
+                "Analysis generated successfully from hospital.db.";
+
+
+            document.getElementById(
+                "downloadStatus"
+            ).style.display = "none";
+
+
+            document
+                .getElementById("chartSection")
+                .scrollIntoView({
+
+                    behavior: "smooth",
+                    block: "start"
+
+                });
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Analytics error:",
+                error
+            );
+
+
+            loading.style.display = "none";
+
+            chartWrapper.style.display = "none";
+
+            message.style.display = "block";
+
+
+            message.innerHTML = `
+
+                <div class="preview-content">
+
+                    <div class="preview-icon">
+                        ⚠️
+                    </div>
+
+                    <h3>
+                        Analytics Error
+                    </h3>
+
+                    <p>
+                        ${escapeHtml(error.message)}
+                    </p>
+
+                    <p>
+                        Please check the Flask server
+                        and try again.
+                    </p>
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    /*
+    =========================================================
+    RENDER CHART
+    =========================================================
+    */
+
+    function renderChart(data, analysis) {
+
+        const canvas =
+            document.getElementById(
+                "analyticsChart"
+            );
+
+
+        if (analyticsChart) {
+
+            analyticsChart.destroy();
+
+            analyticsChart = null;
+
+        }
+
+
+        let chartType = "bar";
+
+        let fill = false;
+
+
+        if (analysis === "pie") {
+
+            chartType = "pie";
+
+        }
+
+        else if (analysis === "doughnut") {
+
+            chartType = "doughnut";
+
+        }
+
+        else if (analysis === "line") {
+
+            chartType = "line";
+
+        }
+
+        else if (analysis === "area") {
+
+            chartType = "line";
+
+            fill = true;
+
+        }
+
+        else if (analysis === "histogram") {
+
+            chartType = "bar";
+
+        }
+
+        else if (analysis === "scatter") {
+
+            chartType = "scatter";
+
+        }
+
+        else {
+
+            chartType = "bar";
+
+        }
+
+
+        let chartData;
+
+
+        /*
+        =====================================================
+        SCATTER
+        =====================================================
+        */
+
+        if (chartType === "scatter") {
+
+            chartData = {
 
                 datasets: [
+
                     {
-                        label: "Patients",
 
-                        data: genderTotals
+                        label: data.title,
+
+                        data: data.values.map(
+                            function(value, index) {
+
+                                return {
+
+                                    x: index + 1,
+
+                                    y: Number(value)
+
+                                };
+
+                            }
+                        )
+
                     }
+
                 ]
-            },
 
-            options: {
-                responsive: true
-            }
+            };
+
         }
-    );
 
+        else {
 
-    /* =====================================================
-       2. PATIENT COUNT BY AGE GROUP
-       ===================================================== */
+            chartData = {
 
-    const ageGroupData =
-        {{ age_group_data | map(attribute="age_group") | list | tojson }};
-
-    const ageGroupTotals =
-        {{ age_group_data | map(attribute="total") | list | tojson }};
-
-
-    new Chart(
-        document.getElementById("ageGroupChart"),
-        {
-            type: "bar",
-
-            data: {
-
-                labels: ageGroupData,
+                labels: data.labels,
 
                 datasets: [
+
                     {
-                        label: "Patients",
 
-                        data: ageGroupTotals
+                        label: data.title,
+
+                        data: data.values,
+
+                        fill: fill,
+
+                        tension: 0.25
+
                     }
+
                 ]
-            },
 
-            options: {
-                responsive: true
-            }
+            };
+
         }
-    );
 
 
-    /* =====================================================
-       3. APPOINTMENT COUNT BY STATUS
-       ===================================================== */
+        analyticsChart =
+            new Chart(
 
-    const statusLabels =
-        {{ status_data | map(attribute="status") | list | tojson }};
+                canvas,
 
-    const statusTotals =
-        {{ status_data | map(attribute="total") | list | tojson }};
+                {
 
+                    type: chartType,
 
-    new Chart(
-        document.getElementById("statusChart"),
-        {
-            type: "doughnut",
+                    data: chartData,
 
-            data: {
+                    options: {
 
-                labels: statusLabels,
+                        responsive: true,
 
-                datasets: [
-                    {
-                        label: "Appointments",
+                        maintainAspectRatio: false,
 
-                        data: statusTotals
+                        plugins: {
+
+                            legend: {
+
+                                display:
+                                    chartType === "pie" ||
+                                    chartType === "doughnut"
+
+                            },
+
+                            title: {
+
+                                display: true,
+
+                                text: data.title
+
+                            }
+
+                        },
+
+                        scales:
+                            chartType === "pie" ||
+                            chartType === "doughnut"
+
+                            ? {}
+
+                            : {
+
+                                x: {
+
+                                    title: {
+
+                                        display: true,
+
+                                        text:
+                                            chartType === "scatter"
+                                            ? "Observation"
+                                            : "Category"
+
+                                    }
+
+                                },
+
+                                y: {
+
+                                    beginAtZero: true,
+
+                                    title: {
+
+                                        display: true,
+
+                                        text: "Count"
+
+                                    }
+
+                                }
+
+                            }
+
                     }
-                ]
-            },
 
-            options: {
-                responsive: true
-            }
-        }
-    );
+                }
+
+            );
+
+    }
 
 
-    /* =====================================================
-       4. DOCTOR COUNT BY SPECIALIZATION
-       ===================================================== */
+    /*
+    =========================================================
+    STATISTICS
+    =========================================================
+    */
 
-    const specializationLabels =
-        {{ specialization_data | map(attribute="specialization") | list | tojson }};
+    function updateStatistics(values) {
 
-    const specializationTotals =
-        {{ specialization_data | map(attribute="total") | list | tojson }};
+        const numbers =
+            values
+                .map(Number)
+                .filter(
+                    function(value) {
 
+                        return Number.isFinite(value);
 
-    new Chart(
-        document.getElementById("specializationChart"),
-        {
-            type: "bar",
-
-            data: {
-
-                labels: specializationLabels,
-
-                datasets: [
-                    {
-                        label: "Doctors",
-
-                        data: specializationTotals
                     }
-                ]
-            },
+                );
 
-            options: {
-                responsive: true
-            }
+
+        if (numbers.length === 0) {
+
+            document.getElementById(
+                "meanValue"
+            ).textContent = "-";
+
+            document.getElementById(
+                "medianValue"
+            ).textContent = "-";
+
+            document.getElementById(
+                "modeValue"
+            ).textContent = "-";
+
+            document.getElementById(
+                "minValue"
+            ).textContent = "-";
+
+            document.getElementById(
+                "maxValue"
+            ).textContent = "-";
+
+            document.getElementById(
+                "stdValue"
+            ).textContent = "-";
+
+            return;
+
         }
-    );
 
 
-    /* =====================================================
-       5. DOCTOR COUNT BY DEPARTMENT
-       ===================================================== */
+        const sorted =
+            [...numbers].sort(
+                function(a, b) {
 
-    const departmentLabels =
-        {{ department_data | map(attribute="department") | list | tojson }};
+                    return a - b;
 
-    const departmentTotals =
-        {{ department_data | map(attribute="total") | list | tojson }};
+                }
+            );
 
 
-    new Chart(
-        document.getElementById("departmentChart"),
-        {
-            type: "bar",
+        const sum =
+            numbers.reduce(
+                function(total, value) {
 
-            data: {
+                    return total + value;
 
-                labels: departmentLabels,
+                },
+                0
+            );
 
-                datasets: [
-                    {
-                        label: "Doctors",
 
-                        data: departmentTotals
-                    }
-                ]
-            },
+        const mean =
+            sum / numbers.length;
 
-            options: {
-                responsive: true
-            }
+
+        let median;
+
+
+        if (sorted.length % 2 === 0) {
+
+            const middle =
+                sorted.length / 2;
+
+            median =
+                (
+                    sorted[middle - 1] +
+                    sorted[middle]
+                ) / 2;
+
         }
-    );
 
+        else {
 
-    /* =====================================================
-       6. DOCTOR APPOINTMENT WORKLOAD
-       ===================================================== */
+            median =
+                sorted[
+                    Math.floor(
+                        sorted.length / 2
+                    )
+                ];
 
-    const doctorWorkloadLabels =
-        {{ doctor_workload | map(attribute="doctor_name") | list | tojson }};
-
-    const doctorWorkloadTotals =
-        {{ doctor_workload | map(attribute="total") | list | tojson }};
-
-
-    new Chart(
-        document.getElementById("doctorWorkloadChart"),
-        {
-            type: "bar",
-
-            data: {
-
-                labels: doctorWorkloadLabels,
-
-                datasets: [
-                    {
-                        label: "Appointments",
-
-                        data: doctorWorkloadTotals
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true,
-
-                indexAxis: "y"
-            }
         }
-    );
 
 
-    /* =====================================================
-       7. PATIENT APPOINTMENT FREQUENCY
-       ===================================================== */
-
-    const patientFrequencyLabels =
-        {{ patient_frequency | map(attribute="patient_name") | list | tojson }};
-
-    const patientFrequencyTotals =
-        {{ patient_frequency | map(attribute="total") | list | tojson }};
+        const frequency = {};
 
 
-    new Chart(
-        document.getElementById("patientFrequencyChart"),
-        {
-            type: "bar",
+        numbers.forEach(
+            function(value) {
 
-            data: {
+                frequency[value] =
+                    (frequency[value] || 0) + 1;
 
-                labels: patientFrequencyLabels,
-
-                datasets: [
-                    {
-                        label: "Appointments",
-
-                        data: patientFrequencyTotals
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true,
-
-                indexAxis: "y"
             }
-        }
-    );
+        );
 
 
-    /* =====================================================
-       8. APPOINTMENTS BY DATE
-       ===================================================== */
+        let mode =
+            numbers[0];
 
-    const appointmentDateLabels =
-        {{ appointments_by_date | map(attribute="appointment_date") | list | tojson }};
-
-    const appointmentDateTotals =
-        {{ appointments_by_date | map(attribute="total") | list | tojson }};
+        let highestFrequency =
+            frequency[mode];
 
 
-    new Chart(
-        document.getElementById("appointmentsDateChart"),
-        {
-            type: "line",
+        Object.keys(frequency).forEach(
+            function(value) {
 
-            data: {
+                if (
+                    frequency[value] >
+                    highestFrequency
+                ) {
 
-                labels: appointmentDateLabels,
+                    mode =
+                        Number(value);
 
-                datasets: [
-                    {
-                        label: "Appointments",
+                    highestFrequency =
+                        frequency[value];
 
-                        data: appointmentDateTotals,
+                }
 
-                        fill: false
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true
             }
+        );
+
+
+        const variance =
+            numbers.reduce(
+                function(total, value) {
+
+                    return total +
+                        Math.pow(
+                            value - mean,
+                            2
+                        );
+
+                },
+                0
+            ) / numbers.length;
+
+
+        const standardDeviation =
+            Math.sqrt(variance);
+
+
+        document.getElementById(
+            "meanValue"
+        ).textContent =
+            mean.toFixed(2);
+
+
+        document.getElementById(
+            "medianValue"
+        ).textContent =
+            median.toFixed(2);
+
+
+        document.getElementById(
+            "modeValue"
+        ).textContent =
+            mode;
+
+
+        document.getElementById(
+            "minValue"
+        ).textContent =
+            Math.min(...numbers);
+
+
+        document.getElementById(
+            "maxValue"
+        ).textContent =
+            Math.max(...numbers);
+
+
+        document.getElementById(
+            "stdValue"
+        ).textContent =
+            standardDeviation.toFixed(2);
+
+    }
+
+
+    /*
+    =========================================================
+    DOWNLOAD ANALYSIS
+    =========================================================
+    */
+
+    function downloadAnalysis(format) {
+
+        if (!currentAnalyticsData) {
+
+            alert(
+                "Please generate an analysis first."
+            );
+
+            return;
+
         }
-    );
 
 
-    /* =====================================================
-       9. APPOINTMENTS BY MONTH
-       ===================================================== */
+        const dataset =
+            currentAnalyticsData.dataset;
 
-    const appointmentMonthLabels =
-        {{ appointments_by_month | map(attribute="month") | list | tojson }};
+        const analysis =
+            currentAnalyticsData.analysis;
 
-    const appointmentMonthTotals =
-        {{ appointments_by_month | map(attribute="total") | list | tojson }};
+        const xVariable =
+            currentAnalyticsData.xVariable;
+
+        const yVariable =
+            currentAnalyticsData.yVariable;
+
+        const dateFrom =
+            currentAnalyticsData.dateFrom;
+
+        const dateTo =
+            currentAnalyticsData.dateTo;
 
 
-    new Chart(
-        document.getElementById("appointmentsMonthChart"),
-        {
-            type: "bar",
+        /*
+        =====================================================
+        PNG / CHART DOWNLOAD
+        =====================================================
+        */
 
-            data: {
+        if (format === "PNG") {
 
-                labels: appointmentMonthLabels,
+            if (!analyticsChart) {
 
-                datasets: [
-                    {
-                        label: "Appointments",
+                alert(
+                    "Please generate a chart first."
+                );
 
-                        data: appointmentMonthTotals
-                    }
-                ]
-            },
+                return;
 
-            options: {
-                responsive: true
             }
+
+
+            const link =
+                document.createElement("a");
+
+
+            link.download =
+                `analytics_${dataset}_${analysis}.png`;
+
+
+            link.href =
+                analyticsChart.toBase64Image();
+
+
+            link.click();
+
+
+            showDownloadStatus(
+                "PNG chart downloaded successfully."
+            );
+
+
+            return;
+
         }
-    );
 
 
-    /* =====================================================
-       10. APPOINTMENTS BY DAY OF WEEK
-       ===================================================== */
+        /*
+        =====================================================
+        BACKEND DOWNLOADS
+        =====================================================
+        */
 
-    const dayLabels =
-        {{ appointments_by_day | map(attribute="day_name") | list | tojson }};
-
-    const dayTotals =
-        {{ appointments_by_day | map(attribute="total") | list | tojson }};
+        let endpoint = "";
 
 
-    new Chart(
-        document.getElementById("dayOfWeekChart"),
-        {
-            type: "bar",
+        if (format === "PDF") {
 
-            data: {
+            endpoint =
+                "/analytics/export/pdf";
 
-                labels: dayLabels,
-
-                datasets: [
-                    {
-                        label: "Appointments",
-
-                        data: dayTotals
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true
-            }
         }
-    );
 
+        else if (format === "Excel") {
 
-    /* =====================================================
-       11. DOCTOR WORKLOAD BY DATE
-       ===================================================== */
+            endpoint =
+                "/analytics/export/excel";
 
-    const doctorDateLabels =
-        {{ doctor_workload_by_date
-            | map(attribute="appointment_date")
-            | list
-            | tojson }};
-
-    const doctorDateTotals =
-        {{ doctor_workload_by_date
-            | map(attribute="total")
-            | list
-            | tojson }};
-
-
-    new Chart(
-        document.getElementById("doctorDateWorkloadChart"),
-        {
-            type: "line",
-
-            data: {
-
-                labels: doctorDateLabels,
-
-                datasets: [
-                    {
-                        label: "Doctor Appointments",
-
-                        data: doctorDateTotals,
-
-                        fill: false
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true
-            }
         }
-    );
 
+        else if (format === "CSV") {
 
-    /* =====================================================
-       12. PATIENT VISITS BY DATE
-       ===================================================== */
+            endpoint =
+                "/analytics/export/csv";
 
-    const patientVisitDateLabels =
-        {{ patient_visits_by_date
-            | map(attribute="appointment_date")
-            | list
-            | tojson }};
-
-    const patientVisitDateTotals =
-        {{ patient_visits_by_date
-            | map(attribute="total")
-            | list
-            | tojson }};
-
-
-    new Chart(
-        document.getElementById("patientVisitsDateChart"),
-        {
-            type: "line",
-
-            data: {
-
-                labels: patientVisitDateLabels,
-
-                datasets: [
-                    {
-                        label: "Patient Visits",
-
-                        data: patientVisitDateTotals,
-
-                        fill: false
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true
-            }
         }
-    );
 
 
-    /* =====================================================
-       13. APPOINTMENT STATUS BY DATE
-       ===================================================== */
+        if (!endpoint) {
 
-    const statusDateLabels =
-        {{ appointment_status_by_date
-            | map(attribute="appointment_date")
-            | list
-            | tojson }};
+            return;
 
-    const statusDateTotals =
-        {{ appointment_status_by_date
-            | map(attribute="total")
-            | list
-            | tojson }};
-
-
-    new Chart(
-        document.getElementById("statusDateChart"),
-        {
-            type: "line",
-
-            data: {
-
-                labels: statusDateLabels,
-
-                datasets: [
-                    {
-                        label: "Appointments by Status",
-
-                        data: statusDateTotals,
-
-                        fill: false
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true
-            }
         }
-    );
+
+
+        /*
+        =====================================================
+        BUILD DOWNLOAD URL
+        =====================================================
+        */
+
+        let url =
+            `${endpoint}?dataset=${encodeURIComponent(dataset)}` +
+            `&analysis=${encodeURIComponent(analysis)}` +
+            `&x_variable=${encodeURIComponent(xVariable)}` +
+            `&y_variable=${encodeURIComponent(yVariable)}`;
+
+
+        if (dateFrom) {
+
+            url +=
+                `&date_from=${encodeURIComponent(dateFrom)}`;
+
+        }
+
+
+        if (dateTo) {
+
+            url +=
+                `&date_to=${encodeURIComponent(dateTo)}`;
+
+        }
+
+
+        window.location.href =
+            url;
+
+
+        showDownloadStatus(
+            `${format} download started.`
+        );
+
+    }
+
+
+    /*
+    =========================================================
+    DOWNLOAD STATUS
+    =========================================================
+    */
+
+    function showDownloadStatus(message) {
+
+        const status =
+            document.getElementById(
+                "downloadStatus"
+            );
+
+
+        status.style.display =
+            "block";
+
+
+        status.innerHTML = `
+
+            <strong>
+                📥 Download
+            </strong>
+
+            <br>
+
+            ${escapeHtml(message)}
+
+        `;
+
+    }
+
+
+    /*
+    =========================================================
+    RESET
+    =========================================================
+    */
+
+    function resetAnalysis() {
+
+        document.getElementById(
+            "dataset"
+        ).value = "";
+
+
+        document.getElementById(
+            "analysis_type"
+        ).value = "";
+
+
+        document.getElementById(
+            "x_variable"
+        ).value = "";
+
+
+        document.getElementById(
+            "y_variable"
+        ).value = "";
+
+
+        document.getElementById(
+            "date_from"
+        ).value = "";
+
+
+        document.getElementById(
+            "date_to"
+        ).value = "";
+
+
+        document
+            .querySelectorAll(".analysis-card")
+            .forEach(
+                function(item) {
+
+                    item.classList.remove(
+                        "selected"
+                    );
+
+                }
+            );
+
+
+        if (analyticsChart) {
+
+            analyticsChart.destroy();
+
+            analyticsChart = null;
+
+        }
+
+
+        currentAnalyticsData = null;
+
+
+        document.getElementById(
+            "statisticsSection"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "chartWrapper"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "chartLoading"
+        ).style.display = "none";
+
+
+        const message =
+            document.getElementById(
+                "analysisMessage"
+            );
+
+
+        message.style.display =
+            "block";
+
+
+        message.innerHTML = `
+
+            <div class="preview-content">
+
+                <div class="preview-icon">
+                    📊
+                </div>
+
+                <h3>
+                    Ready for Analysis
+                </h3>
+
+                <p>
+                    Select a dataset and analysis method,
+                    then click Generate Analysis.
+                </p>
+
+            </div>
+
+        `;
+
+
+        document.getElementById(
+            "downloadStatus"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "chartDescription"
+        ).textContent =
+            "Your selected analysis will appear here.";
+
+
+        updateWorkspace();
+
+    }
+
+
+    /*
+    =========================================================
+    SCROLL TO PREVIEW
+    =========================================================
+    */
+
+    function scrollToPreview() {
+
+        document
+            .getElementById("chartSection")
+            .scrollIntoView({
+
+                behavior: "smooth",
+                block: "start"
+
+            });
+
+    }
+
+
+    /*
+    =========================================================
+    HTML ESCAPE
+    =========================================================
+    */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
 
 </script>
-
-
-<!-- =====================================================
-     FOOTER
-     ===================================================== -->
-
-<hr>
-
-<p>
-    <strong>🏥 Hospital Data Analytics System</strong>
-</p>
-
-<p>
-    Role-Based Access Control Enabled
-</p>
-
 
 </body>
 

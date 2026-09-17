@@ -4,21 +4,53 @@
 
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>User Management</title>
+<title>User Management</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
+
+<style>
+
+    .profile-section {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        padding: 15px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .profile-section label {
+        font-weight: 600;
+    }
+
+    .profile-section select {
+        margin-top: 7px;
+        padding: 9px;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .profile-section small {
+        display: block;
+        margin-top: 7px;
+        color: #64748b;
+    }
+
+    .required {
+        color: red;
+    }
+
+</style>
 
 </head>
 
-
 <body>
-
 
 <!-- =====================================================
      HEADER
@@ -26,16 +58,15 @@
 
 <header>
 
-    <h1>🏥 Hospital Data Analytics System</h1>
+<h1>
+    🏥 Hospital Data Analytics System
+</h1>
 
-    <p>
-
-        Hospital Management & Data Analytics Platform
-
-    </p>
+<p>
+    Hospital Management & Data Analytics Platform
+</p>
 
 </header>
-
 
 <!-- =====================================================
      NAVIGATION BAR
@@ -43,50 +74,35 @@
 
 <nav>
 
-    <a href="{{ url_for('home') }}">
+<a href="{{ url_for('home') }}">
+    🏠 Dashboard
+</a>
 
-        🏠 Dashboard
+<a href="{{ url_for('patients') }}">
+    👥 Patients
+</a>
 
-    </a>
+<a href="{{ url_for('doctors') }}">
+    👨‍⚕️ Doctors
+</a>
 
-    <a href="{{ url_for('patients') }}">
+<a href="{{ url_for('appointments') }}">
+    📅 Appointments
+</a>
 
-        👥 Patients
+<a href="{{ url_for('analytics') }}">
+    📊 Analytics
+</a>
 
-    </a>
+<a href="{{ url_for('users') }}">
+    👤 Users
+</a>
 
-    <a href="{{ url_for('doctors') }}">
-
-        👨‍⚕️ Doctors
-
-    </a>
-
-    <a href="{{ url_for('appointments') }}">
-
-        📅 Appointments
-
-    </a>
-
-    <a href="{{ url_for('analytics') }}">
-
-        📊 Analytics
-
-    </a>
-
-    <a href="{{ url_for('users') }}">
-
-        👤 Users
-
-    </a>
-
-    <a href="{{ url_for('logout') }}">
-
-        🚪 Logout
-
-    </a>
+<a href="{{ url_for('logout') }}">
+    🚪 Logout
+</a>
 
 </nav>
-
 
 <!-- =====================================================
      USER INFORMATION
@@ -94,37 +110,39 @@
 
 <div class="user-info">
 
-    <p>
+<p>
 
-        Welcome,
+    Welcome,
 
-        <strong>{{ session["username"] }}</strong>
+    <strong>
+        {{ session["username"] }}
+    </strong>
 
-    </p>
+</p>
 
-    <p>
+<p>
 
-        Role:
+    Role:
 
-        <strong>{{ session["role"] }}</strong>
+    <strong>
+        {{ session["role"] }}
+    </strong>
 
-    </p>
+</p>
 
 </div>
-
 
 <!-- =====================================================
      PAGE TITLE
      ===================================================== -->
 
-<h2>👤 User Management</h2>
+<h2>
+    👤 User Management
+</h2>
 
 <p>
-
     Manage system users and their access roles.
-
 </p>
-
 
 <!-- =====================================================
      ERROR MESSAGE
@@ -132,329 +150,408 @@
 
 {% if error %}
 
-    <p style="color: red;">
+<p style="color: red;">
 
-        <strong>{{ error }}</strong>
+<strong>
+    {{ error }}
+</strong>
 
-    </p>
+</p>
 
 {% endif %}
-
 
 <!-- =====================================================
      ADD NEW USER
      ===================================================== -->
 
-<h2>Add New User</h2>
-
+<h2>
+    Add New User
+</h2>
 
 <form method="POST"
       action="{{ url_for('users') }}">
 
+<!-- USERNAME -->
 
-    <!-- USERNAME -->
+<label for="username">
 
-    <label for="username">
+    Username:
 
-        Username:
+</label>
 
-    </label>
+<br>
 
-    <br>
+<input
+    type="text"
+    id="username"
+    name="username"
+    required
+>
 
-    <input
-        type="text"
-        id="username"
-        name="username"
-        required
-    >
-
-    <br><br>
-
-
-    <!-- PASSWORD -->
-
-    <label for="password">
-
-        Password:
-
-    </label>
-
-    <br>
-
-    <input
-        type="password"
-        id="password"
-        name="password"
-        required
-    >
-
-    <br><br>
+<br>
+<br>
 
 
-    <!-- ROLE -->
+<!-- PASSWORD -->
 
-    <label for="role">
+<label for="password">
 
-        Role:
+    Password:
+
+</label>
+
+<br>
+
+<input
+    type="password"
+    id="password"
+    name="password"
+    required
+>
+
+<br>
+<br>
+
+
+<!-- ROLE -->
+
+<label for="role">
+
+    Role:
+
+</label>
+
+<br>
+
+<select
+    id="role"
+    name="role"
+    required
+    onchange="showProfileSection()"
+>
+
+    <option value="">
+        -- Select Role --
+    </option>
+
+    <option value="Admin">
+        Admin
+    </option>
+
+    <option value="Doctor">
+        Doctor
+    </option>
+
+    <option value="Receptionist">
+        Receptionist
+    </option>
+
+    <option value="Data Analyst">
+        Data Analyst
+    </option>
+
+    <option value="Patient">
+        Patient
+    </option>
+
+    <option value="Laboratorian">
+        Laboratorian
+    </option>
+
+    <option value="Pharmacist">
+        Pharmacist
+    </option>
+
+</select>
+
+<br>
+<br>
+
+
+<!-- =================================================
+     DOCTOR PROFILE
+     ================================================= -->
+
+<div id="doctorProfileSection"
+     class="profile-section"
+     style="display: none;">
+
+    <label for="doctor_id">
+
+        Doctor Profile
+        <span class="required">*</span>
 
     </label>
 
     <br>
 
     <select
-        id="role"
-        name="role"
-        required
-        onchange="showDoctorProfile()"
+        id="doctor_id"
+        name="doctor_id"
     >
 
         <option value="">
+            -- Select Doctor --
+        </option>
 
-            -- Select Role --
+        {% for doctor in doctors %}
+
+        <option value="{{ doctor['id'] }}">
+
+            {{ doctor['full_name'] }}
+
+            -
+
+            {{ doctor['specialization'] }}
 
         </option>
 
-        <option value="Admin">
-
-            Admin
-
-        </option>
-
-        <option value="Doctor">
-
-            Doctor
-
-        </option>
-
-        <option value="Pharmacist">
-
-            Pharmacist
-
-        </option>
-
-        <option value="Receptionist">
-
-            Receptionist
-
-        </option>
-
-        <option value="Data Analyst">
-
-            Data Analyst
-
-        </option>
+        {% endfor %}
 
     </select>
 
-    <br><br>
+    <small>
+
+        Select the Doctor Profile belonging
+        to this user account.
+
+    </small>
+
+</div>
 
 
-    <!-- =================================================
-         DOCTOR PROFILE
-         ================================================= -->
+<!-- =================================================
+     PATIENT PROFILE
+     ================================================= -->
 
-    <div id="doctorProfileSection"
-         style="display: none;">
+<div id="patientProfileSection"
+     class="profile-section"
+     style="display: none;">
 
-        <label for="doctor_id">
+    <label for="patient_id">
 
-            Doctor Profile:
+        Patient Profile
+        <span class="required">*</span>
 
-        </label>
+    </label>
 
-        <br>
+    <br>
 
-        <select
-            id="doctor_id"
-            name="doctor_id"
-        >
+    <select
+        id="patient_id"
+        name="patient_id"
+    >
 
-            <option value="">
+        <option value="">
+            -- Select Patient --
+        </option>
 
-                -- Select Doctor --
+        {% for patient in patients %}
 
-            </option>
+        <option value="{{ patient['id'] }}">
 
+            {{ patient['full_name'] }}
 
-            {% for doctor in doctors %}
+            -
 
-                <option value="{{ doctor['id'] }}">
+            Patient ID:
+            {{ patient['id'] }}
 
-                    {{ doctor['full_name'] }}
+        </option>
 
-                    -
+        {% endfor %}
 
-                    {{ doctor['specialization'] }}
+    </select>
 
-                </option>
+    <small>
 
-            {% endfor %}
+        Select the Patient Profile belonging
+        to this user account.
 
-        </select>
+    </small>
 
-        <br>
-
-        <small>
-
-            Select the Doctor Profile belonging to this user account.
-
-        </small>
-
-        <br><br>
-
-    </div>
+</div>
 
 
-    <!-- ADD USER BUTTON -->
+<!-- ADD USER BUTTON -->
 
-    <button type="submit">
+<button type="submit">
 
-        ➕ Add User
+    ➕ Add User
 
-    </button>
+</button>
 
 </form>
-
 
 <!-- =====================================================
      USERS LIST
      ===================================================== -->
 
-<h2>System Users</h2>
-
+<h2>
+    System Users
+</h2>
 
 <table>
 
-    <thead>
+<thead>
 
-        <tr>
+<tr>
 
-            <th>ID</th>
+    <th>
+        ID
+    </th>
 
-            <th>Username</th>
+    <th>
+        Username
+    </th>
 
-            <th>Role</th>
+    <th>
+        Role
+    </th>
 
-            <th>Doctor Profile</th>
+    <th>
+        Profile
+    </th>
 
-            <th>Actions</th>
+    <th>
+        Actions
+    </th>
 
-        </tr>
+</tr>
 
-    </thead>
+</thead>
 
+<tbody>
 
-    <tbody>
+{% for user in users %}
 
-        {% for user in users %}
+<tr>
 
-        <tr>
+    <!-- ID -->
 
-            <!-- ID -->
-
-            <td>
-
-                {{ user["id"] }}
-
-            </td>
-
-
-            <!-- USERNAME -->
-
-            <td>
-
-                {{ user["username"] }}
-
-            </td>
+    <td>
+        {{ user["id"] }}
+    </td>
 
 
-            <!-- ROLE -->
+    <!-- USERNAME -->
 
-            <td>
-
-                {{ user["role"] }}
-
-            </td>
+    <td>
+        {{ user["username"] }}
+    </td>
 
 
-            <!-- DOCTOR PROFILE -->
+    <!-- ROLE -->
 
-            <td>
-
-                {% if user["role"] == "Doctor" %}
-
-                    {% if user["doctor_name"] %}
-
-                        👨‍⚕️ {{ user["doctor_name"] }}
-
-                    {% else %}
-
-                        <span style="color: red;">
-
-                            ⚠️ Not Linked
-
-                        </span>
-
-                    {% endif %}
-
-                {% else %}
-
-                    —
-
-                {% endif %}
-
-            </td>
+    <td>
+        {{ user["role"] }}
+    </td>
 
 
-            <!-- ACTIONS -->
+    <!-- PROFILE -->
 
-            <td>
+    <td>
 
-                <a href="{{ url_for('edit_user', user_id=user['id']) }}">
+        {% if user["role"] == "Doctor" %}
 
-                    ✏️ Edit
+            {% if user["doctor_name"] %}
 
-                </a>
+                👨‍⚕️
+                {{ user["doctor_name"] }}
+
+            {% else %}
+
+                <span style="color: red;">
+
+                    ⚠️ Doctor Not Linked
+
+                </span>
+
+            {% endif %}
 
 
-                {% if user["id"] != session["user_id"] %}
+        {% elif user["role"] == "Patient" %}
 
-                    <form
-                        method="POST"
-                        action="{{ url_for('delete_user', user_id=user['id']) }}"
-                        style="display:inline;"
-                        onsubmit="return confirm('Are you sure you want to delete this user?');"
-                    >
+            {% if user["patient_name"] %}
 
-                        <button type="submit">
+                👤
+                {{ user["patient_name"] }}
 
-                            🗑️ Delete
+            {% else %}
 
-                        </button>
+                <span style="color: red;">
 
-                    </form>
+                    ⚠️ Patient Not Linked
 
-                {% else %}
+                </span>
 
-                    <span>
+            {% endif %}
 
-                        Current User
 
-                    </span>
+        {% else %}
 
-                {% endif %}
+            —
 
-            </td>
+        {% endif %}
 
-        </tr>
+    </td>
 
-        {% endfor %}
 
-    </tbody>
+    <!-- ACTIONS -->
+
+    <td>
+
+        <a href="{{ url_for(
+            'edit_user',
+            user_id=user['id']
+        ) }}">
+
+            ✏️ Edit
+
+        </a>
+
+
+        {% if user["id"] != session["user_id"] %}
+
+            <form
+                method="POST"
+                action="{{ url_for(
+                    'delete_user',
+                    user_id=user['id']
+                ) }}"
+                style="display:inline;"
+                onsubmit="return confirm(
+                    'Are you sure you want to delete this user?'
+                );"
+            >
+
+                <button type="submit">
+
+                    🗑️ Delete
+
+                </button>
+
+            </form>
+
+        {% else %}
+
+            <span>
+
+                Current User
+
+            </span>
+
+        {% endif %}
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
 
 </table>
-
 
 <!-- =====================================================
      FOOTER
@@ -462,42 +559,62 @@
 
 <hr>
 
-
 <p>
 
-    <strong>
+<strong>
 
-        🏥 Hospital Data Analytics System
+    🏥 Hospital Data Analytics System
 
-    </strong>
+</strong>
 
 </p>
 
-
 <p>
 
-    Role-Based Access Control Enabled
+Role-Based Access Control Enabled
 
 </p>
-
 
 <!-- =====================================================
      JAVASCRIPT
-     SHOW / HIDE DOCTOR PROFILE
+     SHOW / HIDE PROFILES
      ===================================================== -->
 
 <script>
 
-function showDoctorProfile() {
+function showProfileSection() {
 
-    const role = document.getElementById("role").value;
+    const role =
+        document.getElementById("role").value;
+
 
     const doctorSection =
-        document.getElementById("doctorProfileSection");
+        document.getElementById(
+            "doctorProfileSection"
+        );
+
+
+    const patientSection =
+        document.getElementById(
+            "patientProfileSection"
+        );
+
 
     const doctorSelect =
-        document.getElementById("doctor_id");
+        document.getElementById(
+            "doctor_id"
+        );
 
+
+    const patientSelect =
+        document.getElementById(
+            "patient_id"
+        );
+
+
+    /*
+     * DOCTOR
+     */
 
     if (role === "Doctor") {
 
@@ -517,10 +634,32 @@ function showDoctorProfile() {
 
     }
 
+
+    /*
+     * PATIENT
+     */
+
+    if (role === "Patient") {
+
+        patientSection.style.display = "block";
+
+        patientSelect.required = true;
+
+    }
+
+    else {
+
+        patientSection.style.display = "none";
+
+        patientSelect.required = false;
+
+        patientSelect.value = "";
+
+    }
+
 }
 
 </script>
-
 
 </body>
 

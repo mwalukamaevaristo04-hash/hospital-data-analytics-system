@@ -1,196 +1,581 @@
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
 
 <head>
 
 
-<title>Edit User</title>
+<meta charset="UTF-8">
 
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
+<title>Edit User - Hospital Data Analytics System</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f7f9;
+        color: #222;
+    }
+
+    .header {
+        background: #0b5ed7;
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .header h1 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .header p {
+        margin: 8px 0 0;
+        font-size: 15px;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 850px;
+        margin: 35px auto;
+    }
+
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    h2 {
+        margin-top: 0;
+        text-align: center;
+        color: #0b5ed7;
+    }
+
+    .error {
+        background: #f8d7da;
+        color: #842029;
+        border: 1px solid #f5c2c7;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .info {
+        background: #cff4fc;
+        color: #055160;
+        border: 1px solid #b6effb;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 7px;
+    }
+
+    input,
+    select {
+        width: 100%;
+        padding: 11px;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        font-size: 15px;
+    }
+
+    input:focus,
+    select:focus {
+        outline: none;
+        border-color: #0b5ed7;
+    }
+
+    .password-section {
+        margin-top: 25px;
+        padding: 20px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+    }
+
+    .password-section h3 {
+        margin-top: 0;
+        color: #0b5ed7;
+    }
+
+    .password-note {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 15px;
+    }
+
+    .profile-section {
+        margin-top: 25px;
+        padding: 20px;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+    }
+
+    .profile-section h3 {
+        margin-top: 0;
+        color: #0b5ed7;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 15px;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .btn-save {
+        background: #198754;
+        color: white;
+        flex: 1;
+    }
+
+    .btn-save:hover {
+        background: #157347;
+    }
+
+    .btn-cancel {
+        background: #6c757d;
+        color: white;
+        flex: 1;
+    }
+
+    .btn-cancel:hover {
+        background: #5c636a;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .footer {
+        text-align: center;
+        margin: 30px 0;
+        color: #666;
+        font-size: 14px;
+    }
+
+</style>
 
 </head>
 
 <body>
 
+<div class="header">
 
-<h1>Hospital Data Analytics System</h1>
+    <h1>🏥 Hospital Data Analytics System</h1>
 
-<h2>Edit User</h2>
+    <p>User Management</p>
 
-
-<form method="POST">
-
-    <label>
-        Username
-    </label>
-
-    <br>
-
-    <input
-        type="text"
-        name="username"
-        value="{{ user['username'] }}"
-        required
-    >
-
-    <br><br>
+</div>
 
 
-    <label>
-        Password
-    </label>
+<div class="container">
 
-    <br>
+    <div class="card">
 
-    <input
-        type="password"
-        name="password"
-        value="{{ user['password'] }}"
-        required
-    >
-
-    <br><br>
+        <h2>✏️ Edit User</h2>
 
 
-    <label>
-        Role
-    </label>
+        {% if error %}
 
-    <br>
+        <div class="error">
+            {{ error }}
+        </div>
 
-    <select name="role" id="role" required>
-
-        <option value="Admin"
-            {% if user['role'] == 'Admin' %}
-                selected
-            {% endif %}>
-            Admin
-        </option>
-
-        <option value="Doctor"
-            {% if user['role'] == 'Doctor' %}
-                selected
-            {% endif %}>
-            Doctor
-        </option>
-
-        <option value="Receptionist"
-            {% if user['role'] == 'Receptionist' %}
-                selected
-            {% endif %}>
-            Receptionist
-        </option>
-
-        <option value="Data Analyst"
-            {% if user['role'] == 'Data Analyst' %}
-                selected
-            {% endif %}>
-            Data Analyst
-        </option>
-
-    </select>
-
-    <br><br>
+        {% endif %}
 
 
-    <!-- =================================================
-         DOCTOR PROFILE
-         ================================================= -->
+        <div class="info">
 
-    <div id="doctor-profile-section">
+            <strong>Important:</strong>
 
-        <label>
-            Doctor Profile
-        </label>
+            If you want to keep the current password,
+            leave the password field empty.
 
-        <br>
+            To reset the user's password,
+            enter a new password below.
 
-        <select name="doctor_id">
+        </div>
 
-            <option value="">
-                -- Select Doctor --
-            </option>
 
-            {% for doctor in doctors %}
+        <form method="POST"
+              action="{{ url_for('edit_user', user_id=user['id']) }}">
 
-                <option
-                    value="{{ doctor['id'] }}"
-                    {% if user['doctor_id'] == doctor['id'] %}
-                        selected
-                    {% endif %}
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    value="{{ user['username'] }}"
+                    required
                 >
-                    {{ doctor['full_name'] }}
-                </option>
 
-            {% endfor %}
+            </div>
 
-        </select>
+
+            <!-- ROLE -->
+
+            <div class="form-group">
+
+                <label for="role">
+                    User Role
+                </label>
+
+                <select
+                    id="role"
+                    name="role"
+                    onchange="showProfileFields()"
+                    required
+                >
+
+                    <option
+                        value="Admin"
+                        {% if user['role'] == 'Admin' %}selected{% endif %}
+                    >
+                        Admin
+                    </option>
+
+                    <option
+                        value="Doctor"
+                        {% if user['role'] == 'Doctor' %}selected{% endif %}
+                    >
+                        Doctor
+                    </option>
+
+                    <option
+                        value="Receptionist"
+                        {% if user['role'] == 'Receptionist' %}selected{% endif %}
+                    >
+                        Receptionist
+                    </option>
+
+                    <option
+                        value="Data Analyst"
+                        {% if user['role'] == 'Data Analyst' %}selected{% endif %}
+                    >
+                        Data Analyst
+                    </option>
+
+                    <option
+                        value="Patient"
+                        {% if user['role'] == 'Patient' %}selected{% endif %}
+                    >
+                        Patient
+                    </option>
+
+                    <option
+                        value="Laboratorian"
+                        {% if user['role'] == 'Laboratorian' %}selected{% endif %}
+                    >
+                        Laboratorian
+                    </option>
+
+                    <option
+                        value="Pharmacist"
+                        {% if user['role'] == 'Pharmacist' %}selected{% endif %}
+                    >
+                        Pharmacist
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="password-section">
+
+                <h3>🔐 Password Reset</h3>
+
+                <p class="password-note">
+
+                    Enter a new password only if you want
+                    to change/reset the user's password.
+
+                </p>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        New Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter new password"
+                        autocomplete="new-password"
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="confirm_password">
+                        Confirm New Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        placeholder="Confirm new password"
+                        autocomplete="new-password"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- PROFILE SECTION -->
+
+            <div class="profile-section">
+
+                <h3>👤 Profile Connection</h3>
+
+
+                <!-- DOCTOR -->
+
+                <div
+                    id="doctor-section"
+                    class="form-group hidden"
+                >
+
+                    <label for="doctor_id">
+                        Doctor Profile
+                    </label>
+
+                    <select
+                        id="doctor_id"
+                        name="doctor_id"
+                    >
+
+                        <option value="">
+                            Select Doctor
+                        </option>
+
+                        {% for doctor in doctors %}
+
+                        <option
+                            value="{{ doctor['id'] }}"
+                            {% if user['doctor_id'] == doctor['id'] %}
+                            selected
+                            {% endif %}
+                        >
+                            {{ doctor['full_name'] }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <!-- PATIENT -->
+
+                <div
+                    id="patient-section"
+                    class="form-group hidden"
+                >
+
+                    <label for="patient_id">
+                        Patient Profile
+                    </label>
+
+                    <select
+                        id="patient_id"
+                        name="patient_id"
+                    >
+
+                        <option value="">
+                            Select Patient
+                        </option>
+
+                        {% for patient in patients %}
+
+                        <option
+                            value="{{ patient['id'] }}"
+                            {% if user['patient_id'] == patient['id'] %}
+                            selected
+                            {% endif %}
+                        >
+                            {{ patient['full_name'] }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="actions">
+
+                <button
+                    type="submit"
+                    class="btn btn-save"
+                    onclick="return validatePassword()"
+                >
+                    💾 Save Changes
+                </button>
+
+
+                <a
+                    href="{{ url_for('users') }}"
+                    class="btn btn-cancel"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
 
     </div>
 
-    <br>
 
+    <div class="footer">
 
-    <button type="submit">
-        Update User
-    </button>
+        Hospital Data Analytics System<br>
 
-</form>
+        User Management & Security
 
+    </div>
 
-<br>
+</div>
 
-<a href="{{ url_for('users') }}">
-    Back to User Management
-</a>
-
-
-|
-
-<a href="{{ url_for('home') }}">
-    Dashboard
-</a>
-
-
-<!-- =====================================================
-     SHOW DOCTOR PROFILE ONLY FOR DOCTOR ROLE
-     ===================================================== -->
 
 <script>
 
-    const roleSelect = document.getElementById("role");
-    const doctorProfileSection =
-        document.getElementById("doctor-profile-section");
+    function showProfileFields() {
+
+        const role =
+            document.getElementById("role").value;
+
+        const doctorSection =
+            document.getElementById("doctor-section");
+
+        const patientSection =
+            document.getElementById("patient-section");
 
 
-    function toggleDoctorProfile() {
+        doctorSection.classList.add("hidden");
 
-        if (roleSelect.value === "Doctor") {
+        patientSection.classList.add("hidden");
 
-            doctorProfileSection.style.display = "block";
 
-        } else {
+        if (role === "Doctor") {
 
-            doctorProfileSection.style.display = "none";
+            doctorSection.classList.remove("hidden");
+
+        }
+
+
+        if (role === "Patient") {
+
+            patientSection.classList.remove("hidden");
 
         }
 
     }
 
 
-    roleSelect.addEventListener(
-        "change",
-        toggleDoctorProfile
-    );
+    function validatePassword() {
+
+        const password =
+            document.getElementById("password").value;
+
+        const confirmPassword =
+            document.getElementById("confirm_password").value;
 
 
-    toggleDoctorProfile();
+        if (password === "" && confirmPassword === "") {
+
+            return true;
+
+        }
+
+
+        if (password !== confirmPassword) {
+
+            alert(
+                "New password and confirmation password do not match."
+            );
+
+            return false;
+
+        }
+
+
+        if (password.length < 6) {
+
+            alert(
+                "Password must contain at least 6 characters."
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+
+    showProfileFields();
 
 </script>
-
+```
 
 </body>
 

@@ -1,0 +1,367 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Request Appointment - Hospital Data Analytics System
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        .appointment-page {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .appointment-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .appointment-card h2 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .appointment-card p {
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 7px;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .patient-info {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .empty-doctors {
+            padding: 15px;
+            background: #fff7ed;
+            color: #9a3412;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <div class="header-title">
+        🏥 Hospital Data Analytics System
+    </div>
+
+    <div class="header-subtitle">
+        Request Appointment
+    </div>
+
+</header>
+
+
+<main class="appointment-page">
+
+
+    <section class="appointment-card">
+
+
+        <h2>
+            Request an Appointment
+        </h2>
+
+
+        <p>
+            Submit an appointment request to the hospital.
+            The hospital staff will review your request.
+        </p>
+
+
+        {% if error %}
+
+        <div class="alert">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <div class="patient-info">
+
+            <strong>
+                Patient Account
+            </strong>
+
+            <p>
+                You are requesting this appointment using
+                your logged-in Patient account.
+            </p>
+
+        </div>
+
+
+        {% if doctors %}
+
+
+        <form
+            action="{{ url_for('patient_request_appointment') }}"
+            method="POST"
+        >
+
+
+            <!-- =========================
+                 SELECT DOCTOR
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="doctor_id">
+                    Select Doctor
+                </label>
+
+                <select
+                    id="doctor_id"
+                    name="doctor_id"
+                    required
+                >
+
+                    <option value="">
+                        Select a Doctor
+                    </option>
+
+
+                    {% for doctor in doctors %}
+
+                    <option value="{{ doctor['id'] }}">
+
+                        {{ doctor["full_name"] }}
+
+                        {% if doctor["specialization"] %}
+                            - {{ doctor["specialization"] }}
+                        {% endif %}
+
+                    </option>
+
+                    {% endfor %}
+
+
+                </select>
+
+            </div>
+
+
+            <!-- =========================
+                 APPOINTMENT DATE
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="appointment_date">
+                    Appointment Date
+                </label>
+
+                <input
+                    type="date"
+                    id="appointment_date"
+                    name="appointment_date"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 APPOINTMENT TIME
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="appointment_time">
+                    Appointment Time
+                </label>
+
+                <input
+                    type="time"
+                    id="appointment_time"
+                    name="appointment_time"
+                    required
+                >
+
+            </div>
+
+
+            <!-- =========================
+                 REASON
+            ========================== -->
+
+            <div class="form-group">
+
+                <label for="reason">
+                    Reason for Appointment
+                </label>
+
+                <textarea
+                    id="reason"
+                    name="reason"
+                    placeholder="Describe the reason for your appointment"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- =========================
+                 ACTION BUTTONS
+            ========================== -->
+
+            <div class="form-actions">
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Submit Appointment Request
+                </button>
+
+
+                <a
+                    href="{{ url_for('patient_dashboard') }}"
+                    class="btn btn-secondary"
+                >
+                    Back to Dashboard
+                </a>
+
+
+            </div>
+
+
+        </form>
+
+
+        {% else %}
+
+
+        <div class="empty-doctors">
+
+            <strong>
+                No doctors available.
+            </strong>
+
+            <p>
+                There are currently no doctors available
+                for appointment requests.
+            </p>
+
+        </div>
+
+
+        <div class="form-actions">
+
+            <a
+                href="{{ url_for('patient_dashboard') }}"
+                class="btn btn-secondary"
+            >
+                Back to Dashboard
+            </a>
+
+        </div>
+
+
+        {% endif %}
+
+
+    </section>
+
+
+</main>
+
+
+</body>
+
+</html>

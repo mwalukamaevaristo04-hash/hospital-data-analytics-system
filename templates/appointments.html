@@ -16,6 +16,43 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
 
+    <style>
+
+        /* =====================================================
+           CLICKABLE APPOINTMENT CARDS
+        ===================================================== */
+
+        .appointment-card {
+            cursor: pointer;
+            transition: transform 0.2s ease,
+                        box-shadow 0.2s ease;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .appointment-card.active {
+            transform: translateY(-3px);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        .card-hint {
+            font-size: 13px;
+            margin-top: 8px;
+            opacity: 0.75;
+        }
+
+        .no-filter-results {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+    </style>
+
 </head>
 
 
@@ -72,6 +109,7 @@
     <a href="{{ url_for('laboratory') }}">
         Laboratory
     </a>
+
 
     {% if role in ["Admin", "Doctor", "Data Analyst"] %}
 
@@ -142,7 +180,8 @@
 
         <!-- TOTAL -->
 
-        <div class="card">
+        <div class="card appointment-card active"
+             onclick="filterAppointments('all', this)">
 
             <div>
 
@@ -158,6 +197,10 @@
                     All appointments
                 </p>
 
+                <div class="card-hint">
+                    Click to view all
+                </div>
+
             </div>
 
         </div>
@@ -165,7 +208,8 @@
 
         <!-- PENDING -->
 
-        <div class="card">
+        <div class="card appointment-card"
+             onclick="filterAppointments('Pending', this)">
 
             <div>
 
@@ -181,6 +225,10 @@
                     Waiting for doctor action
                 </p>
 
+                <div class="card-hint">
+                    Click to view pending
+                </div>
+
             </div>
 
         </div>
@@ -188,7 +236,8 @@
 
         <!-- ACCEPTED -->
 
-        <div class="card">
+        <div class="card appointment-card"
+             onclick="filterAppointments('Accepted', this)">
 
             <div>
 
@@ -204,6 +253,10 @@
                     Appointments accepted
                 </p>
 
+                <div class="card-hint">
+                    Click to view accepted
+                </div>
+
             </div>
 
         </div>
@@ -211,7 +264,8 @@
 
         <!-- REJECTED -->
 
-        <div class="card">
+        <div class="card appointment-card"
+             onclick="filterAppointments('Rejected', this)">
 
             <div>
 
@@ -227,6 +281,10 @@
                     Appointments rejected
                 </p>
 
+                <div class="card-hint">
+                    Click to view rejected
+                </div>
+
             </div>
 
         </div>
@@ -234,7 +292,8 @@
 
         <!-- COMPLETED -->
 
-        <div class="card">
+        <div class="card appointment-card"
+             onclick="filterAppointments('Completed', this)">
 
             <div>
 
@@ -250,6 +309,10 @@
                     Completed appointments
                 </p>
 
+                <div class="card-hint">
+                    Click to view completed
+                </div>
+
             </div>
 
         </div>
@@ -257,7 +320,8 @@
 
         <!-- TODAY -->
 
-        <div class="card">
+        <div class="card appointment-card"
+             onclick="filterAppointments('Today', this)">
 
             <div>
 
@@ -272,6 +336,10 @@
                 <p>
                     Scheduled for today
                 </p>
+
+                <div class="card-hint">
+                    Click to view today's
+                </div>
 
             </div>
 
@@ -340,6 +408,7 @@
                             {{ doctor.full_name }}
 
                             -
+
                             {{ doctor.specialization }}
 
                         </option>
@@ -392,7 +461,8 @@
          APPOINTMENT TABLE
     ================================================== -->
 
-    <div class="table-section">
+    <div class="table-section"
+         id="appointment-table">
 
         <h2>
             📋 Appointment Records
@@ -444,11 +514,16 @@
                 </thead>
 
 
-                <tbody>
+                <tbody id="appointmentTableBody">
+
 
                     {% for appointment in appointments %}
 
-                        <tr>
+                        <tr
+                            class="appointment-row"
+                            data-status="{{ appointment.status }}"
+                            data-date="{{ appointment.appointment_date }}"
+                        >
 
                             <td>
                                 {{ appointment.id }}
@@ -601,9 +676,18 @@
 
                     {% endfor %}
 
+
                 </tbody>
 
             </table>
+
+
+            <p id="noFilterResults"
+               class="no-filter-results">
+
+                No appointments found for this category.
+
+            </p>
 
 
         {% else %}
@@ -657,6 +741,184 @@
     </p>
 
 </footer>
+
+
+<!-- =====================================================
+     APPOINTMENT CARD FILTER
+===================================================== -->
+
+<script>
+
+function filterAppointments(filter, selectedCard) {
+
+    const rows = document.querySelectorAll(
+        ".appointment-row"
+    );
+
+    const cards = document.querySelectorAll(
+        ".appointment-card"
+    );
+
+    const noResults = document.getElementById(
+        "noFilterResults"
+    );
+
+    let visibleCount = 0;
+
+
+    /*
+     * Remove active state from all cards.
+     */
+
+    cards.forEach(function(card) {
+
+        card.classList.remove("active");
+
+    });
+
+
+    /*
+     * Add active state to selected card.
+     */
+
+    if (selectedCard) {
+
+        selectedCard.classList.add("active");
+
+    }
+
+
+    /*
+     * Get today's date in YYYY-MM-DD format.
+     */
+
+    const today = new Date();
+
+    const year = today.getFullYear();
+
+    const month = String(
+        today.getMonth() + 1
+    ).padStart(2, "0");
+
+    const day = String(
+        today.getDate()
+    ).padStart(2, "0");
+
+    const todayString =
+        year + "-" + month + "-" + day;
+
+
+    /*
+     * Filter appointment rows.
+     */
+
+    rows.forEach(function(row) {
+
+        const status =
+            row.getAttribute("data-status");
+
+        const appointmentDate =
+            row.getAttribute("data-date");
+
+        let showRow = false;
+
+
+        /*
+         * Total appointments
+         */
+
+        if (filter === "all") {
+
+            showRow = true;
+
+        }
+
+
+        /*
+         * Status filters
+         */
+
+        else if (filter === status) {
+
+            showRow = true;
+
+        }
+
+
+        /*
+         * Today's appointments
+         */
+
+        else if (
+            filter === "Today" &&
+            appointmentDate === todayString
+        ) {
+
+            showRow = true;
+
+        }
+
+
+        /*
+         * Show or hide row
+         */
+
+        if (showRow) {
+
+            row.style.display = "";
+
+            visibleCount++;
+
+        } else {
+
+            row.style.display = "none";
+
+        }
+
+    });
+
+
+    /*
+     * Show "No appointments found"
+     * when the selected filter has no records.
+     */
+
+    if (noResults) {
+
+        if (visibleCount === 0) {
+
+            noResults.style.display = "block";
+
+        } else {
+
+            noResults.style.display = "none";
+
+        }
+
+    }
+
+
+    /*
+     * Scroll to appointment table.
+     */
+
+    const table =
+        document.getElementById(
+            "appointment-table"
+        );
+
+    if (table) {
+
+        table.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+}
+
+</script>
 
 
 </body>
