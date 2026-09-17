@@ -1,4 +1,5 @@
 from io import BytesIO, StringIO
+import os
 
 from flask import send_file
 
@@ -56,18 +57,28 @@ app.secret_key = "hospital_secret_key_2026"
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+# =========================================================
+# DATABASE CONNECTION
+# =========================================================
 # =========================================================
 # DATABASE CONNECTION
 # =========================================================
 
 def get_db_connection():
 
-    conn = sqlite3.connect("hospital.db")
+    database_path = os.path.join(
+        app.root_path,
+        "hospital.db"
+    )
+
+    conn = sqlite3.connect(
+        database_path
+    )
 
     conn.row_factory = sqlite3.Row
 
     return conn
-
 
 # =========================================================
 # INITIALIZE DATABASE
