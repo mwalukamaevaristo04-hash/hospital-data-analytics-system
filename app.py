@@ -61,9 +61,6 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 # =========================================================
 # DATABASE CONNECTION
 # =========================================================
-# =========================================================
-# DATABASE CONNECTION
-# =========================================================
 
 def get_db_connection():
 
@@ -79,10 +76,9 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
 
     return conn
-
-# =========================================================
+# ==================================================
 # INITIALIZE DATABASE
-# =========================================================
+# =================================================
 
 def init_db():
 
@@ -111,7 +107,7 @@ def init_db():
     """)
 
     # =====================================================
-    # DATABASE MIGRATION
+    # USERS DATABASE MIGRATION
     # =====================================================
 
     columns = conn.execute(
@@ -580,8 +576,6 @@ def init_db():
     # PASSWORD HASH MIGRATION
     # =====================================================
 
-    # Convert existing plain-text passwords to secure hashes.
-    # This keeps existing users working while upgrading the database.
     all_users = conn.execute("""
         SELECT id, password
         FROM users
@@ -591,19 +585,28 @@ def init_db():
 
         stored_password = existing_user["password"]
 
-        if stored_password and not stored_password.startswith(("scrypt:", "pbkdf2:")):
+        if (
+            stored_password
+            and not stored_password.startswith(
+                ("scrypt:", "pbkdf2:")
+            )
+        ):
 
             conn.execute("""
                 UPDATE users
+
                 SET password = ?
+
                 WHERE id = ?
             """, (
-                generate_password_hash(stored_password),
+                generate_password_hash(
+                    stored_password
+                ),
                 existing_user["id"]
             ))
 
     # =====================================================
-    # OLD CONFIRMED STATUS
+    # OLD APPOINTMENT STATUS MIGRATION
     # =====================================================
 
     conn.execute("""
@@ -613,6 +616,10 @@ def init_db():
 
         WHERE status = 'Confirmed'
     """)
+
+    # =====================================================
+    # SAVE DATABASE
+    # =====================================================
 
     conn.commit()
 
@@ -2845,9 +2852,7 @@ def medical_records_diagnosed():
 )
 def medical_records_linked():
 
-    return 
-
-("linked")
+    return render_medical_records_page("linked")
 
 
 # =========================================================
@@ -8142,7 +8147,9 @@ def csv_file(rows):
     memory_file.seek(0)
 
     return memory_file
-## =========================================================
+
+
+# =========================================================
 # ANALYTICS EXPORT HELPERS
 # =========================================================
 
@@ -8746,265 +8753,6 @@ def get_analytics_export_data():
         conn.close()
 
         return None
-    # =====================================================
-    # PATIENTS
-    # =====================================================
-
-    if dataset == "patients":
-
-        rows = conn.execute("""
-            SELECT
-                gender,
-                COUNT(*) AS total
-            FROM patients
-            GROUP BY gender
-            ORDER BY gender
-        """).fetchall()
-
-        labels = [
-            row["gender"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Patients by Gender"
-
-    # =====================================================
-    # DOCTORS
-    # =====================================================
-
-    elif dataset == "doctors":
-
-        rows = conn.execute("""
-            SELECT
-                specialization,
-                COUNT(*) AS total
-            FROM doctors
-            GROUP BY specialization
-            ORDER BY total DESC
-        """).fetchall()
-
-        labels = [
-            row["specialization"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Doctors by Specialization"
-
-    # =====================================================
-    # APPOINTMENTS
-    # =====================================================
-
-    elif dataset == "appointments":
-
-        query = """
-            SELECT
-                status,
-                COUNT(*) AS total
-            FROM appointments
-        """
-
-        params = []
-        conditions = []
-
-        if date_from:
-
-            conditions.append(
-                "appointment_date >= ?"
-            )
-
-            params.append(
-                date_from
-            )
-
-        if date_to:
-
-            conditions.append(
-                "appointment_date <= ?"
-            )
-
-            params.append(
-                date_to
-            )
-
-        if conditions:
-
-            query += (
-                " WHERE "
-                +
-                " AND ".join(
-                    conditions
-                )
-            )
-
-        query += """
-            GROUP BY status
-            ORDER BY total DESC
-        """
-
-        rows = conn.execute(
-            query,
-            params
-        ).fetchall()
-
-        labels = [
-            row["status"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Appointments by Status"
-
-    # =====================================================
-    # MEDICAL RECORDS
-    # =====================================================
-
-    elif dataset == "medical_records":
-
-        query = """
-            SELECT
-                diagnosis,
-                COUNT(*) AS total
-            FROM medical_records
-        """
-
-        params = []
-        conditions = []
-
-        if date_from:
-
-            conditions.append(
-                "visit_date >= ?"
-            )
-
-            params.append(
-                date_from
-            )
-
-        if date_to:
-
-            conditions.append(
-                "visit_date <= ?"
-            )
-
-            params.append(
-                date_to
-            )
-
-        if conditions:
-
-            query += (
-                " WHERE "
-                +
-                " AND ".join(
-                    conditions
-                )
-            )
-
-        query += """
-            GROUP BY diagnosis
-            ORDER BY total DESC
-        """
-
-        rows = conn.execute(
-            query,
-            params
-        ).fetchall()
-
-        labels = [
-            row["diagnosis"] or "Not Diagnosed"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Medical Records by Diagnosis"
-
-    # =====================================================
-    # LABORATORY
-    # =====================================================
-
-    elif dataset == "laboratory":
-
-        rows = conn.execute("""
-            SELECT
-                status,
-                COUNT(*) AS total
-            FROM laboratory_requests
-            GROUP BY status
-            ORDER BY total DESC
-        """).fetchall()
-
-        labels = [
-            row["status"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Laboratory Requests by Status"
-
-    # =====================================================
-    # PHARMACY
-    # =====================================================
-
-    elif dataset == "pharmacy":
-
-        rows = conn.execute("""
-            SELECT
-                medicine_name,
-                quantity
-            FROM medicines
-            ORDER BY quantity ASC
-        """).fetchall()
-
-        labels = [
-            row["medicine_name"]
-            for row in rows
-        ]
-
-        values = [
-            row["quantity"]
-            for row in rows
-        ]
-
-        title = "Medicine Stock Quantity"
-
-    else:
-
-        conn.close()
-
-        return None
-
-    conn.close()
-
-    return {
-        "dataset": dataset,
-        "title": title,
-        "labels": labels,
-        "values": values,
-        "date_from": date_from,
-        "date_to": date_to
-    }
 
 
 # =========================================================
@@ -10819,7 +10567,10 @@ def analytics():
 
         laboratory_specialty_data=laboratory_specialty_data
 
-    )# =========================================================
+    )
+
+
+# =========================================================
 # ANALYTICS DATA API
 # =========================================================
 
@@ -11520,275 +11271,6 @@ def analytics_data():
             "success": False,
             "message": str(e)
         }), 500
-    # =====================================================
-    # PATIENTS
-    # =====================================================
-
-    if dataset == "patients":
-
-        rows = conn.execute("""
-            SELECT
-                gender,
-                COUNT(*) AS total
-            FROM patients
-            GROUP BY gender
-            ORDER BY gender
-        """).fetchall()
-
-        labels = [
-            row["gender"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Patients by Gender"
-
-    # =====================================================
-    # DOCTORS
-    # =====================================================
-
-    elif dataset == "doctors":
-
-        rows = conn.execute("""
-            SELECT
-                specialization,
-                COUNT(*) AS total
-            FROM doctors
-            GROUP BY specialization
-            ORDER BY total DESC
-        """).fetchall()
-
-        labels = [
-            row["specialization"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Doctors by Specialization"
-
-    # =====================================================
-    # APPOINTMENTS
-    # =====================================================
-
-    elif dataset == "appointments":
-
-        query = """
-            SELECT
-                status,
-                COUNT(*) AS total
-            FROM appointments
-        """
-
-        params = []
-
-        conditions = []
-
-        if date_from:
-
-            conditions.append(
-                "appointment_date >= ?"
-            )
-
-            params.append(
-                date_from
-            )
-
-        if date_to:
-
-            conditions.append(
-                "appointment_date <= ?"
-            )
-
-            params.append(
-                date_to
-            )
-
-        if conditions:
-
-            query += (
-                " WHERE "
-                +
-                " AND ".join(
-                    conditions
-                )
-            )
-
-        query += """
-            GROUP BY status
-            ORDER BY total DESC
-        """
-
-        rows = conn.execute(
-            query,
-            params
-        ).fetchall()
-
-        labels = [
-            row["status"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Appointments by Status"
-
-    # =====================================================
-    # MEDICAL RECORDS
-    # =====================================================
-
-    elif dataset == "medical_records":
-
-        query = """
-            SELECT
-                diagnosis,
-                COUNT(*) AS total
-            FROM medical_records
-        """
-
-        params = []
-
-        conditions = []
-
-        if date_from:
-
-            conditions.append(
-                "visit_date >= ?"
-            )
-
-            params.append(
-                date_from
-            )
-
-        if date_to:
-
-            conditions.append(
-                "visit_date <= ?"
-            )
-
-            params.append(
-                date_to
-            )
-
-        if conditions:
-
-            query += (
-                " WHERE "
-                +
-                " AND ".join(
-                    conditions
-                )
-            )
-
-        query += """
-            GROUP BY diagnosis
-            ORDER BY total DESC
-        """
-
-        rows = conn.execute(
-            query,
-            params
-        ).fetchall()
-
-        labels = [
-            row["diagnosis"] or "Not Diagnosed"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Medical Records by Diagnosis"
-
-    # =====================================================
-    # LABORATORY
-    # =====================================================
-
-    elif dataset == "laboratory":
-
-        rows = conn.execute("""
-            SELECT
-                status,
-                COUNT(*) AS total
-            FROM laboratory_requests
-            GROUP BY status
-            ORDER BY total DESC
-        """).fetchall()
-
-        labels = [
-            row["status"] or "Not Specified"
-            for row in rows
-        ]
-
-        values = [
-            row["total"]
-            for row in rows
-        ]
-
-        title = "Laboratory Requests by Status"
-
-    # =====================================================
-    # PHARMACY
-    # =====================================================
-
-    elif dataset == "pharmacy":
-
-        rows = conn.execute("""
-            SELECT
-                medicine_name,
-                quantity
-            FROM medicines
-            ORDER BY quantity ASC
-        """).fetchall()
-
-        labels = [
-            row["medicine_name"]
-            for row in rows
-        ]
-
-        values = [
-            row["quantity"]
-            for row in rows
-        ]
-
-        title = "Medicine Stock Quantity"
-
-    # =====================================================
-    # UNKNOWN DATASET
-    # =====================================================
-
-    else:
-
-        conn.close()
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid analytics dataset."
-        }), 400
-
-    conn.close()
-
-    return jsonify({
-        "success": True,
-        "dataset": dataset,
-        "title": title,
-        "labels": labels,
-        "values": values,
-        "date_from": date_from,
-        "date_to": date_to
-    })
 
 
 # =========================================================
