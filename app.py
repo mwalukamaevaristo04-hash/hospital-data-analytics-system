@@ -57,17 +57,25 @@ app.secret_key = "hospital_secret_key_2026"
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-
-# =========================================================
+## =========================================================
 # DATABASE CONNECTION
 # =========================================================
 
 def get_db_connection():
 
-    database_path = os.path.join(
-        app.root_path,
-        "hospital.db"
-    )
+    if os.path.exists("/data"):
+
+        database_path = os.path.join(
+            "/data",
+            "hospital.db"
+        )
+
+    else:
+
+        database_path = os.path.join(
+            app.root_path,
+            "hospital.db"
+        )
 
     conn = sqlite3.connect(
         database_path
@@ -76,7 +84,8 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
 
     return conn
-# ==================================================
+
+#=================================
 # INITIALIZE DATABASE
 # =================================================
 
