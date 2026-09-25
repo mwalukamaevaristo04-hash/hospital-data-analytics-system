@@ -1,4 +1,6 @@
+```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -197,7 +199,6 @@
 </header>
 
 
-
 <!-- =====================================================
      NAVIGATION
      ===================================================== -->
@@ -251,7 +252,6 @@
 </nav>
 
 
-
 <!-- =====================================================
      USER INFORMATION
      ===================================================== -->
@@ -269,7 +269,6 @@
     </p>
 
 </div>
-
 
 
 <!-- =====================================================
@@ -300,13 +299,19 @@
         </div>
 
 
-
         <!-- =================================================
              MEDICINE FORM
              ================================================= -->
 
         <form method="POST"
               action="{{ url_for('add_medicine') }}">
+
+            <!-- CSRF PROTECTION -->
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
 
 
             <div class="form-grid">
@@ -321,24 +326,27 @@
                 </div>
 
 
-
                 <!-- MEDICINE NAME -->
 
                 <div class="form-group">
 
                     <label for="medicine_name">
+
                         Medicine Name
+
                         <span class="required">*</span>
+
                     </label>
 
-                    <input type="text"
-                           id="medicine_name"
-                           name="medicine_name"
-                           placeholder="Enter medicine name"
-                           required>
+                    <input
+                        type="text"
+                        id="medicine_name"
+                        name="medicine_name"
+                        placeholder="Enter medicine name"
+                        required
+                    >
 
                 </div>
-
 
 
                 <!-- CATEGORY -->
@@ -349,13 +357,14 @@
                         Category
                     </label>
 
-                    <input type="text"
-                           id="category"
-                           name="category"
-                           placeholder="e.g. Antibiotic, Analgesic">
+                    <input
+                        type="text"
+                        id="category"
+                        name="category"
+                        placeholder="e.g. Antibiotic, Analgesic"
+                    >
 
                 </div>
-
 
 
                 <!-- UNIT -->
@@ -366,8 +375,10 @@
                         Unit
                     </label>
 
-                    <select id="unit"
-                            name="unit">
+                    <select
+                        id="unit"
+                        name="unit"
+                    >
 
                         <option value="">
                             Select Unit
@@ -414,7 +425,6 @@
                 </div>
 
 
-
                 <!-- SUPPLIER -->
 
                 <div class="form-group">
@@ -423,13 +433,14 @@
                         Supplier
                     </label>
 
-                    <input type="text"
-                           id="supplier"
-                           name="supplier"
-                           placeholder="Enter supplier name">
+                    <input
+                        type="text"
+                        id="supplier"
+                        name="supplier"
+                        placeholder="Enter supplier name"
+                    >
 
                 </div>
-
 
 
                 <!-- =========================================
@@ -441,22 +452,26 @@
                 </div>
 
 
-
                 <!-- QUANTITY -->
 
                 <div class="form-group">
 
                     <label for="quantity">
+
                         Initial Quantity
+
                         <span class="required">*</span>
+
                     </label>
 
-                    <input type="number"
-                           id="quantity"
-                           name="quantity"
-                           min="0"
-                           value="0"
-                           required>
+                    <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        min="0"
+                        value="0"
+                        required
+                    >
 
                     <span class="form-note">
                         Number of units currently available.
@@ -465,29 +480,32 @@
                 </div>
 
 
-
                 <!-- REORDER LEVEL -->
 
                 <div class="form-group">
 
                     <label for="reorder_level">
+
                         Reorder Level
+
                         <span class="required">*</span>
+
                     </label>
 
-                    <input type="number"
-                           id="reorder_level"
-                           name="reorder_level"
-                           min="0"
-                           value="10"
-                           required>
+                    <input
+                        type="number"
+                        id="reorder_level"
+                        name="reorder_level"
+                        min="0"
+                        value="10"
+                        required
+                    >
 
                     <span class="form-note">
                         Stock level at which restocking is required.
                     </span>
 
                 </div>
-
 
 
                 <!-- UNIT PRICE -->
@@ -498,20 +516,21 @@
                         Unit Price
                     </label>
 
-                    <input type="number"
-                           id="unit_price"
-                           name="unit_price"
-                           min="0"
-                           step="0.01"
-                           value="0"
-                           placeholder="0.00">
+                    <input
+                        type="number"
+                        id="unit_price"
+                        name="unit_price"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                        placeholder="0.00"
+                    >
 
                     <span class="form-note">
                         Price of one medicine unit.
                     </span>
 
                 </div>
-
 
 
                 <!-- BATCH NUMBER -->
@@ -522,13 +541,14 @@
                         Batch Number
                     </label>
 
-                    <input type="text"
-                           id="batch_number"
-                           name="batch_number"
-                           placeholder="Enter batch number">
+                    <input
+                        type="text"
+                        id="batch_number"
+                        name="batch_number"
+                        placeholder="Enter batch number"
+                    >
 
                 </div>
-
 
 
                 <!-- =========================================
@@ -540,7 +560,6 @@
                 </div>
 
 
-
                 <!-- EXPIRY DATE -->
 
                 <div class="form-group">
@@ -549,16 +568,17 @@
                         Expiry Date
                     </label>
 
-                    <input type="date"
-                           id="expiry_date"
-                           name="expiry_date">
+                    <input
+                        type="date"
+                        id="expiry_date"
+                        name="expiry_date"
+                    >
 
                     <span class="form-note">
                         Select the medicine expiry date.
                     </span>
 
                 </div>
-
 
 
                 <!-- DESCRIPTION -->
@@ -569,15 +589,16 @@
                         Description
                     </label>
 
-                    <textarea id="description"
-                              name="description"
-                              placeholder="Enter additional information about this medicine..."></textarea>
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Enter additional information about this medicine..."
+                    ></textarea>
 
                 </div>
 
 
             </div>
-
 
 
             <!-- =================================================
@@ -586,19 +607,19 @@
 
             <div class="form-actions">
 
-                <button type="submit"
-                        class="save-button">
-
+                <button
+                    type="submit"
+                    class="save-button"
+                >
                     💾 Save Medicine
-
                 </button>
 
 
-                <a href="{{ url_for('medicines') }}"
-                   class="cancel-button">
-
+                <a
+                    href="{{ url_for('medicines') }}"
+                    class="cancel-button"
+                >
                     ❌ Cancel
-
                 </a>
 
             </div>
@@ -611,7 +632,6 @@
 
 
 </div>
-
 
 
 <!-- =====================================================
@@ -636,3 +656,4 @@
 </body>
 
 </html>
+```

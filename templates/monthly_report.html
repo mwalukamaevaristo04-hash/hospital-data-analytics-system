@@ -4,254 +4,529 @@
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>
-        Monthly Report - Hospital Data Analytics System
-    </title>
+<title>
+    Monthly Report - Hospital Data Analytics System
+</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
 
-    <style>
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        background: #f4f7f8;
+    }
+
+    /* =========================================================
+       PAGE
+    ========================================================= */
+
+    .monthly-report-page {
+        min-height: 100vh;
+    }
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
+    .monthly-report-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .monthly-report-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+    }
+
+    .monthly-report-hospital-title p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .monthly-report-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .monthly-report-user-info p {
+        margin: 0;
+    }
+
+    .monthly-report-logout {
+        display: inline-block;
+        margin-top: 4px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .monthly-report-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =========================================================
+       NAVIGATION
+    ========================================================= */
+
+    .monthly-report-nav {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #dfe5e8;
+        padding: 12px 35px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .monthly-report-nav a {
+        text-decoration: none;
+        color: #34495e;
+        padding: 8px 13px;
+        border-radius: 7px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .monthly-report-nav a:hover {
+        background: #eef4f6;
+        color: #0f4c5c;
+    }
+
+    .monthly-report-nav a.active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =========================================================
+       CONTAINER
+    ========================================================= */
+
+    .report-container {
+        width: 92%;
+        max-width: 1400px;
+        margin: 30px auto 45px;
+    }
+
+    /* =========================================================
+       REPORT HEADER
+    ========================================================= */
+
+    .report-header-card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        border-left: 4px solid #0f4c5c;
+    }
+
+    .report-header-card h2 {
+        margin: 0 0 8px;
+        color: #17324d;
+    }
+
+    .report-header-card p {
+        margin: 0;
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+    /* =========================================================
+       ACTIONS
+    ========================================================= */
+
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 10px 16px;
+        border-radius: 7px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .back-btn {
+        background: #374151;
+        color: white;
+    }
+
+    .back-btn:hover {
+        background: #1f2937;
+    }
+
+    .print-btn {
+        background: #16a34a;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    .print-btn:hover {
+        background: #15803d;
+    }
+
+    /* =========================================================
+       FILTER CARD
+    ========================================================= */
+
+    .filter-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        border: 1px solid #e5e7eb;
+    }
+
+    .filter-title {
+        margin: 0 0 15px;
+        color: #17324d;
+        font-size: 17px;
+    }
+
+    .filter-form {
+        display: flex;
+        align-items: end;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #374151;
+        font-size: 14px;
+    }
+
+    .form-group select {
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        font-size: 14px;
+        min-width: 180px;
+        background: white;
+    }
+
+    .form-group select:focus {
+        outline: none;
+        border-color: #0f4c5c;
+        box-shadow: 0 0 0 3px rgba(15,76,92,0.10);
+    }
+
+    .generate-btn {
+        padding: 10px 18px;
+        border: none;
+        border-radius: 7px;
+        background: #0f4c5c;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .generate-btn:hover {
+        background: #0b3946;
+    }
+
+    /* =========================================================
+       SUMMARY
+    ========================================================= */
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .summary-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        transition: 0.2s;
+    }
+
+    .summary-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.09);
+    }
+
+    .summary-icon {
+        font-size: 28px;
+        margin-bottom: 8px;
+    }
+
+    .summary-title {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .summary-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    /* =========================================================
+       REPORT CARDS
+    ========================================================= */
+
+    .report-card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        overflow-x: auto;
+    }
+
+    .report-card h3 {
+        margin-top: 0;
+        margin-bottom: 18px;
+        color: #17324d;
+    }
+
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 750px;
+    }
+
+    .report-table th,
+    .report-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .report-table th {
+        background: #f0f5f7;
+        font-weight: 700;
+        color: #263746;
+    }
+
+    .report-table tbody tr:hover {
+        background: #f8fafb;
+    }
+
+    .empty-message {
+        text-align: center;
+        padding: 30px;
+        color: #6b7280;
+        background: #f8fafc;
+        border-radius: 8px;
+    }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+
+    .monthly-report-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 18px;
+        font-size: 13px;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+
+    @media (max-width: 1100px) {
+
+        .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 750px) {
+
+        .monthly-report-header {
+            padding: 18px 20px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .monthly-report-user-info {
+            text-align: left;
+        }
+
+        .monthly-report-nav {
+            padding: 10px 20px;
+        }
 
         .report-container {
-            width: 95%;
-            max-width: 1400px;
-            margin: 30px auto;
-        }
-
-        .report-header,
-        .filter-card,
-        .report-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
-
-        .report-header {
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        .report-header h2 {
-            margin: 0 0 8px 0;
-        }
-
-        .report-header p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        .filter-card {
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .filter-form {
-            display: flex;
-            align-items: end;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            margin-bottom: 7px;
-        }
-
-        .form-group select {
-            padding: 10px 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 7px;
-            font-size: 14px;
-            min-width: 180px;
-        }
-
-        .generate-btn {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 7px;
-            background: #2563eb;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .generate-btn:hover {
-            background: #1d4ed8;
+            width: 92%;
+            margin-top: 20px;
         }
 
         .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 18px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr;
         }
 
-        .summary-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+        .filter-form {
+            flex-direction: column;
+            align-items: stretch;
         }
 
-        .summary-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .summary-title {
-            color: #6b7280;
-            font-size: 13px;
-            margin-bottom: 7px;
-        }
-
-        .summary-value {
-            font-size: 28px;
-            font-weight: 700;
-        }
-
-        .report-card {
-            padding: 25px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-
-        .report-card h3 {
-            margin-top: 0;
-        }
-
-        .report-table {
+        .form-group select {
             width: 100%;
-            border-collapse: collapse;
-            min-width: 750px;
         }
 
-        .report-table th,
-        .report-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .report-table th {
-            background: #f8fafc;
-            font-weight: 700;
-        }
-
-        .report-table tbody tr:hover {
-            background: #f9fafb;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 30px;
-            color: #6b7280;
+        .generate-btn {
+            width: 100%;
         }
 
         .actions {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 10px;
-            flex-wrap: wrap;
+            flex-direction: column;
         }
 
         .action-btn {
-            display: inline-block;
-            padding: 10px 16px;
-            border-radius: 7px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
+            width: 100%;
+            text-align: center;
         }
 
-        .back-btn {
-            background: #374151;
-            color: white;
+    }
+
+    /* =========================================================
+       PRINT
+    ========================================================= */
+
+    @media print {
+
+        .monthly-report-nav,
+        .monthly-report-user-info,
+        .actions,
+        .filter-card {
+            display: none !important;
         }
 
-        .print-btn {
-            background: #16a34a;
-            color: white;
-            border: none;
-            cursor: pointer;
+        .monthly-report-header {
+            background: white !important;
+            color: black !important;
+            padding: 10px 0;
         }
 
-        @media (max-width: 1100px) {
-
-            .summary-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
+        .monthly-report-hospital-title p {
+            color: #444;
         }
 
-        @media (max-width: 700px) {
-
-            .report-container {
-                width: 92%;
-            }
-
-            .summary-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-form {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .form-group select {
-                width: 100%;
-            }
-
+        .report-container {
+            width: 100%;
+            margin: 0;
         }
 
-        @media print {
-
-            nav,
-            .user-info,
-            .actions,
-            .filter-card {
-                display: none !important;
-            }
-
-            .report-container {
-                width: 100%;
-                margin: 0;
-            }
-
+        .report-card,
+        .report-header-card,
+        .summary-card {
+            box-shadow: none;
+            border: 1px solid #ddd;
         }
 
-    </style>
+        .monthly-report-footer {
+            background: white !important;
+            color: black !important;
+            border-top: 1px solid #ddd;
+        }
+
+    }
+
+</style>
+```
 
 </head>
 
 <body>
 
-<header>
+<div class="monthly-report-page">
 
-    <h1>
-        🏥 Hospital Data Analytics System
-    </h1>
+```
+<!-- =========================================================
+     HEADER
+========================================================== -->
 
-    <p>
-        Hospital Management & Data Analytics Platform
-    </p>
+<header class="monthly-report-header">
+
+    <div class="monthly-report-hospital-title">
+
+        <h1>
+            🏥 Hospital Data Analytics System
+        </h1>
+
+        <p>
+            Hospital Management &amp;
+            Data Analytics Platform
+        </p>
+
+    </div>
+
+    <div class="monthly-report-user-info">
+
+        <p>
+            Welcome,
+            <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role:
+            <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="monthly-report-logout">
+
+            🚪 Logout
+
+        </a>
+
+    </div>
 
 </header>
 
-<nav>
+
+<!-- =========================================================
+     NAVIGATION
+========================================================== -->
+
+<nav class="monthly-report-nav">
 
     <a href="{{ url_for('home') }}">
         🏠 Dashboard
@@ -273,12 +548,27 @@
         📋 Medical Records
     </a>
 
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('laboratory') }}">
+        🧪 Laboratory
+    </a>
+
+    {% if role in ['Admin', 'Doctor', 'Data Analyst'] %}
+
     <a href="{{ url_for('analytics') }}">
         📊 Analytics
     </a>
 
-    <a href="{{ url_for('reports') }}">
+    {% endif %}
+
+    <a href="{{ url_for('reports') }}"
+       class="active">
+
         📑 Reports
+
     </a>
 
     {% if role == "Admin" %}
@@ -289,39 +579,54 @@
 
     {% endif %}
 
-    <a href="{{ url_for('logout') }}">
-        🚪 Logout
-    </a>
+    {% if role in ['Admin', 'Receptionist', 'Doctor'] %}
+
+        {% if role == "Doctor" %}
+
+        <a href="{{ url_for('emergency_cases') }}">
+            🚨 EMD
+        </a>
+
+        {% else %}
+
+        <a href="{{ url_for('emergency_register') }}">
+            🚨 EMD
+        </a>
+
+        {% endif %}
+
+    {% endif %}
 
 </nav>
 
-<div class="user-info">
 
-    <p>
-        Welcome,
-        <strong>{{ username }}</strong>
-    </p>
+<!-- =========================================================
+     MAIN CONTENT
+========================================================== -->
 
-    <p>
-        Role:
-        <strong>{{ role }}</strong>
-    </p>
+<main class="report-container">
 
-</div>
+    <!-- =====================================================
+         REPORT INTRODUCTION
+    ====================================================== -->
 
-<div class="report-container">
-
-    <div class="report-header">
+    <div class="report-header-card">
 
         <h2>
             🗓️ Monthly Hospital Report
         </h2>
 
         <p>
-            Hospital activities and statistics for a selected month.
+            Hospital activities and statistics
+            for a selected month.
         </p>
 
     </div>
+
+
+    <!-- =====================================================
+         ACTIONS
+    ====================================================== -->
 
     <div class="actions">
 
@@ -332,7 +637,8 @@
 
         </a>
 
-        <button onclick="window.print()"
+        <button type="button"
+                onclick="window.print()"
                 class="action-btn print-btn">
 
             🖨️ Print Report
@@ -341,7 +647,16 @@
 
     </div>
 
+
+    <!-- =====================================================
+         MONTH / YEAR FILTER
+    ====================================================== -->
+
     <div class="filter-card">
+
+        <h3 class="filter-title">
+            🔎 Select Report Period
+        </h3>
 
         <form method="GET"
               action="{{ url_for('monthly_report') }}"
@@ -421,6 +736,7 @@
 
             </div>
 
+
             <div class="form-group">
 
                 <label for="year">
@@ -446,6 +762,7 @@
 
             </div>
 
+
             <button type="submit"
                     class="generate-btn">
 
@@ -456,6 +773,11 @@
         </form>
 
     </div>
+
+
+    <!-- =====================================================
+         SUMMARY CARDS
+    ====================================================== -->
 
     <div class="summary-grid">
 
@@ -475,6 +797,7 @@
 
         </div>
 
+
         <div class="summary-card">
 
             <div class="summary-icon">
@@ -491,6 +814,7 @@
 
         </div>
 
+
         <div class="summary-card">
 
             <div class="summary-icon">
@@ -506,6 +830,7 @@
             </div>
 
         </div>
+
 
         <div class="summary-card">
 
@@ -524,6 +849,11 @@
         </div>
 
     </div>
+
+
+    <!-- =====================================================
+         DAILY ACTIVITY
+    ====================================================== -->
 
     <div class="report-card">
 
@@ -608,6 +938,11 @@
         {% endif %}
 
     </div>
+
+
+    <!-- =====================================================
+         MONTHLY APPOINTMENTS
+    ====================================================== -->
 
     <div class="report-card">
 
@@ -701,6 +1036,11 @@
 
     </div>
 
+
+    <!-- =====================================================
+         MONTHLY DIAGNOSES
+    ====================================================== -->
+
     <div class="report-card">
 
         <h3>
@@ -768,6 +1108,20 @@
         {% endif %}
 
     </div>
+
+</main>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================== -->
+
+<footer class="monthly-report-footer">
+
+    Hospital Data Analytics System
+
+</footer>
+```
 
 </div>
 

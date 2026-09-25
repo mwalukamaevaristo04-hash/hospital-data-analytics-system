@@ -1,56 +1,81 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>User Management</title>
 
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
+<link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}"
+>
 
 <style>
 
     .profile-section {
+
         margin-top: 10px;
         margin-bottom: 15px;
         padding: 15px;
         border: 1px solid #cbd5e1;
         border-radius: 8px;
         background: #f8fafc;
+
     }
 
     .profile-section label {
+
         font-weight: 600;
+
     }
 
     .profile-section select {
+
         margin-top: 7px;
         padding: 9px;
         width: 100%;
         max-width: 500px;
+
     }
 
     .profile-section small {
+
         display: block;
         margin-top: 7px;
         color: #64748b;
+
     }
 
     .required {
+
         color: red;
+
+    }
+
+    .email-help {
+
+        display: block;
+        margin-top: 5px;
+        margin-bottom: 10px;
+        color: #64748b;
+        font-size: 13px;
+
     }
 
 </style>
 
 </head>
 
+
 <body>
+
 
 <!-- =====================================================
      HEADER
@@ -59,14 +84,19 @@
 <header>
 
 <h1>
+
     🏥 Hospital Data Analytics System
+
 </h1>
 
 <p>
+
     Hospital Management & Data Analytics Platform
+
 </p>
 
 </header>
+
 
 <!-- =====================================================
      NAVIGATION BAR
@@ -75,34 +105,49 @@
 <nav>
 
 <a href="{{ url_for('home') }}">
+
     🏠 Dashboard
+
 </a>
 
 <a href="{{ url_for('patients') }}">
+
     👥 Patients
+
 </a>
 
 <a href="{{ url_for('doctors') }}">
+
     👨‍⚕️ Doctors
+
 </a>
 
 <a href="{{ url_for('appointments') }}">
+
     📅 Appointments
+
 </a>
 
 <a href="{{ url_for('analytics') }}">
+
     📊 Analytics
+
 </a>
 
 <a href="{{ url_for('users') }}">
+
     👤 Users
+
 </a>
 
 <a href="{{ url_for('logout') }}">
+
     🚪 Logout
+
 </a>
 
 </nav>
+
 
 <!-- =====================================================
      USER INFORMATION
@@ -115,7 +160,9 @@
     Welcome,
 
     <strong>
+
         {{ session["username"] }}
+
     </strong>
 
 </p>
@@ -125,24 +172,32 @@
     Role:
 
     <strong>
+
         {{ session["role"] }}
+
     </strong>
 
 </p>
 
 </div>
 
+
 <!-- =====================================================
      PAGE TITLE
      ===================================================== -->
 
 <h2>
+
     👤 User Management
+
 </h2>
 
 <p>
+
     Manage system users and their access roles.
+
 </p>
+
 
 <!-- =====================================================
      ERROR MESSAGE
@@ -153,25 +208,36 @@
 <p style="color: red;">
 
 <strong>
+
     {{ error }}
+
 </strong>
 
 </p>
 
 {% endif %}
 
+
 <!-- =====================================================
      ADD NEW USER
      ===================================================== -->
 
 <h2>
+
     Add New User
+
 </h2>
 
-<form method="POST"
-      action="{{ url_for('users') }}">
 
-<!-- USERNAME -->
+<form
+    method="POST"
+    action="{{ url_for('users') }}"
+>
+
+
+<!-- =====================================================
+     USERNAME
+     ===================================================== -->
 
 <label for="username">
 
@@ -192,7 +258,40 @@
 <br>
 
 
-<!-- PASSWORD -->
+<!-- =====================================================
+     RECOVERY EMAIL
+     ===================================================== -->
+
+<label for="email">
+
+    Recovery Email:
+
+    <span class="required">*</span>
+
+</label>
+
+<br>
+
+<input
+    type="email"
+    id="email"
+    name="email"
+    placeholder="Enter user's email address"
+    required
+>
+
+<small class="email-help">
+
+    This email will be used for password recovery.
+
+</small>
+
+<br>
+
+
+<!-- =====================================================
+     PASSWORD
+     ===================================================== -->
 
 <label for="password">
 
@@ -206,14 +305,24 @@
     type="password"
     id="password"
     name="password"
+    minlength="8"
     required
 >
 
 <br>
+
+<small class="email-help">
+
+    Password must contain at least 8 characters.
+
+</small>
+
 <br>
 
 
-<!-- ROLE -->
+<!-- =====================================================
+     ROLE
+     ===================================================== -->
 
 <label for="role">
 
@@ -231,35 +340,51 @@
 >
 
     <option value="">
+
         -- Select Role --
+
     </option>
 
     <option value="Admin">
+
         Admin
+
     </option>
 
     <option value="Doctor">
+
         Doctor
+
     </option>
 
     <option value="Receptionist">
+
         Receptionist
+
     </option>
 
     <option value="Data Analyst">
+
         Data Analyst
+
     </option>
 
     <option value="Patient">
+
         Patient
+
     </option>
 
     <option value="Laboratorian">
+
         Laboratorian
+
     </option>
 
     <option value="Pharmacist">
+
         Pharmacist
+
     </option>
 
 </select>
@@ -272,13 +397,16 @@
      DOCTOR PROFILE
      ================================================= -->
 
-<div id="doctorProfileSection"
-     class="profile-section"
-     style="display: none;">
+<div
+    id="doctorProfileSection"
+    class="profile-section"
+    style="display: none;"
+>
 
     <label for="doctor_id">
 
         Doctor Profile
+
         <span class="required">*</span>
 
     </label>
@@ -291,7 +419,9 @@
     >
 
         <option value="">
+
             -- Select Doctor --
+
         </option>
 
         {% for doctor in doctors %}
@@ -324,13 +454,16 @@
      PATIENT PROFILE
      ================================================= -->
 
-<div id="patientProfileSection"
-     class="profile-section"
-     style="display: none;">
+<div
+    id="patientProfileSection"
+    class="profile-section"
+    style="display: none;"
+>
 
     <label for="patient_id">
 
         Patient Profile
+
         <span class="required">*</span>
 
     </label>
@@ -343,7 +476,9 @@
     >
 
         <option value="">
+
             -- Select Patient --
+
         </option>
 
         {% for patient in patients %}
@@ -355,6 +490,7 @@
             -
 
             Patient ID:
+
             {{ patient['id'] }}
 
         </option>
@@ -373,7 +509,9 @@
 </div>
 
 
-<!-- ADD USER BUTTON -->
+<!-- =====================================================
+     ADD USER BUTTON
+     ===================================================== -->
 
 <button type="submit">
 
@@ -381,15 +519,20 @@
 
 </button>
 
+
 </form>
+
 
 <!-- =====================================================
      USERS LIST
      ===================================================== -->
 
 <h2>
+
     System Users
+
 </h2>
+
 
 <table>
 
@@ -398,28 +541,45 @@
 <tr>
 
     <th>
+
         ID
+
     </th>
 
     <th>
+
         Username
+
     </th>
 
     <th>
+
+        Recovery Email
+
+    </th>
+
+    <th>
+
         Role
+
     </th>
 
     <th>
+
         Profile
+
     </th>
 
     <th>
+
         Actions
+
     </th>
 
 </tr>
 
 </thead>
+
 
 <tbody>
 
@@ -427,24 +587,52 @@
 
 <tr>
 
+
     <!-- ID -->
 
     <td>
+
         {{ user["id"] }}
+
     </td>
 
 
     <!-- USERNAME -->
 
     <td>
+
         {{ user["username"] }}
+
+    </td>
+
+
+    <!-- RECOVERY EMAIL -->
+
+    <td>
+
+        {% if user["email"] %}
+
+            📧 {{ user["email"] }}
+
+        {% else %}
+
+            <span style="color: #64748b;">
+
+                Not set
+
+            </span>
+
+        {% endif %}
+
     </td>
 
 
     <!-- ROLE -->
 
     <td>
+
         {{ user["role"] }}
+
     </td>
 
 
@@ -457,6 +645,7 @@
             {% if user["doctor_name"] %}
 
                 👨‍⚕️
+
                 {{ user["doctor_name"] }}
 
             {% else %}
@@ -475,6 +664,7 @@
             {% if user["patient_name"] %}
 
                 👤
+
                 {{ user["patient_name"] }}
 
             {% else %}
@@ -501,10 +691,12 @@
 
     <td>
 
-        <a href="{{ url_for(
-            'edit_user',
-            user_id=user['id']
-        ) }}">
+        <a
+            href="{{ url_for(
+                'edit_user',
+                user_id=user['id']
+            ) }}"
+        >
 
             ✏️ Edit
 
@@ -545,6 +737,7 @@
 
     </td>
 
+
 </tr>
 
 {% endfor %}
@@ -552,6 +745,7 @@
 </tbody>
 
 </table>
+
 
 <!-- =====================================================
      FOOTER
@@ -574,6 +768,7 @@
 Role-Based Access Control Enabled
 
 </p>
+
 
 <!-- =====================================================
      JAVASCRIPT
@@ -660,6 +855,7 @@ function showProfileSection() {
 }
 
 </script>
+
 
 </body>
 

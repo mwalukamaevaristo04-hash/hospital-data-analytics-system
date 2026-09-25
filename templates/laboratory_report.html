@@ -1,29 +1,135 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
 <title>Laboratory Report</title>
 
 <link rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}">
 
+<!-- Chart.js -->
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
+    /* =========================================================
+       LABORATORY REPORT PAGE
+       EMD-STYLE PAGE STRUCTURE
+       ========================================================= */
+
     .report-page {
-        width: 95%;
-        max-width: 1450px;
-        margin: 30px auto;
+        min-height: 100vh;
+        background: #f8fafc;
     }
 
-    .report-header {
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .report-header-bar {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .report-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .report-hospital-title p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .report-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .report-user-info p {
+        margin: 0;
+    }
+
+    .report-logout {
+        display: inline-block;
+        margin-top: 3px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .report-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =========================================================
+       NAVIGATION
+       ========================================================= */
+
+    .report-nav {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 35px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        box-sizing: border-box;
+    }
+
+    .report-nav a {
+        text-decoration: none;
+        color: #334155;
+        padding: 8px 13px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .report-nav a:hover {
+        background: #e2e8f0;
+    }
+
+    .report-nav .report-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =========================================================
+       MAIN CONTAINER
+       ========================================================= */
+
+    .report-container {
+        width: 92%;
+        max-width: 1450px;
+        margin: 30px auto 45px;
+    }
+
+    /* =========================================================
+       PAGE HEADER
+       ========================================================= */
+
+    .page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -32,13 +138,16 @@
         margin-bottom: 30px;
     }
 
-    .report-header h1 {
+    .page-header h2 {
         margin: 0;
+        color: #0f172a;
+        font-size: 27px;
     }
 
-    .report-header p {
+    .page-header p {
         color: #64748b;
-        margin-top: 7px;
+        margin: 7px 0 0;
+        font-size: 15px;
     }
 
     .actions {
@@ -47,6 +156,10 @@
         flex-wrap: wrap;
     }
 
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+
     .btn {
         display: inline-block;
         padding: 10px 16px;
@@ -54,7 +167,9 @@
         border: none;
         text-decoration: none;
         font-weight: 600;
+        font-size: 13px;
         cursor: pointer;
+        transition: 0.2s ease;
     }
 
     .btn-primary {
@@ -62,10 +177,22 @@
         color: white;
     }
 
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
     .btn-secondary {
         background: #475569;
         color: white;
     }
+
+    .btn-secondary:hover {
+        background: #334155;
+    }
+
+    /* =========================================================
+       SUMMARY CARDS
+       ========================================================= */
 
     .summary-cards {
         display: grid;
@@ -110,6 +237,10 @@
         border-left-color: #d97706;
     }
 
+    /* =========================================================
+       CHART GRID
+       ========================================================= */
+
     .report-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -124,7 +255,8 @@
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
     }
 
-    .report-card h2 {
+    .report-card h2,
+    .table-card h2 {
         margin-top: 0;
         color: #1e293b;
     }
@@ -132,7 +264,26 @@
     .chart-container {
         position: relative;
         height: 330px;
+        width: 100%;
     }
+
+    .chart-container canvas {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .empty-chart {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        text-align: center;
+    }
+
+    /* =========================================================
+       TABLE CARDS
+       ========================================================= */
 
     .table-card {
         background: white;
@@ -158,11 +309,15 @@
         padding: 13px;
         color: #334155;
         border-bottom: 2px solid #e2e8f0;
+        font-size: 13px;
+        white-space: nowrap;
     }
 
     td {
         padding: 13px;
         border-bottom: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 13px;
     }
 
     tr:hover {
@@ -184,6 +339,23 @@
         padding: 30px;
     }
 
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .report-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 18px;
+        font-size: 13px;
+        margin-top: 45px;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
     @media (max-width: 1000px) {
 
         .summary-cards {
@@ -196,10 +368,78 @@
 
     }
 
+    @media (max-width: 750px) {
+
+        .report-header-bar {
+            padding: 18px 20px;
+        }
+
+        .report-hospital-title h1 {
+            font-size: 21px;
+        }
+
+        .report-user-info {
+            text-align: left;
+        }
+
+        .report-nav {
+            padding: 10px 20px;
+        }
+
+        .report-container {
+            width: 94%;
+            margin-top: 25px;
+        }
+
+        .page-header {
+            align-items: flex-start;
+        }
+
+        .page-header h2 {
+            font-size: 23px;
+        }
+
+        .actions {
+            width: 100%;
+        }
+
+        .actions .btn {
+            flex: 1;
+            text-align: center;
+        }
+
+        .table-card,
+        .report-card {
+            padding: 20px;
+        }
+
+    }
+
     @media (max-width: 600px) {
 
         .summary-cards {
             grid-template-columns: 1fr;
+        }
+
+        .report-hospital-title h1 {
+            font-size: 19px;
+        }
+
+        .report-hospital-title p {
+            font-size: 13px;
+        }
+
+        .report-nav a {
+            font-size: 13px;
+            padding: 7px 10px;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+
+        .actions .btn {
+            width: 100%;
         }
 
     }
@@ -212,12 +452,233 @@
 
 <div class="report-page">
 
+```
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-    <div class="report-header">
+<header class="report-header-bar">
+
+    <div class="report-hospital-title">
+
+        <h1>🏥 Hospital Data Analytics System</h1>
+
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
+
+    </div>
+
+
+    <div class="report-user-info">
+
+        <p>
+            Welcome, <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role: <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="report-logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
+
+<nav class="report-nav">
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst', 'Patient'] %}
+
+    <a href="{{ url_for('patients') }}">
+        👤 Patients
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst'] %}
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst', 'Patient'] %}
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst', 'Patient'] %}
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('medicines') }}">
+        📦 Medicines
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('pharmacy_prescriptions') }}">
+        📋 Prescriptions
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('pharmacy_report') }}">
+        📊 Pharmacy Report
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Laboratorian', 'Laboratory'] %}
+
+    <a href="{{ url_for('laboratory') }}">
+        🔬 Laboratory
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Laboratorian', 'Laboratory'] %}
+
+    <a href="{{ url_for('laboratory_tests') }}">
+        🧪 Laboratory Tests
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Laboratorian', 'Laboratory'] %}
+
+    <a href="{{ url_for('laboratory_requests') }}">
+        📝 Lab Requests
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Patient'] %}
+
+    <a href="{{ url_for('request_laboratory_test') }}">
+        ➕ Request Test
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Laboratorian', 'Laboratory', 'Data Analyst'] %}
+
+    <a href="{{ url_for('laboratory_report') }}"
+       class="report-active">
+        📊 Laboratory Report
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Data Analyst'] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📈 Analytics
+    </a>
+
+    {% endif %}
+
+
+    {% if role == 'Admin' %}
+
+    <a href="{{ url_for('reports') }}">
+        📄 Reports
+    </a>
+
+    <a href="{{ url_for('users') }}">
+        👥 User Management
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor'] %}
+
+    {% if role == 'Doctor' %}
+
+    <a href="{{ url_for('emergency_cases') }}">
+        🚨 EMD
+    </a>
+
+    {% else %}
+
+    <a href="{{ url_for('emergency_register') }}">
+        🚨 EMD
+    </a>
+
+    {% endif %}
+
+    {% endif %}
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
+
+<main class="report-container">
+
+    <!-- =================================================
+         REPORT TITLE
+         ================================================= -->
+
+    <div class="page-header">
 
         <div>
 
-            <h1>Laboratory Report & Analytics</h1>
+            <h2>
+                📊 Laboratory Report &amp; Analytics
+            </h2>
 
             <p>
                 Laboratory testing activity and
@@ -244,12 +705,17 @@
     </div>
 
 
-    <div class="summary-cards">
+    <!-- =================================================
+         SUMMARY CARDS
+         ================================================= -->
 
+    <div class="summary-cards">
 
         <div class="summary-card tests">
 
-            <h3>Total Tests</h3>
+            <h3>
+                Total Tests
+            </h3>
 
             <div class="number">
                 {{ total_tests }}
@@ -260,7 +726,9 @@
 
         <div class="summary-card requests">
 
-            <h3>Total Requests</h3>
+            <h3>
+                Total Requests
+            </h3>
 
             <div class="number">
                 {{ total_requests }}
@@ -271,7 +739,9 @@
 
         <div class="summary-card completed">
 
-            <h3>Completed Requests</h3>
+            <h3>
+                Completed Requests
+            </h3>
 
             <div class="number">
                 {{ completed_requests }}
@@ -282,7 +752,9 @@
 
         <div class="summary-card pending">
 
-            <h3>Pending Requests</h3>
+            <h3>
+                Pending Requests
+            </h3>
 
             <div class="number">
                 {{ pending_requests }}
@@ -290,45 +762,87 @@
 
         </div>
 
-
     </div>
 
+
+    <!-- =================================================
+         CHARTS
+         ================================================= -->
 
     <div class="report-grid">
 
 
+        <!-- REQUESTS BY STATUS -->
+
         <div class="report-card">
 
-            <h2>Requests by Status</h2>
+            <h2>
+                Requests by Status
+            </h2>
 
             <div class="chart-container">
+
+                {% if status_data %}
 
                 <canvas id="statusChart"></canvas>
 
+                {% else %}
+
+                <div class="empty-chart">
+
+                    No laboratory request status
+                    data available.
+
+                </div>
+
+                {% endif %}
+
             </div>
 
         </div>
 
+
+        <!-- MOST REQUESTED TESTS -->
 
         <div class="report-card">
 
-            <h2>Most Requested Tests</h2>
+            <h2>
+                Most Requested Tests
+            </h2>
 
             <div class="chart-container">
 
+                {% if test_usage %}
+
                 <canvas id="testChart"></canvas>
+
+                {% else %}
+
+                <div class="empty-chart">
+
+                    No laboratory test usage
+                    data available.
+
+                </div>
+
+                {% endif %}
 
             </div>
 
         </div>
-
 
     </div>
 
 
+    <!-- =================================================
+         TEST USAGE REPORT
+         ================================================= -->
+
     <div class="table-card">
 
-        <h2>Test Usage Report</h2>
+        <h2>
+            Test Usage Report
+        </h2>
 
         <div class="table-container">
 
@@ -366,21 +880,30 @@
                         </td>
 
                         <td>
+
                             <strong>
                                 {{ item['test_name'] }}
                             </strong>
+
                         </td>
 
                         <td>
-                            {{ item['category'] or 'General' }}
+
+                            {{ item['category']
+                               or 'General' }}
+
                         </td>
 
                         <td class="number-cell">
+
                             {{ item['total_requests'] }}
+
                         </td>
 
                         <td class="number-cell">
+
                             {{ item['completed_requests'] }}
+
                         </td>
 
                     </tr>
@@ -394,7 +917,9 @@
             {% else %}
 
             <div class="empty">
+
                 No laboratory test usage data available.
+
             </div>
 
             {% endif %}
@@ -404,9 +929,15 @@
     </div>
 
 
+    <!-- =================================================
+         REQUESTS BY SPECIALTY
+         ================================================= -->
+
     <div class="table-card">
 
-        <h2>Requests by Recommended Specialty</h2>
+        <h2>
+            Requests by Recommended Specialty
+        </h2>
 
         <div class="table-container">
 
@@ -451,7 +982,9 @@
                         </td>
 
                         <td class="number-cell">
+
                             {{ item['total_requests'] }}
+
                         </td>
 
                     </tr>
@@ -465,7 +998,9 @@
             {% else %}
 
             <div class="empty">
+
                 No specialty usage data available.
+
             </div>
 
             {% endif %}
@@ -474,91 +1009,204 @@
 
     </div>
 
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="report-footer">
+
+    Hospital Data Analytics System
+
+</footer>
+```
 
 </div>
 
+<!-- =========================================================
+     CHART DATA
+     ========================================================= -->
 
 <script>
 
-    const statusLabels = [
-        {% for item in status_data %}
-            "{{ item['status'] }}"{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
+    const statusData =
+        {{ status_data | tojson | safe }};
 
-    const statusValues = [
-        {% for item in status_data %}
-            {{ item['total'] }}{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
+    const testUsageData =
+        {{ test_usage | tojson | safe }};
 
 
-    new Chart(
-        document.getElementById("statusChart"),
-        {
-            type: "doughnut",
+    /* =========================================================
+       REQUESTS BY STATUS - DOUGHNUT CHART
+       ========================================================= */
 
-            data: {
-                labels: statusLabels,
+    const statusCanvas =
+        document.getElementById("statusChart");
 
-                datasets: [
-                    {
-                        data: statusValues
+
+    if (statusCanvas && statusData.length > 0) {
+
+        const statusLabels =
+            statusData.map(
+                item => item.status
+            );
+
+
+        const statusValues =
+            statusData.map(
+                item => Number(item.total)
+            );
+
+
+        new Chart(
+            statusCanvas,
+            {
+
+                type: "doughnut",
+
+                data: {
+
+                    labels: statusLabels,
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Requests",
+
+                            data:
+                                statusValues,
+
+                            borderWidth: 1
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            display: true,
+
+                            position: "bottom"
+
+                        }
+
                     }
-                ]
-            },
 
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        }
-    );
-
-
-    const testLabels = [
-        {% for item in test_usage %}
-            "{{ item['test_name'] }}"{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
-
-    const testValues = [
-        {% for item in test_usage %}
-            {{ item['total_requests'] }}{% if not loop.last %},{% endif %}
-        {% endfor %}
-    ];
-
-
-    new Chart(
-        document.getElementById("testChart"),
-        {
-            type: "bar",
-
-            data: {
-                labels: testLabels,
-
-                datasets: [
-                    {
-                        label: "Requests",
-                        data: testValues
-                    }
-                ]
-            },
-
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
                 }
+
             }
-        }
-    );
+
+        );
+
+    }
+
+
+    /* =========================================================
+       MOST REQUESTED TESTS - BAR CHART
+       ========================================================= */
+
+    const testCanvas =
+        document.getElementById("testChart");
+
+
+    if (testCanvas && testUsageData.length > 0) {
+
+        const testLabels =
+            testUsageData.map(
+                item => item.test_name
+            );
+
+
+        const testValues =
+            testUsageData.map(
+                item => Number(item.total_requests)
+            );
+
+
+        new Chart(
+            testCanvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: testLabels,
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Requests",
+
+                            data:
+                                testValues,
+
+                            borderWidth: 1
+
+                        }
+
+                    ]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        y: {
+
+                            beginAtZero: true,
+
+                            ticks: {
+
+                                precision: 0
+
+                            }
+
+                        }
+
+                    },
+
+                    plugins: {
+
+                        legend: {
+
+                            display: true
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+    }
 
 </script>
 
 </body>
+
 </html>

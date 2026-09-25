@@ -1,405 +1,703 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
 
-    <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>Add Laboratory Test</title>
+<title>Add Laboratory Test</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
 
-    <style>
+<style>
 
-        .form-page {
-            width: 95%;
-            max-width: 1000px;
-            margin: 30px auto;
+    .add-lab-test-page {
+        min-height: 100vh;
+        background: #f8fafc;
+    }
+
+    .add-lab-test-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .add-lab-test-hospital-title h1 {
+        margin: 0 0 5px;
+        font-size: 25px;
+    }
+
+    .add-lab-test-hospital-title p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.95;
+    }
+
+    .add-lab-test-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .add-lab-test-user-info p {
+        margin: 0;
+    }
+
+    .add-lab-test-logout {
+        color: #fecaca;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 3px;
+    }
+
+    .add-lab-test-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    .add-lab-test-nav {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 35px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        box-sizing: border-box;
+    }
+
+    .add-lab-test-nav a {
+        color: #334155;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 6px;
+        transition: 0.2s;
+    }
+
+    .add-lab-test-nav a:hover {
+        background: #e2e8f0;
+    }
+
+    .add-lab-test-nav .active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    .add-lab-test-container {
+        width: 92%;
+        max-width: 1000px;
+        margin: 30px auto 45px;
+    }
+
+    .add-lab-test-page-header {
+        margin-bottom: 25px;
+    }
+
+    .add-lab-test-page-header h2 {
+        margin: 0 0 8px;
+        color: #0f172a;
+        font-size: 26px;
+    }
+
+    .add-lab-test-page-header p {
+        margin: 0;
+        color: #64748b;
+        font-size: 15px;
+    }
+
+    .add-lab-test-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .add-lab-test-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .add-lab-test-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .add-lab-test-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .add-lab-test-group label {
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #334155;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .add-lab-test-group input,
+    .add-lab-test-group select,
+    .add-lab-test-group textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        font-size: 14px;
+        box-sizing: border-box;
+        background: white;
+        font-family: inherit;
+    }
+
+    .add-lab-test-group input:focus,
+    .add-lab-test-group select:focus,
+    .add-lab-test-group textarea:focus {
+        outline: none;
+        border-color: #0f4c5c;
+        box-shadow: 0 0 0 2px rgba(15, 76, 92, 0.12);
+    }
+
+    .add-lab-test-group textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .form-help {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 5px;
+        line-height: 1.4;
+    }
+
+    .add-lab-test-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .add-lab-test-btn {
+        display: inline-block;
+        padding: 11px 18px;
+        border-radius: 7px;
+        border: none;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .add-lab-test-btn-save {
+        background: #16a34a;
+        color: white;
+    }
+
+    .add-lab-test-btn-save:hover {
+        background: #15803d;
+    }
+
+    .add-lab-test-btn-cancel {
+        background: #475569;
+        color: white;
+    }
+
+    .add-lab-test-btn-cancel:hover {
+        background: #334155;
+    }
+
+    .add-lab-test-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 16px;
+        font-size: 13px;
+    }
+
+    @media (max-width: 750px) {
+
+        .add-lab-test-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 18px 20px;
         }
 
-        .form-header {
-            margin-bottom: 25px;
+        .add-lab-test-user-info {
+            text-align: left;
         }
 
-        .form-header h1 {
-            margin-bottom: 8px;
+        .add-lab-test-nav {
+            padding: 10px 20px;
         }
 
-        .form-header p {
-            color: #64748b;
+        .add-lab-test-container {
+            width: 94%;
+            margin-top: 25px;
         }
 
-        .form-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        .add-lab-test-grid {
+            grid-template-columns: 1fr;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+        .add-lab-test-group.full-width {
+            grid-column: auto;
         }
 
-        .form-group {
-            display: flex;
+        .add-lab-test-card {
+            padding: 20px;
+        }
+
+    }
+
+    @media (max-width: 500px) {
+
+        .add-lab-test-hospital-title h1 {
+            font-size: 21px;
+        }
+
+        .add-lab-test-page-header h2 {
+            font-size: 22px;
+        }
+
+        .add-lab-test-actions {
             flex-direction: column;
         }
 
-        .form-group.full-width {
-            grid-column: 1 / -1;
+        .add-lab-test-btn {
+            text-align: center;
         }
 
-        label {
-            font-weight: 600;
-            margin-bottom: 7px;
-            color: #334155;
-        }
+    }
 
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 7px;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: white;
-        }
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
-        }
-
-        textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        .required {
-            color: #dc2626;
-        }
-
-        .form-help {
-            font-size: 12px;
-            color: #64748b;
-            margin-top: 5px;
-        }
-
-        .form-actions {
-            margin-top: 30px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 11px 18px;
-            border-radius: 7px;
-            border: none;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-success {
-            background: #16a34a;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #475569;
-            color: white;
-        }
-
-        @media (max-width: 700px) {
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-group.full-width {
-                grid-column: auto;
-            }
-
-            .form-card {
-                padding: 20px;
-            }
-
-        }
-
-    </style>
+</style>
 
 </head>
 
 <body>
 
-    <div class="form-page">
+<div class="add-lab-test-page">
 
-        <div class="form-header">
+<!-- =====================================================
+     HEADER
+====================================================== -->
 
-            <h1>Add Laboratory Test</h1>
+<header class="add-lab-test-header">
 
-            <p>
-                Create a new laboratory or diagnostic
-                service in the system.
-            </p>
+    <div class="add-lab-test-hospital-title">
 
-        </div>
+        <h1>🏥 Hospital Data Analytics System</h1>
 
-
-        <div class="form-card">
-
-            <form method="POST"
-                  action="{{ url_for('add_laboratory_test') }}">
-
-
-                <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label for="test_name">
-
-                            Test Name
-                            <span class="required">*</span>
-
-                        </label>
-
-                        <input type="text"
-                               id="test_name"
-                               name="test_name"
-                               placeholder="e.g. Complete Blood Count (CBC)"
-                               required>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="category">
-                            Category
-                        </label>
-
-                        <select id="category"
-                                name="category">
-
-                            <option value="">
-                                Select Category
-                            </option>
-
-                            <option value="Hematology">
-                                Hematology
-                            </option>
-
-                            <option value="Biochemistry">
-                                Biochemistry
-                            </option>
-
-                            <option value="Parasitology">
-                                Parasitology
-                            </option>
-
-                            <option value="Microbiology">
-                                Microbiology
-                            </option>
-
-                            <option value="Clinical Laboratory">
-                                Clinical Laboratory
-                            </option>
-
-                            <option value="Diagnostic Imaging">
-                                Diagnostic Imaging
-                            </option>
-
-                            <option value="Immunology">
-                                Immunology
-                            </option>
-
-                            <option value="Other">
-                                Other
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group full-width">
-
-                        <label for="description">
-                            Description
-                        </label>
-
-                        <textarea id="description"
-                                  name="description"
-                                  placeholder="Describe the laboratory test or diagnostic service..."></textarea>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="normal_range">
-                            Normal Range
-                        </label>
-
-                        <input type="text"
-                               id="normal_range"
-                               name="normal_range"
-                               placeholder="e.g. 70-99 mg/dL fasting">
-
-                        <div class="form-help">
-                            For imaging tests you can use
-                            "Report based".
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="unit">
-                            Unit
-                        </label>
-
-                        <input type="text"
-                               id="unit"
-                               name="unit"
-                               placeholder="e.g. mg/dL">
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="price">
-                            Price (TZS)
-                        </label>
-
-                        <input type="number"
-                               id="price"
-                               name="price"
-                               min="0"
-                               step="0.01"
-                               value="0"
-                               placeholder="e.g. 10000">
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="recommended_specialty">
-                            Recommended Specialty
-                        </label>
-
-                        <select id="recommended_specialty"
-                                name="recommended_specialty">
-
-                            <option value="">
-                                Select Specialty
-                            </option>
-
-                            <option value="Internal Medicine">
-                                Internal Medicine
-                            </option>
-
-                            <option value="Hematology">
-                                Hematology
-                            </option>
-
-                            <option value="Orthopedic">
-                                Orthopedic
-                            </option>
-
-                            <option value="Pulmonology">
-                                Pulmonology
-                            </option>
-
-                            <option value="Ophthalmology">
-                                Ophthalmology
-                            </option>
-
-                            <option value="Cardiology">
-                                Cardiology
-                            </option>
-
-                            <option value="Neurology">
-                                Neurology
-                            </option>
-
-                            <option value="Pediatrics">
-                                Pediatrics
-                            </option>
-
-                            <option value="Gynecology">
-                                Gynecology
-                            </option>
-
-                            <option value="Urology">
-                                Urology
-                            </option>
-
-                            <option value="Dermatology">
-                                Dermatology
-                            </option>
-
-                            <option value="ENT">
-                                ENT
-                            </option>
-
-                            <option value="General Practice">
-                                General Practice
-                            </option>
-
-                            <option value="Other">
-                                Other
-                            </option>
-
-                        </select>
-
-                        <div class="form-help">
-                            This helps connect completed results
-                            with the appropriate medical specialty.
-                        </div>
-
-                    </div>
-
-
-                </div>
-
-
-                <div class="form-actions">
-
-                    <button type="submit"
-                            class="btn btn-success">
-                        Save Laboratory Test
-                    </button>
-
-                    <a href="{{ url_for('laboratory_tests') }}"
-                       class="btn btn-secondary">
-                        Cancel
-                    </a>
-
-                </div>
-
-
-            </form>
-
-        </div>
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
 
     </div>
+
+    <div class="add-lab-test-user-info">
+
+        <p>
+            Welcome, <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role: <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="add-lab-test-logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+====================================================== -->
+
+<nav class="add-lab-test-nav">
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('laboratory') }}">
+        🔬 Laboratory
+    </a>
+
+    <a href="{{ url_for('laboratory_tests') }}"
+       class="active">
+        🧪 Laboratory Tests
+    </a>
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+        <a href="{{ url_for('analytics') }}">
+            📈 Analytics
+        </a>
+
+    {% endif %}
+
+    {% if role == "Admin" %}
+
+        <a href="{{ url_for('users') }}">
+            👤 Users
+        </a>
+
+    {% endif %}
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+====================================================== -->
+
+<main class="add-lab-test-container">
+
+    <div class="add-lab-test-page-header">
+
+        <h2>🧪 Add Laboratory Test</h2>
+
+        <p>
+            Create a new laboratory or diagnostic
+            service in the system.
+        </p>
+
+    </div>
+
+
+    <div class="add-lab-test-card">
+
+        <form method="POST"
+              action="{{ url_for('add_laboratory_test') }}">
+
+            <!-- CSRF PROTECTION -->
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+
+            <div class="add-lab-test-grid">
+
+
+                <!-- TEST NAME -->
+
+                <div class="add-lab-test-group">
+
+                    <label for="test_name">
+
+                        Test Name
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="test_name"
+                        name="test_name"
+                        placeholder="e.g. Complete Blood Count (CBC)"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="add-lab-test-group">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        name="category"
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="Hematology">
+                            Hematology
+                        </option>
+
+                        <option value="Biochemistry">
+                            Biochemistry
+                        </option>
+
+                        <option value="Parasitology">
+                            Parasitology
+                        </option>
+
+                        <option value="Microbiology">
+                            Microbiology
+                        </option>
+
+                        <option value="Clinical Laboratory">
+                            Clinical Laboratory
+                        </option>
+
+                        <option value="Diagnostic Imaging">
+                            Diagnostic Imaging
+                        </option>
+
+                        <option value="Immunology">
+                            Immunology
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="add-lab-test-group full-width">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        placeholder="Describe the laboratory test or diagnostic service..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- NORMAL RANGE -->
+
+                <div class="add-lab-test-group">
+
+                    <label for="normal_range">
+                        Normal Range
+                    </label>
+
+                    <input
+                        type="text"
+                        id="normal_range"
+                        name="normal_range"
+                        placeholder="e.g. 70-99 mg/dL fasting"
+                    >
+
+                    <div class="form-help">
+                        For imaging tests you can use
+                        "Report based".
+                    </div>
+
+                </div>
+
+
+                <!-- UNIT -->
+
+                <div class="add-lab-test-group">
+
+                    <label for="unit">
+                        Unit
+                    </label>
+
+                    <input
+                        type="text"
+                        id="unit"
+                        name="unit"
+                        placeholder="e.g. mg/dL"
+                    >
+
+                </div>
+
+
+                <!-- PRICE -->
+
+                <div class="add-lab-test-group">
+
+                    <label for="price">
+                        Price (TZS)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        min="0"
+                        step="0.01"
+                        value="0"
+                        placeholder="e.g. 10000"
+                    >
+
+                </div>
+
+
+                <!-- RECOMMENDED SPECIALTY -->
+
+                <div class="add-lab-test-group">
+
+                    <label for="recommended_specialty">
+                        Recommended Specialty
+                    </label>
+
+                    <select
+                        id="recommended_specialty"
+                        name="recommended_specialty"
+                    >
+
+                        <option value="">
+                            Select Specialty
+                        </option>
+
+                        <option value="Internal Medicine">
+                            Internal Medicine
+                        </option>
+
+                        <option value="Hematology">
+                            Hematology
+                        </option>
+
+                        <option value="Orthopedic">
+                            Orthopedic
+                        </option>
+
+                        <option value="Pulmonology">
+                            Pulmonology
+                        </option>
+
+                        <option value="Ophthalmology">
+                            Ophthalmology
+                        </option>
+
+                        <option value="Cardiology">
+                            Cardiology
+                        </option>
+
+                        <option value="Neurology">
+                            Neurology
+                        </option>
+
+                        <option value="Pediatrics">
+                            Pediatrics
+                        </option>
+
+                        <option value="Gynecology">
+                            Gynecology
+                        </option>
+
+                        <option value="Urology">
+                            Urology
+                        </option>
+
+                        <option value="Dermatology">
+                            Dermatology
+                        </option>
+
+                        <option value="ENT">
+                            ENT
+                        </option>
+
+                        <option value="General Practice">
+                            General Practice
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                    <div class="form-help">
+                        This helps connect completed results
+                        with the appropriate medical specialty.
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="add-lab-test-actions">
+
+                <button
+                    type="submit"
+                    class="add-lab-test-btn add-lab-test-btn-save"
+                >
+                    Save Laboratory Test
+                </button>
+
+                <a
+                    href="{{ url_for('laboratory_tests') }}"
+                    class="add-lab-test-btn add-lab-test-btn-cancel"
+                >
+                    Cancel
+                </a>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+====================================================== -->
+
+<footer class="add-lab-test-footer">
+
+    Hospital Data Analytics System
+
+</footer>
+
+</div>
 
 </body>
 </html>

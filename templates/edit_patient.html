@@ -1,4 +1,6 @@
+```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -12,153 +14,178 @@
 
 </head>
 
-
 <body>
 
 
-    <h1>Edit Patient</h1>
+<h1>Edit Patient</h1>
 
 
-    <!-- =====================================================
-         ERROR MESSAGE
-         ===================================================== -->
+<!-- =====================================================
+     ERROR MESSAGE
+     ===================================================== -->
 
-    {% if error %}
+{% if error %}
 
-    <p style="color: red; font-weight: bold;">
+<p style="color: red; font-weight: bold;">
 
-        ❌ {{ error }}
+    ❌ {{ error }}
 
-    </p>
+</p>
 
-    {% endif %}
-
-
-
-    <!-- =====================================================
-         EDIT PATIENT FORM
-         ===================================================== -->
-
-    <form method="POST">
-
-
-        <label for="full_name">
-            Full Name:
-        </label>
-
-        <br>
-
-        <input type="text"
-               id="full_name"
-               name="full_name"
-               value="{{ patient['full_name'] }}"
-               required>
-
-        <br><br>
+{% endif %}
 
 
 
-        <label for="age">
-            Age:
-        </label>
+<!-- =====================================================
+     EDIT PATIENT FORM
+     ===================================================== -->
 
-        <br>
+<form method="POST">
 
-        <input type="number"
-               id="age"
-               name="age"
-               value="{{ patient['age'] }}"
-               min="0"
-               required>
-
-        <br><br>
+    <!-- CSRF PROTECTION -->
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
 
 
-
-        <label for="gender">
-            Gender:
-        </label>
-
-        <br>
-
-        <select id="gender"
-                name="gender"
-                required>
-
-            <option value="Male"
-                {% if patient['gender'] == 'Male' %}selected{% endif %}>
-                Male
-            </option>
-
-            <option value="Female"
-                {% if patient['gender'] == 'Female' %}selected{% endif %}>
-                Female
-            </option>
-
-        </select>
-
-        <br><br>
-
-
-
-        <label for="phone">
-            Phone Number:
-        </label>
-
-        <br>
-
-        <input type="tel"
-               id="phone"
-               name="phone"
-               value="{{ patient['phone'] or '' }}"
-               pattern="(06|07)[0-9]{8}"
-               minlength="10"
-               maxlength="10"
-               inputmode="numeric"
-               placeholder="07XXXXXXXX"
-               title="Phone number must start with 06 or 07 and contain exactly 10 digits.">
-
-        <br>
-
-        <small>
-            Phone must start with 06 or 07 and contain exactly 10 digits.
-        </small>
-
-        <br><br>
-
-
-
-        <label for="address">
-            Address:
-        </label>
-
-        <br>
-
-        <input type="text"
-               id="address"
-               name="address"
-               value="{{ patient['address'] or '' }}">
-
-        <br><br>
-
-
-
-        <button type="submit">
-            Update Patient
-        </button>
-
-
-    </form>
-
+    <label for="full_name">
+        Full Name:
+    </label>
 
     <br>
 
+    <input
+        type="text"
+        id="full_name"
+        name="full_name"
+        value="{{ patient['full_name'] }}"
+        required
+    >
 
-    <a href="{{ url_for('patients') }}">
-        Cancel
-    </a>
+    <br><br>
+
+
+
+    <label for="age">
+        Age:
+    </label>
+
+    <br>
+
+    <input
+        type="number"
+        id="age"
+        name="age"
+        value="{{ patient['age'] }}"
+        min="0"
+        required
+    >
+
+    <br><br>
+
+
+
+    <label for="gender">
+        Gender:
+    </label>
+
+    <br>
+
+    <select
+        id="gender"
+        name="gender"
+        required
+    >
+
+        <option
+            value="Male"
+            {% if patient['gender'] == 'Male' %}
+                selected
+            {% endif %}
+        >
+            Male
+        </option>
+
+        <option
+            value="Female"
+            {% if patient['gender'] == 'Female' %}
+                selected
+            {% endif %}
+        >
+            Female
+        </option>
+
+    </select>
+
+    <br><br>
+
+
+
+    <label for="phone">
+        Phone Number:
+    </label>
+
+    <br>
+
+    <input
+        type="tel"
+        id="phone"
+        name="phone"
+        value="{{ patient['phone'] or '' }}"
+        pattern="(06|07)[0-9]{8}"
+        minlength="10"
+        maxlength="10"
+        inputmode="numeric"
+        placeholder="07XXXXXXXX"
+        title="Phone number must start with 06 or 07 and contain exactly 10 digits."
+    >
+
+    <br>
+
+    <small>
+        Phone must start with 06 or 07 and contain exactly 10 digits.
+    </small>
+
+    <br><br>
+
+
+
+    <label for="address">
+        Address:
+    </label>
+
+    <br>
+
+    <input
+        type="text"
+        id="address"
+        name="address"
+        value="{{ patient['address'] or '' }}"
+    >
+
+    <br><br>
+
+
+
+    <button type="submit">
+        Update Patient
+    </button>
+
+
+</form>
+
+
+<br>
+
+
+<a href="{{ url_for('patients') }}">
+    Cancel
+</a>
 
 
 </body>
 
 </html>
+```

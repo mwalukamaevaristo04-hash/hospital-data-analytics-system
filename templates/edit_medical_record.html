@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -237,6 +238,12 @@
             method="POST"
             action="{{ url_for('edit_medical_record', record_id=record['id']) }}"
         >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
 
             <div class="form-grid">
 
@@ -502,3 +509,4 @@
 
 </body>
 </html>
+```

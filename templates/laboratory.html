@@ -7,44 +7,155 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
 <title>
-    Laboratory Dashboard
+    Laboratory Dashboard - Hospital Data Analytics System
 </title>
-
-<link rel="stylesheet"
-      href="{{ url_for('static', filename='style.css') }}">
 
 <style>
 
-    .laboratory-container {
-        width: 95%;
-        max-width: 1400px;
-        margin: 30px auto;
+    * {
+        box-sizing: border-box;
     }
 
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+    }
 
-    .laboratory-header {
+    /* =========================================================
+       LABORATORY PAGE
+       ========================================================= */
+
+    .laboratory-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .laboratory-main-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .laboratory-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .laboratory-hospital-title p {
+        margin: 5px 0 0 0;
+        font-size: 14px;
+        color: #e2e8f0;
+    }
+
+    .laboratory-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .laboratory-user-info p {
+        margin: 0;
+    }
+
+    .laboratory-logout {
+        display: inline-block;
+        margin-top: 3px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .laboratory-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =========================================================
+       NAVIGATION
+       ========================================================= */
+
+    .laboratory-nav {
+        width: 100%;
+        background: #ffffff;
+        border-bottom: 1px solid #dbe3e8;
+        padding: 12px 35px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .laboratory-nav a {
+        text-decoration: none;
+        color: #374151;
+        padding: 9px 13px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .laboratory-nav a:hover {
+        background: #e6f0f3;
+        color: #0f4c5c;
+    }
+
+    .laboratory-nav .active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =========================================================
+       MAIN CONTAINER
+       ========================================================= */
+
+    .laboratory-container {
+        width: 92%;
+        max-width: 1400px;
+        margin: 30px auto 45px;
+        flex: 1;
+    }
+
+    /* =========================================================
+       PAGE TITLE
+       ========================================================= */
+
+    .laboratory-page-title {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 30px;
-        flex-wrap: wrap;
         gap: 15px;
+        flex-wrap: wrap;
     }
 
-
-    .laboratory-header h1 {
+    .laboratory-page-title h2 {
         margin: 0;
+        font-size: 25px;
+        color: #111827;
     }
 
-
-    .laboratory-header p {
-        margin: 5px 0 0;
-        color: #666;
+    .laboratory-page-title p {
+        margin: 6px 0 0;
+        color: #64748b;
+        font-size: 14px;
     }
-
 
     .laboratory-actions {
         display: flex;
@@ -52,41 +163,61 @@
         flex-wrap: wrap;
     }
 
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
 
     .laboratory-btn {
         display: inline-block;
-        padding: 11px 18px;
+        padding: 10px 16px;
         border-radius: 7px;
         text-decoration: none;
         font-weight: 600;
         border: none;
         cursor: pointer;
+        font-size: 13px;
+        transition: 0.2s;
     }
-
 
     .btn-primary {
-        background: #2563eb;
+        background: #0f4c5c;
         color: white;
     }
 
+    .btn-primary:hover {
+        background: #0b3945;
+    }
 
     .btn-success {
-        background: #16a34a;
+        background: #15803d;
         color: white;
     }
 
+    .btn-success:hover {
+        background: #166534;
+    }
 
     .btn-warning {
-        background: #d97706;
+        background: #b45309;
         color: white;
     }
 
+    .btn-warning:hover {
+        background: #92400e;
+    }
 
     .btn-secondary {
         background: #475569;
         color: white;
     }
 
+    .btn-secondary:hover {
+        background: #334155;
+    }
+
+    /* =========================================================
+       LABORATORY CARDS
+       ========================================================= */
 
     .laboratory-cards {
         display: grid;
@@ -95,85 +226,81 @@
         margin-bottom: 30px;
     }
 
-
     .laboratory-card {
         display: block;
         background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-        border-left: 5px solid #2563eb;
+        border-radius: 10px;
+        padding: 22px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: 1px solid #e5e7eb;
+        border-left: 5px solid #0f4c5c;
         text-decoration: none;
         transition: transform 0.2s ease,
                     box-shadow 0.2s ease;
     }
 
-
     .laboratory-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.10);
     }
-
 
     .laboratory-card h3 {
         margin: 0 0 12px;
-        font-size: 16px;
-        color: #555;
+        font-size: 15px;
+        color: #4b5563;
     }
-
 
     .laboratory-card .number {
-        font-size: 32px;
+        font-size: 30px;
         font-weight: 700;
-        color: #1e293b;
+        color: #111827;
     }
-
 
     .laboratory-card .card-description {
         margin-top: 8px;
         color: #64748b;
-        font-size: 14px;
+        font-size: 13px;
+        line-height: 1.5;
     }
-
 
     .laboratory-card.pending {
         border-left-color: #f59e0b;
     }
 
-
     .laboratory-card.processing {
         border-left-color: #2563eb;
     }
-
 
     .laboratory-card.completed {
         border-left-color: #16a34a;
     }
 
-
     .laboratory-card.tests {
         border-left-color: #7c3aed;
     }
-
 
     .laboratory-card.requests {
         border-left-color: #0891b2;
     }
 
+    /* =========================================================
+       QUICK ACTIONS
+       ========================================================= */
 
     .laboratory-workflow {
         background: white;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        border-radius: 10px;
+        padding: 28px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
-
 
     .laboratory-workflow h2 {
         margin-top: 0;
         margin-bottom: 25px;
+        font-size: 20px;
+        color: #111827;
     }
-
 
     .workflow-grid {
         display: grid;
@@ -181,33 +308,33 @@
         gap: 20px;
     }
 
-
     .workflow-item {
         border: 1px solid #e2e8f0;
         border-radius: 10px;
         padding: 20px;
         text-align: center;
+        background: #ffffff;
     }
-
 
     .workflow-number {
         width: 42px;
         height: 42px;
         margin: 0 auto 12px;
         border-radius: 50%;
-        background: #2563eb;
+        background: #0f4c5c;
         color: white;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
+        font-size: 18px;
     }
-
 
     .workflow-item h3 {
         margin: 10px 0;
+        color: #111827;
+        font-size: 17px;
     }
-
 
     .workflow-item p {
         color: #64748b;
@@ -215,18 +342,47 @@
         font-size: 14px;
     }
 
+    .workflow-item .laboratory-btn {
+        margin-top: 5px;
+    }
+
+    /* =========================================================
+       LABORATORY NOTE
+       ========================================================= */
 
     .laboratory-note {
         margin-top: 25px;
         padding: 18px;
         background: #f8fafc;
         border-radius: 8px;
-        border-left: 4px solid #2563eb;
+        border-left: 4px solid #0f4c5c;
         color: #475569;
+        line-height: 1.7;
+        font-size: 14px;
     }
 
+    .laboratory-note strong {
+        color: #1f2937;
+    }
 
-    @media (max-width: 1000px) {
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .laboratory-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 1100px) {
 
         .laboratory-cards {
             grid-template-columns: repeat(2, 1fr);
@@ -238,6 +394,27 @@
 
     }
 
+    @media (max-width: 750px) {
+
+        .laboratory-main-header {
+            padding: 20px 22px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .laboratory-user-info {
+            text-align: left;
+        }
+
+        .laboratory-nav {
+            padding: 12px 22px;
+        }
+
+        .laboratory-container {
+            width: 94%;
+        }
+
+    }
 
     @media (max-width: 600px) {
 
@@ -249,6 +426,14 @@
             grid-template-columns: 1fr;
         }
 
+        .laboratory-workflow {
+            padding: 20px;
+        }
+
+        .laboratory-page-title h2 {
+            font-size: 21px;
+        }
+
     }
 
 </style>
@@ -257,398 +442,508 @@
 
 <body>
 
-<div class="laboratory-container">
+<div class="laboratory-page">
 
-<!-- =================================================
+```
+<!-- =====================================================
      LABORATORY HEADER
-     ================================================= -->
+     ===================================================== -->
 
-<div class="laboratory-header">
+<header class="laboratory-main-header">
 
-    <div>
+    <div class="laboratory-hospital-title">
 
         <h1>
-            Laboratory & Diagnostic Services
+            🏥 Hospital Data Analytics System
         </h1>
 
         <p>
-            Welcome, {{ username }} |
-            Role: {{ role }}
+            Hospital Management &amp; Data Analytics Platform
         </p>
 
     </div>
 
+    <div class="laboratory-user-info">
 
-    <div class="laboratory-actions">
+        <p>
+            Welcome,
+            <strong>{{ username }}</strong>
+        </p>
 
+        <p>
+            Role:
+            <strong>{{ role }}</strong>
+        </p>
 
-        <!-- LABORATORY TESTS -->
+        <a href="{{ url_for('logout') }}"
+           class="laboratory-logout">
 
-        <a href="{{ url_for('laboratory_tests') }}"
-           class="laboratory-btn btn-primary">
-
-            Laboratory Tests
-
-        </a>
-
-
-        <!-- REQUEST TEST -->
-
-        {% if role in ['Patient', 'Admin'] %}
-
-        <a href="{{ url_for('request_laboratory_test') }}"
-           class="laboratory-btn btn-success">
-
-            Request Test
-
-        </a>
-
-        {% endif %}
-
-
-        <!-- TEST REQUESTS -->
-
-        <a href="{{ url_for('laboratory_requests') }}"
-           class="laboratory-btn btn-warning">
-
-            Test Requests
-
-        </a>
-
-
-        <!-- LABORATORY REPORT -->
-
-        {% if role in ['Admin', 'Laboratory', 'Data Analyst'] %}
-
-        <a href="{{ url_for('laboratory_report') }}"
-           class="laboratory-btn btn-secondary">
-
-            Laboratory Report
-
-        </a>
-
-        {% endif %}
-
-
-        <!-- MAIN DASHBOARD -->
-
-        <a href="{{ url_for('home') }}"
-           class="laboratory-btn btn-secondary">
-
-            Dashboard
+            🚪 Logout
 
         </a>
 
     </div>
 
-</div>
+</header>
 
 
-<!-- =================================================
-     LABORATORY CARDS
-     ================================================= -->
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
 
-<div class="laboratory-cards">
+<nav class="laboratory-nav">
 
-
-    <!-- =============================================
-         TOTAL LABORATORY TESTS
-         ============================================= -->
-
-    <a href="{{ url_for('laboratory_tests') }}"
-       class="laboratory-card tests">
-
-        <h3>
-            🔬 Available Laboratory Tests
-        </h3>
-
-        <div class="number">
-            {{ total_tests }}
-        </div>
-
-        <div class="card-description">
-            View available laboratory and diagnostic tests
-        </div>
-
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
     </a>
 
 
-    <!-- =============================================
-         TOTAL REQUESTS
-         ============================================= -->
+    {% if role in ["Admin", "Receptionist", "Doctor", "Data Analyst", "Patient"] %}
 
-    <a href="{{ url_for('laboratory_requests') }}"
-       class="laboratory-card requests">
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
 
-        <h3>
-            📝 Total Requests
-        </h3>
+    {% endif %}
 
-        <div class="number">
-            {{ total_requests }}
-        </div>
 
-        <div class="card-description">
-            All laboratory test requests
-        </div>
+    {% if role in ["Admin", "Receptionist", "Doctor", "Data Analyst"] %}
 
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        🏥 Medical Records
+    </a>
+
+    {% endif %}
+
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('laboratory') }}"
+       class="active">
+        🧪 Laboratory
     </a>
 
 
-    <!-- =============================================
-         PENDING REQUESTS
-         ============================================= -->
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
 
-    <a href="{{ url_for('laboratory_requests') }}"
-       class="laboratory-card pending">
-
-        <h3>
-            ⏳ Pending Requests
-        </h3>
-
-        <div class="number">
-            {{ pending_requests }}
-        </div>
-
-        <div class="card-description">
-            Requests waiting to be processed
-        </div>
-
+    <a href="{{ url_for('analytics') }}">
+        📈 Analytics
     </a>
 
+    {% endif %}
 
-    <!-- =============================================
-         PROCESSING REQUESTS
-         ============================================= -->
 
-    <a href="{{ url_for('laboratory_requests') }}"
-       class="laboratory-card processing">
+    {% if role == "Admin" %}
 
-        <h3>
-            🔄 Processing Requests
-        </h3>
-
-        <div class="number">
-            {{ processing_requests }}
-        </div>
-
-        <div class="card-description">
-            Tests currently being processed
-        </div>
-
+    <a href="{{ url_for('users') }}">
+        👤 Users
     </a>
 
+    {% endif %}
 
-    <!-- =============================================
-         COMPLETED REQUESTS
-         ============================================= -->
-
-    <a href="{{ url_for('laboratory_requests') }}"
-       class="laboratory-card completed">
-
-        <h3>
-            ✅ Completed Results
-        </h3>
-
-        <div class="number">
-            {{ completed_requests }}
-        </div>
-
-        <div class="card-description">
-            Completed laboratory results
-        </div>
-
-    </a>
+</nav>
 
 
-</div>
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
+
+<main class="laboratory-container">
 
 
-<!-- =================================================
-     QUICK ACTIONS
-     ================================================= -->
+    <div class="laboratory-page-title">
 
-<div class="laboratory-workflow">
+        <div>
 
-    <h2>
-        Laboratory Quick Actions
-    </h2>
-
-
-    <div class="workflow-grid">
-
-
-        <!-- =========================================
-             AVAILABLE TESTS
-             ========================================= -->
-
-        <div class="workflow-item">
-
-            <div class="workflow-number">
-                🔬
-            </div>
-
-            <h3>
-                Laboratory Tests
-            </h3>
+            <h2>
+                🧪 Laboratory &amp; Diagnostic Services
+            </h2>
 
             <p>
-                View available laboratory and
-                diagnostic services.
+                Manage laboratory tests, requests, results and diagnostic services.
             </p>
+
+        </div>
+
+
+        <div class="laboratory-actions">
+
+
+            <!-- LABORATORY TESTS -->
 
             <a href="{{ url_for('laboratory_tests') }}"
                class="laboratory-btn btn-primary">
 
-                View Tests
+                🔬 Laboratory Tests
 
             </a>
 
-        </div>
 
-
-        <!-- =========================================
-             REQUESTS
-             ========================================= -->
-
-        <div class="workflow-item">
-
-            <div class="workflow-number">
-                📝
-            </div>
-
-            <h3>
-                Test Requests
-            </h3>
-
-            <p>
-                View and manage laboratory
-                test requests.
-            </p>
-
-            <a href="{{ url_for('laboratory_requests') }}"
-               class="laboratory-btn btn-warning">
-
-                View Requests
-
-            </a>
-
-        </div>
-
-
-        <!-- =========================================
-             REQUEST TEST
-             ========================================= -->
-
-        <div class="workflow-item">
-
-            <div class="workflow-number">
-                ➕
-            </div>
-
-            <h3>
-                Request a Test
-            </h3>
-
-            <p>
-                Submit a new laboratory or
-                diagnostic test request.
-            </p>
+            <!-- REQUEST TEST -->
 
             {% if role in ['Patient', 'Admin'] %}
 
             <a href="{{ url_for('request_laboratory_test') }}"
                class="laboratory-btn btn-success">
 
-                Request Test
+                ➕ Request Test
 
             </a>
 
-            {% else %}
-
-            <p>
-                Available to patients.
-            </p>
-
             {% endif %}
 
-        </div>
+
+            <!-- TEST REQUESTS -->
+
+            <a href="{{ url_for('laboratory_requests') }}"
+               class="laboratory-btn btn-warning">
+
+                📝 Test Requests
+
+            </a>
 
 
-        <!-- =========================================
-             REPORTS
-             ========================================= -->
+            <!-- LABORATORY REPORT -->
 
-        <div class="workflow-item">
-
-            <div class="workflow-number">
-                📊
-            </div>
-
-            <h3>
-                Laboratory Reports
-            </h3>
-
-            <p>
-                View laboratory statistics,
-                performance and reports.
-            </p>
-
-            {% if role in ['Admin', 'Laboratory', 'Data Analyst'] %}
+            {% if role in ['Admin', 'Laboratorian', 'Data Analyst'] %}
 
             <a href="{{ url_for('laboratory_report') }}"
                class="laboratory-btn btn-secondary">
 
-                View Reports
+                📊 Laboratory Report
 
             </a>
 
-            {% else %}
-
-            <p>
-                Restricted access.
-            </p>
-
             {% endif %}
 
+
         </div>
+
+    </div>
+
+
+    <!-- =================================================
+         LABORATORY CARDS
+         ================================================= -->
+
+    <div class="laboratory-cards">
+
+
+        <!-- TOTAL LABORATORY TESTS -->
+
+        <a href="{{ url_for('laboratory_tests') }}"
+           class="laboratory-card tests">
+
+            <h3>
+                🔬 Available Laboratory Tests
+            </h3>
+
+            <div class="number">
+                {{ total_tests }}
+            </div>
+
+            <div class="card-description">
+                View available laboratory and diagnostic tests
+            </div>
+
+        </a>
+
+
+        <!-- TOTAL REQUESTS -->
+
+        <a href="{{ url_for('laboratory_requests') }}"
+           class="laboratory-card requests">
+
+            <h3>
+                📝 Total Requests
+            </h3>
+
+            <div class="number">
+                {{ total_requests }}
+            </div>
+
+            <div class="card-description">
+                All laboratory test requests
+            </div>
+
+        </a>
+
+
+        <!-- PENDING REQUESTS -->
+
+        <a href="{{ url_for('laboratory_requests') }}"
+           class="laboratory-card pending">
+
+            <h3>
+                ⏳ Pending Requests
+            </h3>
+
+            <div class="number">
+                {{ pending_requests }}
+            </div>
+
+            <div class="card-description">
+                Requests waiting to be processed
+            </div>
+
+        </a>
+
+
+        <!-- PROCESSING REQUESTS -->
+
+        <a href="{{ url_for('laboratory_requests') }}"
+           class="laboratory-card processing">
+
+            <h3>
+                🔄 Processing Requests
+            </h3>
+
+            <div class="number">
+                {{ processing_requests }}
+            </div>
+
+            <div class="card-description">
+                Tests currently being processed
+            </div>
+
+        </a>
+
+
+        <!-- COMPLETED REQUESTS -->
+
+        <a href="{{ url_for('laboratory_requests') }}"
+           class="laboratory-card completed">
+
+            <h3>
+                ✅ Completed Results
+            </h3>
+
+            <div class="number">
+                {{ completed_requests }}
+            </div>
+
+            <div class="card-description">
+                Completed laboratory results
+            </div>
+
+        </a>
 
 
     </div>
 
 
     <!-- =================================================
-         LABORATORY WORKFLOW INFORMATION
+         QUICK ACTIONS
          ================================================= -->
 
-    <div class="laboratory-note">
+    <div class="laboratory-workflow">
 
-        <strong>
-            Laboratory Workflow:
-        </strong>
+        <h2>
+            Laboratory Quick Actions
+        </h2>
 
-        Patient requests a test →
-        Laboratory receives the request →
-        Laboratory processes the test →
-        Laboratory enters the result →
-        Result is available to the patient →
-        Relevant specialty/doctor can review the result.
 
-        <br><br>
+        <div class="workflow-grid">
 
-        <strong>
-            Important:
-        </strong>
 
-        A laboratory result represents a test
-        finding or interpretation. It does not
-        automatically become a medical diagnosis.
-        The appropriate doctor uses the result
-        together with clinical assessment.
+            <!-- AVAILABLE TESTS -->
+
+            <div class="workflow-item">
+
+                <div class="workflow-number">
+                    🔬
+                </div>
+
+                <h3>
+                    Laboratory Tests
+                </h3>
+
+                <p>
+                    View available laboratory and
+                    diagnostic services.
+                </p>
+
+                <a href="{{ url_for('laboratory_tests') }}"
+                   class="laboratory-btn btn-primary">
+
+                    View Tests
+
+                </a>
+
+            </div>
+
+
+            <!-- REQUESTS -->
+
+            <div class="workflow-item">
+
+                <div class="workflow-number">
+                    📝
+                </div>
+
+                <h3>
+                    Test Requests
+                </h3>
+
+                <p>
+                    View and manage laboratory
+                    test requests.
+                </p>
+
+                <a href="{{ url_for('laboratory_requests') }}"
+                   class="laboratory-btn btn-warning">
+
+                    View Requests
+
+                </a>
+
+            </div>
+
+
+            <!-- REQUEST TEST -->
+
+            <div class="workflow-item">
+
+                <div class="workflow-number">
+                    ➕
+                </div>
+
+                <h3>
+                    Request a Test
+                </h3>
+
+                <p>
+                    Submit a new laboratory or
+                    diagnostic test request.
+                </p>
+
+                {% if role in ['Patient', 'Admin'] %}
+
+                <a href="{{ url_for('request_laboratory_test') }}"
+                   class="laboratory-btn btn-success">
+
+                    Request Test
+
+                </a>
+
+                {% else %}
+
+                <p>
+                    Available to patients.
+                </p>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- REPORTS -->
+
+            <div class="workflow-item">
+
+                <div class="workflow-number">
+                    📊
+                </div>
+
+                <h3>
+                    Laboratory Reports
+                </h3>
+
+                <p>
+                    View laboratory statistics,
+                    performance and reports.
+                </p>
+
+                {% if role in ['Admin', 'Laboratorian', 'Data Analyst'] %}
+
+                <a href="{{ url_for('laboratory_report') }}"
+                   class="laboratory-btn btn-secondary">
+
+                    View Reports
+
+                </a>
+
+                {% else %}
+
+                <p>
+                    Restricted access.
+                </p>
+
+                {% endif %}
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             LABORATORY WORKFLOW INFORMATION
+             ================================================= -->
+
+        <div class="laboratory-note">
+
+            <strong>
+                Laboratory Workflow:
+            </strong>
+
+            Patient requests a test →
+
+            Laboratory receives the request →
+
+            Laboratory processes the test →
+
+            Laboratory enters the result →
+
+            Result is available to the patient →
+
+            Relevant specialty/doctor can review the result.
+
+            <br><br>
+
+            <strong>
+                Important:
+            </strong>
+
+            A laboratory result represents a test
+            finding or interpretation. It does not
+            automatically become a medical diagnosis.
+
+            The appropriate doctor uses the result
+            together with clinical assessment.
+
+        </div>
 
     </div>
 
-</div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="laboratory-footer">
+
+    Hospital Data Analytics System
+
+    <br>
+
+    Laboratory &amp; Diagnostic Services
+
+</footer>
+```
 
 </div>
 

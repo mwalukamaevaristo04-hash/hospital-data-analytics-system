@@ -1,5 +1,6 @@
 from io import BytesIO, StringIO
 import os
+from flask_wtf.csrf import CSRFProtect
 
 from flask import send_file
 
@@ -46,17 +47,39 @@ from datetime import (
     datetime,
     timedelta
 )
-
-
 app = Flask(__name__)
 
-app.secret_key = "hospital_secret_key_2026"
+# =========================================================
+# SESSION SECURITY
+# =========================================================
 
-# Basic secure session-cookie settings.
-# HTTPS should be enabled before setting SESSION_COOKIE_SECURE=True.
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "hospital_secret_key_2026"
+)
 
+# Prevent JavaScript from accessing the session cookie
 app.config["SESSION_COOKIE_HTTPONLY"] = True
+
+# Helps protect against Cross-Site Request Forgery
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+# Send the session cookie only over HTTPS in production.
+# Keep False locally so the system works on http://127.0.0.1
+app.config["SESSION_COOKIE_SECURE"] = (
+    os.environ.get("FLASK_ENV") == "production"
+)
+
+# Prevent the browser from keeping the session cookie
+# after the browser is closed.
+app.config["SESSION_COOKIE_PERMANENT"] = False
+
+
+# =========================================================
+# CSRF PROTECTION
+# =========================================================
+
+csrf = CSRFProtect(app)
 ## =========================================================
 # DATABASE CONNECTION
 # =========================================================
@@ -85,9 +108,9 @@ def get_db_connection():
 
     return conn
 
-#=================================
+# =========================================================
 # INITIALIZE DATABASE
-# =================================================
+# =========================================================
 
 def init_db():
 
@@ -110,8 +133,33 @@ def init_db():
 
             doctor_id INTEGER,
 
-            patient_id INTEGER
+            patient_id INTEGER,
 
+            email TEXT
+
+        )
+    """)
+        # =========================================================
+    # PASSWORD RESET TOKENS
+    # =========================================================
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS password_reset_tokens (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            user_id INTEGER NOT NULL,
+
+            token_hash TEXT NOT NULL,
+
+            expires_at TEXT NOT NULL,
+
+            used_at TEXT,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (user_id)
+            REFERENCES users(id)
         )
     """)
 
@@ -128,6 +176,7 @@ def init_db():
         for column in columns
     ]
 
+    # Add doctor_id if it does not exist
     if "doctor_id" not in column_names:
 
         conn.execute("""
@@ -135,12 +184,22 @@ def init_db():
             ADD COLUMN doctor_id INTEGER
         """)
 
+    # Add patient_id if it does not exist
     if "patient_id" not in column_names:
 
         conn.execute("""
             ALTER TABLE users
             ADD COLUMN patient_id INTEGER
         """)
+
+    # Add email if it does not exist
+    if "email" not in column_names:
+
+        conn.execute("""
+            ALTER TABLE users
+            ADD COLUMN email TEXT
+        """)
+
 
     # =====================================================
     # PATIENTS TABLE
@@ -163,6 +222,7 @@ def init_db():
 
         )
     """)
+
 
     # =====================================================
     # DOCTORS TABLE
@@ -187,6 +247,7 @@ def init_db():
 
         )
     """)
+
 
     # =====================================================
     # APPOINTMENTS TABLE
@@ -217,6 +278,7 @@ def init_db():
 
         )
     """)
+
 
     # =====================================================
     # MEDICAL RECORDS TABLE
@@ -259,6 +321,7 @@ def init_db():
         )
     """)
 
+
     # =====================================================
     # PHARMACY - MEDICINES
     # =====================================================
@@ -290,6 +353,7 @@ def init_db():
 
         )
     """)
+
 
     # =====================================================
     # PHARMACY - PRESCRIPTIONS
@@ -341,6 +405,7 @@ def init_db():
         )
     """)
 
+
     # =====================================================
     # LABORATORY - TEST TYPES
     # =====================================================
@@ -366,6 +431,7 @@ def init_db():
 
         )
     """)
+
 
     # =====================================================
     # LABORATORY - TEST REQUESTS
@@ -396,6 +462,7 @@ def init_db():
 
         )
     """)
+
 
     # =====================================================
     # LABORATORY - RESULTS
@@ -431,7 +498,8 @@ def init_db():
         )
     """)
 
-    # =====================================================
+
+      # =====================================================
     # LABORATORY RESULT MIGRATION
     # =====================================================
 
@@ -451,6 +519,82 @@ def init_db():
             ADD COLUMN doctor_id INTEGER
         """)
 
+    # =====================================================
+    # EMERGENCY MEDICAL DEPARTMENT (EMD)
+    # =====================================================
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS emergency_visits (
+
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            emergency_number TEXT NOT NULL UNIQUE,
+
+            patient_name TEXT NOT NULL,
+
+            gender TEXT NOT NULL,
+
+            age INTEGER,
+
+            phone TEXT,
+
+            emergency_reason TEXT NOT NULL,
+
+            symptoms TEXT,
+
+            examination TEXT,
+
+            diagnosis TEXT,
+
+            treatment TEXT,
+
+            laboratory_request TEXT,
+
+            doctor_notes TEXT,
+
+            status TEXT NOT NULL DEFAULT 'Under Treatment',
+
+            doctor_id INTEGER,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (doctor_id)
+                REFERENCES doctors(id)
+
+        )
+    """)
+
+    # =====================================================
+    # EMD - ADD CLINICAL DETAIL COLUMNS TO EXISTING TABLE
+    # =====================================================
+
+    emergency_columns = [
+        ("symptoms", "TEXT"),
+        ("examination", "TEXT"),
+        ("diagnosis", "TEXT"),
+        ("treatment", "TEXT"),
+        ("laboratory_request", "TEXT"),
+        ("doctor_notes", "TEXT")
+    ]
+
+    existing_emergency_columns = [
+        row["name"]
+        for row in conn.execute(
+            "PRAGMA table_info(emergency_visits)"
+        ).fetchall()
+    ]
+
+    for column_name, column_type in emergency_columns:
+
+        if column_name not in existing_emergency_columns:
+
+            conn.execute(
+                f"""
+                ALTER TABLE emergency_visits
+                ADD COLUMN {column_name} {column_type}
+                """
+            )
+            
     # =====================================================
     # DEFAULT LABORATORY TESTS
     # =====================================================
@@ -551,6 +695,7 @@ def init_db():
             VALUES (?, ?, ?, ?, ?, ?, ?)
         """, default_tests)
 
+
     # =====================================================
     # DEFAULT ADMIN
     # =====================================================
@@ -569,17 +714,29 @@ def init_db():
                 password,
                 role,
                 doctor_id,
-                patient_id
+                patient_id,
+                email
             )
 
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
         """, (
+
             "admin",
-            generate_password_hash("admin123"),
+
+            generate_password_hash(
+                "admin123"
+            ),
+
             "Admin",
+
             None,
+
+            None,
+
             None
+
         ))
+
 
     # =====================================================
     # PASSWORD HASH MIGRATION
@@ -608,11 +765,15 @@ def init_db():
 
                 WHERE id = ?
             """, (
+
                 generate_password_hash(
                     stored_password
                 ),
+
                 existing_user["id"]
+
             ))
+
 
     # =====================================================
     # OLD APPOINTMENT STATUS MIGRATION
@@ -626,6 +787,7 @@ def init_db():
         WHERE status = 'Confirmed'
     """)
 
+
     # =====================================================
     # SAVE DATABASE
     # =====================================================
@@ -633,9 +795,7 @@ def init_db():
     conn.commit()
 
     conn.close()
-
-
-# =========================================================
+ # =========================================================
 # LOGIN REQUIRED
 # =========================================================
 
@@ -646,13 +806,61 @@ def login_required(function):
 
         if "user_id" not in session:
 
-            return redirect(url_for("login"))
+            return redirect(
+                url_for("login")
+            )
+
+        # =================================================
+        # SESSION TIMEOUT
+        # 30 MINUTES OF INACTIVITY
+        # =================================================
+
+        now = datetime.now()
+
+        last_activity = session.get(
+            "last_activity"
+        )
+
+        if last_activity:
+
+            try:
+
+                last_activity_time = datetime.fromisoformat(
+                    last_activity
+                )
+
+                inactive_time = (
+                    now - last_activity_time
+                ).total_seconds()
+
+                # 30 minutes = 1800 seconds
+                if inactive_time > 1800:
+
+                    session.clear()
+
+                    return redirect(
+                        url_for(
+                            "login",
+                            timeout="1"
+                        )
+                    )
+
+            except ValueError:
+
+                # Invalid activity timestamp.
+                # Clear the session for safety.
+                session.clear()
+
+                return redirect(
+                    url_for("login")
+                )
+
+        # Update activity timestamp
+        session["last_activity"] = now.isoformat()
 
         return function(*args, **kwargs)
 
     return decorated_function
-
-
 # =========================================================
 # ROLE REQUIRED
 # =========================================================
@@ -728,20 +936,32 @@ def admin_required(function):
         return function(*args, **kwargs)
 
     return decorated_function
-
-
 # =========================================================
 # LOGIN
 # =========================================================
 
 @app.route("/login", methods=["GET", "POST"])
+@csrf.exempt
 def login():
 
     if request.method == "POST":
 
-        username = request.form["username"].strip()
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
 
-        password = request.form["password"]
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        if not username or not password:
+
+            return render_template(
+                "login.html",
+                error="Please enter your username and password."
+            )
 
         conn = get_db_connection()
 
@@ -753,10 +973,15 @@ def login():
             username,
         )).fetchone()
 
-        if user and check_password_hash(user["password"], password):
+        if user and check_password_hash(
+            user["password"],
+            password
+        ):
 
             conn.close()
 
+            # Start a completely new session
+            # after successful authentication.
             session.clear()
 
             session["user_id"] = user["id"]
@@ -769,10 +994,18 @@ def login():
 
             session["patient_id"] = user["patient_id"]
 
-            if user["role"] == "Patient":
-                return redirect(url_for("patient_dashboard"))
+            # Record the time of successful login.
+            session["last_activity"] = datetime.now().isoformat()
 
-            return redirect(url_for("home"))
+            if user["role"] == "Patient":
+
+                return redirect(
+                    url_for("patient_dashboard")
+                )
+
+            return redirect(
+                url_for("home")
+            )
 
         conn.close()
 
@@ -781,10 +1014,25 @@ def login():
             error="Invalid username or password."
         )
 
-    return render_template("login.html")
+    # =====================================================
+    # SESSION TIMEOUT MESSAGE
+    # =====================================================
 
+    if request.args.get("timeout") == "1":
 
+        return render_template(
+            "login.html",
+            error=(
+                "Your session has expired after "
+                "30 minutes of inactivity. "
+                "Please login again."
+            )
+        )
 
+    return render_template(
+        "login.html"
+    )
+    
 # =========================================================
 # PATIENT SELF REGISTRATION
 # =========================================================
@@ -951,8 +1199,466 @@ def logout():
     session.clear()
 
     return redirect(url_for("login"))
+# =========================================================
+# CHANGE PASSWORD
+# =========================================================
 
+@app.route("/change-password", methods=["GET", "POST"])
+@login_required
+def change_password():
 
+    if request.method == "POST":
+
+        current_password = request.form.get(
+            "current_password",
+            ""
+        )
+
+        new_password = request.form.get(
+            "new_password",
+            ""
+        )
+
+        confirm_password = request.form.get(
+            "confirm_password",
+            ""
+        )
+
+        # -------------------------------------------------
+        # BASIC VALIDATION
+        # -------------------------------------------------
+
+        if not current_password:
+            return render_template(
+                "change_password.html",
+                error="Please enter your current password."
+            )
+
+        if not new_password:
+            return render_template(
+                "change_password.html",
+                error="Please enter a new password."
+            )
+
+        if not confirm_password:
+            return render_template(
+                "change_password.html",
+                error="Please confirm your new password."
+            )
+
+        # -------------------------------------------------
+        # NEW PASSWORD MATCH
+        # -------------------------------------------------
+
+        if new_password != confirm_password:
+            return render_template(
+                "change_password.html",
+                error="New password and confirmation password do not match."
+            )
+
+        # -------------------------------------------------
+        # PASSWORD LENGTH
+        # -------------------------------------------------
+
+        if len(new_password) < 8:
+            return render_template(
+                "change_password.html",
+                error="New password must be at least 8 characters long."
+            )
+
+        # -------------------------------------------------
+        # GET CURRENT USER
+        # -------------------------------------------------
+
+        conn = get_db_connection()
+
+        user = conn.execute("""
+            SELECT id, password
+            FROM users
+            WHERE id = ?
+        """, (
+            session["user_id"],
+        )).fetchone()
+
+        if user is None:
+
+            conn.close()
+
+            session.clear()
+
+            return redirect(
+                url_for("login")
+            )
+
+        # -------------------------------------------------
+        # VERIFY CURRENT PASSWORD
+        # -------------------------------------------------
+
+        if not check_password_hash(
+            user["password"],
+            current_password
+        ):
+
+            conn.close()
+
+            return render_template(
+                "change_password.html",
+                error="Current password is incorrect."
+            )
+
+        # -------------------------------------------------
+        # PREVENT SAME PASSWORD
+        # -------------------------------------------------
+
+        if check_password_hash(
+            user["password"],
+            new_password
+        ):
+
+            conn.close()
+
+            return render_template(
+                "change_password.html",
+                error="New password must be different from your current password."
+            )
+
+        # -------------------------------------------------
+        # HASH NEW PASSWORD
+        # -------------------------------------------------
+
+        new_password_hash = generate_password_hash(
+            new_password
+        )
+
+        # -------------------------------------------------
+        # UPDATE ONLY CURRENT USER
+        # -------------------------------------------------
+
+        conn.execute("""
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        """, (
+            new_password_hash,
+            session["user_id"]
+        ))
+
+        conn.commit()
+
+        conn.close()
+
+        return render_template(
+            "change_password.html",
+            success="Your password has been changed successfully."
+        )
+
+    return render_template(
+        "change_password.html"
+    )
+    
+# =========================================================
+# FORGOT PASSWORD
+# =========================================================
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+
+    if request.method == "POST":
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        if not email:
+            return render_template(
+                "forgot_password.html",
+                error="Please enter your recovery email address."
+            )
+
+        conn = get_db_connection()
+
+        user = conn.execute("""
+            SELECT id, username
+            FROM users
+            WHERE LOWER(email) = ?
+        """, (
+            email,
+        )).fetchone()
+
+        if user:
+
+            # Generate a secure random token
+            import secrets
+            import hashlib
+
+            raw_token = secrets.token_urlsafe(32)
+
+            token_hash = hashlib.sha256(
+                raw_token.encode()
+            ).hexdigest()
+
+            now = datetime.now()
+
+            expires_at = now + timedelta(
+                minutes=5
+            )
+
+            # Invalidate previous unused tokens
+            conn.execute("""
+                UPDATE password_reset_tokens
+                SET used_at = ?
+                WHERE user_id = ?
+                AND used_at IS NULL
+            """, (
+                now.isoformat(),
+                user["id"]
+            ))
+
+            # Store only the token hash
+            conn.execute("""
+                INSERT INTO password_reset_tokens
+                (
+                    user_id,
+                    token_hash,
+                    expires_at,
+                    created_at
+                )
+                VALUES (?, ?, ?, ?)
+            """, (
+                user["id"],
+                token_hash,
+                expires_at.isoformat(),
+                now.isoformat()
+            ))
+
+            conn.commit()
+            conn.close()
+
+            # Temporary local-development reset link.
+            # Email sending will be connected later.
+            reset_link = url_for(
+                "reset_password",
+                token=raw_token,
+                _external=True
+            )
+
+            return render_template(
+                "forgot_password.html",
+                success=(
+                    "A password reset link has been generated. "
+                    "It is valid for 5 minutes."
+                ),
+                reset_link=reset_link
+            )
+
+        conn.close()
+
+        # Do not reveal whether the email exists.
+        return render_template(
+            "forgot_password.html",
+            success=(
+                "If this email is registered in the system, "
+                "password recovery instructions will be provided."
+            )
+        )
+
+    return render_template(
+        "forgot_password.html"
+    )
+    
+    # =========================================================
+# RESET PASSWORD
+# =========================================================
+
+@app.route("/reset-password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+
+    import hashlib
+
+    token_hash = hashlib.sha256(
+        token.encode()
+    ).hexdigest()
+
+    conn = get_db_connection()
+
+    reset_record = conn.execute("""
+        SELECT
+            password_reset_tokens.id,
+            password_reset_tokens.user_id,
+            password_reset_tokens.expires_at,
+            password_reset_tokens.used_at
+        FROM password_reset_tokens
+        WHERE password_reset_tokens.token_hash = ?
+    """, (
+        token_hash,
+    )).fetchone()
+
+    if reset_record is None:
+
+        conn.close()
+
+        return render_template(
+            "reset_password.html",
+            error="This password reset link is invalid."
+        )
+
+    if reset_record["used_at"] is not None:
+
+        conn.close()
+
+        return render_template(
+            "reset_password.html",
+            error="This password reset link has already been used."
+        )
+
+    try:
+
+        expires_at = datetime.fromisoformat(
+            reset_record["expires_at"]
+        )
+
+    except ValueError:
+
+        conn.close()
+
+        return render_template(
+            "reset_password.html",
+            error="This password reset link is invalid."
+        )
+
+    if datetime.now() > expires_at:
+
+        conn.close()
+
+        return render_template(
+            "reset_password.html",
+            error="This password reset link has expired."
+        )
+
+    if request.method == "POST":
+
+        new_password = request.form.get(
+            "new_password",
+            ""
+        )
+
+        confirm_password = request.form.get(
+            "confirm_password",
+            ""
+        )
+
+        if not new_password:
+
+            conn.close()
+
+            return render_template(
+                "reset_password.html",
+                error="Please enter your new password."
+            )
+
+        if not confirm_password:
+
+            conn.close()
+
+            return render_template(
+                "reset_password.html",
+                error="Please confirm your new password."
+            )
+
+        if new_password != confirm_password:
+
+            conn.close()
+
+            return render_template(
+                "reset_password.html",
+                error="Passwords do not match."
+            )
+
+        if len(new_password) < 8:
+
+            conn.close()
+
+            return render_template(
+                "reset_password.html",
+                error=(
+                    "Password must be at least "
+                    "8 characters long."
+                )
+            )
+
+        user = conn.execute("""
+            SELECT id, password
+            FROM users
+            WHERE id = ?
+        """, (
+            reset_record["user_id"],
+        )).fetchone()
+
+        if user is None:
+
+            conn.close()
+
+            return render_template(
+                "reset_password.html",
+                error="User account could not be found."
+            )
+
+        if check_password_hash(
+            user["password"],
+            new_password
+        ):
+
+            conn.close()
+
+            return render_template(
+                "reset_password.html",
+                error=(
+                    "New password must be different "
+                    "from your current password."
+                )
+            )
+
+        new_password_hash = generate_password_hash(
+            new_password
+        )
+
+        conn.execute("""
+            UPDATE users
+            SET password = ?
+            WHERE id = ?
+        """, (
+            new_password_hash,
+            user["id"]
+        ))
+
+        # Mark token as used
+        conn.execute("""
+            UPDATE password_reset_tokens
+            SET used_at = ?
+            WHERE id = ?
+        """, (
+            datetime.now().isoformat(),
+            reset_record["id"]
+        ))
+
+        conn.commit()
+        conn.close()
+
+        return render_template(
+            "reset_password.html",
+            success=(
+                "Your password has been reset successfully. "
+                "You can now log in with your new password."
+            )
+        )
+
+    conn.close()
+
+    return render_template(
+        "reset_password.html"
+    )
+    
 # =========================================================
 # DASHBOARD
 # =========================================================
@@ -1040,7 +1746,6 @@ def home():
         role=session["role"]
     )
 
-
 # =========================================================
 # USER MANAGEMENT
 # ADMIN ONLY
@@ -1054,9 +1759,65 @@ def users():
 
     if request.method == "POST":
 
-        username = request.form["username"]
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
 
-        password = request.form.get("password", "").strip()
+        email = request.form.get(
+            "email",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        ).strip()
+
+        role = request.form.get(
+            "role",
+            ""
+        ).strip()
+
+
+        # =================================================
+        # EMAIL VALIDATION
+        # =================================================
+
+        if not email:
+
+            doctors = conn.execute("""
+                SELECT *
+                FROM doctors
+                ORDER BY full_name
+            """).fetchall()
+
+            patients = conn.execute("""
+                SELECT *
+                FROM patients
+                ORDER BY full_name
+            """).fetchall()
+
+            users_list = conn.execute("""
+                SELECT *
+                FROM users
+                ORDER BY id
+            """).fetchall()
+
+            conn.close()
+
+            return render_template(
+                "users.html",
+                users=users_list,
+                doctors=doctors,
+                patients=patients,
+                error="Recovery email is required for a new user."
+            )
+
+
+        # =================================================
+        # PASSWORD VALIDATION
+        # =================================================
 
         if not password:
 
@@ -1088,19 +1849,69 @@ def users():
                 error="Password is required for a new user."
             )
 
-        hashed_password = generate_password_hash(password)
 
-        role = request.form["role"]
+        if len(password) < 8:
+
+            doctors = conn.execute("""
+                SELECT *
+                FROM doctors
+                ORDER BY full_name
+            """).fetchall()
+
+            patients = conn.execute("""
+                SELECT *
+                FROM patients
+                ORDER BY full_name
+            """).fetchall()
+
+            users_list = conn.execute("""
+                SELECT *
+                FROM users
+                ORDER BY id
+            """).fetchall()
+
+            conn.close()
+
+            return render_template(
+                "users.html",
+                users=users_list,
+                doctors=doctors,
+                patients=patients,
+                error="Password must be at least 8 characters long."
+            )
+
+
+        # =================================================
+        # PASSWORD HASH
+        # =================================================
+
+        hashed_password = generate_password_hash(
+            password
+        )
+
+
+        # =================================================
+        # ALLOWED USER ROLES
+        # =================================================
 
         allowed_user_roles = [
+
             "Admin",
+
             "Doctor",
+
             "Receptionist",
+
             "Data Analyst",
+
             "Patient",
+
             "Laboratorian",
+
             "Pharmacist"
+
         ]
+
 
         if role not in allowed_user_roles:
 
@@ -1132,13 +1943,25 @@ def users():
                 error="Invalid user role selected."
             )
 
+
+        # =================================================
+        # DOCTOR / PATIENT PROFILE IDs
+        # =================================================
+
         doctor_id = None
 
         patient_id = None
 
+
+        # =================================================
+        # DOCTOR ROLE
+        # =================================================
+
         if role == "Doctor":
 
-            doctor_id = request.form.get("doctor_id")
+            doctor_id = request.form.get(
+                "doctor_id"
+            )
 
             if not doctor_id:
 
@@ -1170,9 +1993,16 @@ def users():
                     error="Please select a Doctor Profile."
                 )
 
+
+        # =================================================
+        # PATIENT ROLE
+        # =================================================
+
         elif role == "Patient":
 
-            patient_id = request.form.get("patient_id")
+            patient_id = request.form.get(
+                "patient_id"
+            )
 
             if not patient_id:
 
@@ -1204,6 +2034,55 @@ def users():
                     error="Please select a Patient Profile."
                 )
 
+
+        # =================================================
+        # CHECK IF EMAIL ALREADY EXISTS
+        # =================================================
+
+        existing_email = conn.execute("""
+            SELECT id
+            FROM users
+            WHERE LOWER(email) = ?
+        """, (
+            email,
+        )).fetchone()
+
+
+        if existing_email:
+
+            users_list = conn.execute("""
+                SELECT *
+                FROM users
+                ORDER BY id
+            """).fetchall()
+
+            doctors = conn.execute("""
+                SELECT *
+                FROM doctors
+                ORDER BY full_name
+            """).fetchall()
+
+            patients = conn.execute("""
+                SELECT *
+                FROM patients
+                ORDER BY full_name
+            """).fetchall()
+
+            conn.close()
+
+            return render_template(
+                "users.html",
+                users=users_list,
+                doctors=doctors,
+                patients=patients,
+                error="This recovery email is already in use."
+            )
+
+
+        # =================================================
+        # CREATE NEW USER
+        # =================================================
+
         try:
 
             conn.execute("""
@@ -1213,19 +2092,22 @@ def users():
                     password,
                     role,
                     doctor_id,
-                    patient_id
+                    patient_id,
+                    email
                 )
 
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?)
             """, (
                 username,
                 hashed_password,
                 role,
                 doctor_id,
-                patient_id
+                patient_id,
+                email
             ))
 
             conn.commit()
+
 
         except sqlite3.IntegrityError:
 
@@ -1257,6 +2139,11 @@ def users():
                 error="Username already exists."
             )
 
+
+    # =====================================================
+    # LOAD USERS
+    # =====================================================
+
     users_list = conn.execute("""
         SELECT
 
@@ -1277,11 +2164,21 @@ def users():
         ORDER BY users.id
     """).fetchall()
 
+
+    # =====================================================
+    # LOAD DOCTORS
+    # =====================================================
+
     doctors = conn.execute("""
         SELECT *
         FROM doctors
         ORDER BY full_name
     """).fetchall()
+
+
+    # =====================================================
+    # LOAD PATIENTS
+    # =====================================================
 
     patients = conn.execute("""
         SELECT *
@@ -1289,7 +2186,13 @@ def users():
         ORDER BY full_name
     """).fetchall()
 
+
     conn.close()
+
+
+    # =====================================================
+    # DISPLAY USER MANAGEMENT PAGE
+    # =====================================================
 
     return render_template(
         "users.html",
@@ -1297,8 +2200,6 @@ def users():
         doctors=doctors,
         patients=patients
     )
-
-
 # =========================================================
 # EDIT USER
 # ADMIN ONLY
@@ -1697,6 +2598,594 @@ def add_patient():
     conn.close()
 
     return redirect(url_for("patients"))
+
+# =========================================================
+# EMD - EMERGENCY PATIENT REGISTRATION
+# ADMIN + RECEPTIONIST
+# =========================================================
+
+@app.route(
+    "/emergency_register",
+    methods=["GET", "POST"]
+)
+@role_required(
+    "Admin",
+    "Receptionist"
+)
+def emergency_register():
+
+    if request.method == "POST":
+
+        patient_name = request.form.get(
+            "patient_name",
+            ""
+        ).strip()
+
+        gender = request.form.get(
+            "gender",
+            ""
+        ).strip()
+
+        age = request.form.get(
+            "age",
+            ""
+        ).strip()
+
+        phone = request.form.get(
+            "phone",
+            ""
+        ).strip()
+
+        emergency_reason = request.form.get(
+            "emergency_reason",
+            ""
+        ).strip()
+
+        # -------------------------------------------------
+        # BASIC VALIDATION
+        # -------------------------------------------------
+
+        if not patient_name:
+
+            return render_template(
+                "emergency_register.html",
+                error="Patient name is required.",
+                username=session.get("username"),
+                role=session.get("role")
+            )
+
+        if not gender:
+
+            return render_template(
+                "emergency_register.html",
+                error="Please select the patient's gender.",
+                username=session.get("username"),
+                role=session.get("role")
+            )
+
+        if not emergency_reason:
+
+            return render_template(
+                "emergency_register.html",
+                error="Emergency reason is required.",
+                username=session.get("username"),
+                role=session.get("role")
+            )
+
+        # -------------------------------------------------
+        # AGE VALIDATION
+        # -------------------------------------------------
+
+        if age:
+
+            try:
+
+                age = int(age)
+
+            except ValueError:
+
+                return render_template(
+                    "emergency_register.html",
+                    error="Age must be a valid number.",
+                    username=session.get("username"),
+                    role=session.get("role")
+                )
+
+            if age < 0 or age > 120:
+
+                return render_template(
+                    "emergency_register.html",
+                    error="Please enter a valid age.",
+                    username=session.get("username"),
+                    role=session.get("role")
+                )
+
+        else:
+
+            age = None
+
+        # -------------------------------------------------
+        # PHONE VALIDATION
+        # -------------------------------------------------
+
+        if phone:
+
+            if (
+                len(phone) != 10
+                or not phone.isdigit()
+                or not (
+                    phone.startswith("06")
+                    or phone.startswith("07")
+                )
+            ):
+
+                return render_template(
+                    "emergency_register.html",
+                    error=(
+                        "Phone number must contain 10 digits "
+                        "and start with 06 or 07."
+                    ),
+                    username=session.get("username"),
+                    role=session.get("role")
+                )
+
+        # -------------------------------------------------
+        # CREATE EMERGENCY NUMBER
+        # -------------------------------------------------
+
+        current_year = datetime.now().year
+
+        conn = get_db_connection()
+
+        last_emergency = conn.execute("""
+            SELECT emergency_number
+            FROM emergency_visits
+            WHERE emergency_number LIKE ?
+            ORDER BY id DESC
+            LIMIT 1
+        """, (
+            f"EMD-{current_year}-%",
+        )).fetchone()
+
+        if last_emergency:
+
+            try:
+
+                last_number = int(
+                    last_emergency["emergency_number"]
+                    .split("-")[-1]
+                )
+
+            except (ValueError, IndexError):
+
+                last_number = 0
+
+        else:
+
+            last_number = 0
+
+        emergency_number = (
+            f"EMD-{current_year}-{last_number + 1:03d}"
+        )
+
+        # -------------------------------------------------
+        # SAVE EMERGENCY VISIT
+        # -------------------------------------------------
+
+        conn.execute("""
+            INSERT INTO emergency_visits
+            (
+                emergency_number,
+                patient_name,
+                gender,
+                age,
+                phone,
+                emergency_reason,
+                status,
+                doctor_id,
+                created_at
+            )
+
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+
+            emergency_number,
+
+            patient_name,
+
+            gender,
+
+            age,
+
+            phone if phone else None,
+
+            emergency_reason,
+
+            "Under Treatment",
+
+            None,
+
+            datetime.now().isoformat()
+
+        ))
+
+        conn.commit()
+
+        conn.close()
+
+        return redirect(
+            url_for(
+                "emergency_register",
+                registered=emergency_number
+            )
+        )
+
+    # -----------------------------------------------------
+    # SUCCESS MESSAGE
+    # -----------------------------------------------------
+
+    registered_number = request.args.get(
+        "registered"
+    )
+
+    return render_template(
+        "emergency_register.html",
+        registered_number=registered_number,
+        username=session.get("username"),
+        role=session.get("role")
+    )
+    # =========================================================
+# EMD - DOCTOR EMERGENCY CASES
+# DOCTOR ONLY
+# =========================================================
+
+@app.route("/emergency_cases")
+@role_required("Doctor")
+def emergency_cases():
+
+    conn = get_db_connection()
+
+    doctor_id = session.get("doctor_id")
+
+    emergency_cases_list = conn.execute("""
+        SELECT
+            emergency_visits.*,
+            doctors.full_name AS doctor_name
+
+        FROM emergency_visits
+
+        LEFT JOIN doctors
+        ON emergency_visits.doctor_id = doctors.id
+
+        WHERE
+            emergency_visits.doctor_id IS NULL
+            OR emergency_visits.doctor_id = ?
+
+        ORDER BY
+            CASE
+                WHEN emergency_visits.status = 'Under Treatment'
+                THEN 0
+                WHEN emergency_visits.status = 'Admitted'
+                THEN 1
+                ELSE 2
+            END,
+            emergency_visits.created_at DESC
+    """, (
+        doctor_id,
+    )).fetchall()
+
+    conn.close()
+
+    return render_template(
+        "emergency_cases.html",
+
+        emergency_cases=emergency_cases_list,
+
+        username=session.get("username"),
+
+        role=session.get("role"),
+
+        doctor_id=doctor_id
+    )
+
+
+# =========================================================
+# EMD - DOCTOR TAKE EMERGENCY CASE
+# DOCTOR ONLY
+# =========================================================
+
+@app.route(
+    "/emergency_cases/<int:emergency_id>/take",
+    methods=["POST"]
+)
+@role_required("Doctor")
+def take_emergency_case(emergency_id):
+
+    doctor_id = session.get("doctor_id")
+
+    conn = get_db_connection()
+
+    emergency_case = conn.execute("""
+        SELECT *
+        FROM emergency_visits
+        WHERE id = ?
+    """, (
+        emergency_id,
+    )).fetchone()
+
+    if emergency_case is None:
+
+        conn.close()
+
+        return "Emergency case not found."
+
+    # -----------------------------------------------------
+    # PREVENT ANOTHER DOCTOR FROM TAKING AN ASSIGNED CASE
+    # -----------------------------------------------------
+
+    if emergency_case["doctor_id"] is not None:
+
+        if str(emergency_case["doctor_id"]) != str(
+            doctor_id
+        ):
+
+            conn.close()
+
+            return """
+                <h1>Access Denied</h1>
+
+                <p>
+                    This emergency case is already
+                    assigned to another doctor.
+                </p>
+
+                <a href="/emergency_cases">
+                    Back to Emergency Cases
+                </a>
+            """
+
+    # -----------------------------------------------------
+    # ASSIGN CASE TO CURRENT DOCTOR
+    # -----------------------------------------------------
+
+    conn.execute("""
+        UPDATE emergency_visits
+
+        SET
+            doctor_id = ?,
+            status = 'Under Treatment'
+
+        WHERE id = ?
+    """, (
+        doctor_id,
+        emergency_id
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return redirect(
+        url_for("emergency_cases")
+    )
+    
+    # =========================================================
+# EMD - EMERGENCY CASE DETAILS
+# DOCTOR ONLY
+# =========================================================
+
+@app.route(
+    "/emergency_cases/<int:emergency_id>",
+    methods=["GET", "POST"]
+)
+@role_required("Doctor")
+def emergency_case_details(emergency_id):
+
+    doctor_id = session.get("doctor_id")
+
+    conn = get_db_connection()
+
+    # -----------------------------------------------------
+    # GET EMERGENCY CASE
+    # -----------------------------------------------------
+
+    emergency_case = conn.execute("""
+        SELECT
+            emergency_visits.*,
+            doctors.full_name AS doctor_name
+
+        FROM emergency_visits
+
+        LEFT JOIN doctors
+        ON emergency_visits.doctor_id = doctors.id
+
+        WHERE emergency_visits.id = ?
+    """, (
+        emergency_id,
+    )).fetchone()
+
+    # -----------------------------------------------------
+    # CHECK CASE EXISTS
+    # -----------------------------------------------------
+
+    if emergency_case is None:
+
+        conn.close()
+
+        return "Emergency case not found."
+
+    # -----------------------------------------------------
+    # PREVENT DOCTOR FROM ACCESSING ANOTHER DOCTOR'S CASE
+    # -----------------------------------------------------
+
+    if emergency_case["doctor_id"] is None:
+
+        conn.close()
+
+        return """
+            <h1>Access Denied</h1>
+
+            <p>
+                This emergency case has not yet been
+                assigned to a doctor.
+            </p>
+
+            <a href="/emergency_cases">
+                Back to Emergency Cases
+            </a>
+        """
+
+    if str(emergency_case["doctor_id"]) != str(
+        doctor_id
+    ):
+
+        conn.close()
+
+        return """
+            <h1>Access Denied</h1>
+
+            <p>
+                This emergency case is assigned to
+                another doctor.
+            </p>
+
+            <a href="/emergency_cases">
+                Back to Emergency Cases
+            </a>
+        """
+
+    # -----------------------------------------------------
+    # UPDATE EMERGENCY CASE
+    # -----------------------------------------------------
+
+    if request.method == "POST":
+
+        symptoms = request.form.get(
+            "symptoms",
+            ""
+        ).strip()
+
+        examination = request.form.get(
+            "examination",
+            ""
+        ).strip()
+
+        diagnosis = request.form.get(
+            "diagnosis",
+            ""
+        ).strip()
+
+        treatment = request.form.get(
+            "treatment",
+            ""
+        ).strip()
+
+        laboratory_request = request.form.get(
+            "laboratory_request",
+            ""
+        ).strip()
+
+        doctor_notes = request.form.get(
+            "doctor_notes",
+            ""
+        ).strip()
+
+        status = request.form.get(
+            "status",
+            "Under Treatment"
+        ).strip()
+
+        # -------------------------------------------------
+        # VALID STATUS
+        # -------------------------------------------------
+
+        allowed_statuses = [
+            "Under Treatment",
+            "Admitted",
+            "Discharged",
+            "Referred"
+        ]
+
+        if status not in allowed_statuses:
+
+            status = "Under Treatment"
+
+        # -------------------------------------------------
+        # SAVE CLINICAL DETAILS
+        # -------------------------------------------------
+
+        conn.execute("""
+            UPDATE emergency_visits
+
+            SET
+
+                symptoms = ?,
+
+                examination = ?,
+
+                diagnosis = ?,
+
+                treatment = ?,
+
+                laboratory_request = ?,
+
+                doctor_notes = ?,
+
+                status = ?
+
+            WHERE id = ?
+
+            AND doctor_id = ?
+        """, (
+
+            symptoms,
+
+            examination,
+
+            diagnosis,
+
+            treatment,
+
+            laboratory_request,
+
+            doctor_notes,
+
+            status,
+
+            emergency_id,
+
+            doctor_id
+
+        ))
+
+        conn.commit()
+
+        conn.close()
+
+        return redirect(
+            url_for(
+                "emergency_case_details",
+                emergency_id=emergency_id
+            )
+        )
+
+    # -----------------------------------------------------
+    # DISPLAY CASE DETAILS
+    # -----------------------------------------------------
+
+    conn.close()
+
+    return render_template(
+        "emergency_case_details.html",
+
+        emergency_case=emergency_case,
+
+        username=session.get("username"),
+
+        role=session.get("role"),
+
+        doctor_id=doctor_id
+    )
 
 
 # =========================================================
@@ -5841,7 +7330,6 @@ def assign_laboratory_result(result_id):
         )
     )
 
-
 # =========================================================
 # LABORATORY REPORT
 # =========================================================
@@ -5856,15 +7344,22 @@ def laboratory_report():
 
     conn = get_db_connection()
 
+
+    # =====================================================
+    # SUMMARY COUNTS
+    # =====================================================
+
     total_tests = conn.execute("""
         SELECT COUNT(*) AS count
         FROM laboratory_tests
     """).fetchone()["count"]
 
+
     total_requests = conn.execute("""
         SELECT COUNT(*) AS count
         FROM laboratory_requests
     """).fetchone()["count"]
+
 
     pending_requests = conn.execute("""
         SELECT COUNT(*) AS count
@@ -5872,11 +7367,13 @@ def laboratory_report():
         WHERE status = 'Pending'
     """).fetchone()["count"]
 
+
     processing_requests = conn.execute("""
         SELECT COUNT(*) AS count
         FROM laboratory_requests
         WHERE status = 'Processing'
     """).fetchone()["count"]
+
 
     completed_requests = conn.execute("""
         SELECT COUNT(*) AS count
@@ -5884,13 +7381,47 @@ def laboratory_report():
         WHERE status = 'Completed'
     """).fetchone()["count"]
 
+
     cancelled_requests = conn.execute("""
         SELECT COUNT(*) AS count
         FROM laboratory_requests
         WHERE status = 'Cancelled'
     """).fetchone()["count"]
 
-    test_usage = conn.execute("""
+
+
+    # =====================================================
+    # REQUESTS BY STATUS
+    # =====================================================
+
+    status_data_rows = conn.execute("""
+        SELECT
+            status,
+            COUNT(*) AS total
+        FROM laboratory_requests
+        GROUP BY status
+        ORDER BY total DESC
+    """).fetchall()
+
+
+    status_data = [
+
+        {
+            "status": row["status"],
+            "total": row["total"]
+        }
+
+        for row in status_data_rows
+
+    ]
+
+
+
+    # =====================================================
+    # MOST REQUESTED TESTS
+    # =====================================================
+
+    test_usage_rows = conn.execute("""
         SELECT
 
             laboratory_tests.test_name,
@@ -5908,7 +7439,7 @@ def laboratory_report():
                     THEN 1
                     ELSE 0
                 END
-            ) AS completed
+            ) AS completed_requests
 
         FROM laboratory_tests
 
@@ -5921,16 +7452,41 @@ def laboratory_report():
         ORDER BY total_requests DESC
     """).fetchall()
 
-    specialty_data = conn.execute("""
+
+    test_usage = [
+
+        {
+            "test_name": row["test_name"],
+
+            "category": row["category"],
+
+            "total_requests": row["total_requests"],
+
+            "completed_requests":
+                row["completed_requests"] or 0
+        }
+
+        for row in test_usage_rows
+
+    ]
+
+
+    # =====================================================
+    # REQUESTS BY RECOMMENDED SPECIALTY
+    # =====================================================
+
+    specialty_rows = conn.execute("""
         SELECT
 
             COALESCE(
                 laboratory_results.recommended_specialty,
                 laboratory_tests.recommended_specialty,
                 'Not Assigned'
-            ) AS specialty,
+            ) AS recommended_specialty,
 
-            COUNT(laboratory_requests.id) AS total
+            COUNT(
+                laboratory_requests.id
+            ) AS total_requests
 
         FROM laboratory_requests
 
@@ -5942,12 +7498,38 @@ def laboratory_report():
         ON laboratory_requests.id =
            laboratory_results.request_id
 
-        GROUP BY specialty
+        GROUP BY
+            COALESCE(
+                laboratory_results.recommended_specialty,
+                laboratory_tests.recommended_specialty,
+                'Not Assigned'
+            )
 
-        ORDER BY total DESC
+        ORDER BY total_requests DESC
+
     """).fetchall()
 
+
+    specialty_usage = [
+
+        {
+            "recommended_specialty":
+                row["recommended_specialty"],
+
+            "total_requests":
+                row["total_requests"]
+        }
+
+        for row in specialty_rows
+
+    ]
+
+
     conn.close()
+
+    # =====================================================
+    # RENDER REPORT
+    # =====================================================
 
     return render_template(
         "laboratory_report.html",
@@ -5964,15 +7546,16 @@ def laboratory_report():
 
         cancelled_requests=cancelled_requests,
 
+        status_data=status_data,
+
         test_usage=test_usage,
 
-        specialty_data=specialty_data,
+        specialty_usage=specialty_usage,
 
         username=session.get("username"),
 
         role=session.get("role")
     )
-
 
 # =========================================================
 # REPORTS HELPER

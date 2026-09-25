@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pharmacy Prescriptions - Hospital Data Analytics System</title>
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+    Pharmacy Prescriptions - Hospital Data Analytics System
+</title>
 
 <style>
 
@@ -17,130 +24,182 @@
         margin: 0;
         padding: 0;
         font-family: Arial, Helvetica, sans-serif;
-        background: #f4f7fb;
+        background: #f5f7fa;
         color: #1f2937;
     }
 
-    .header {
-        background: #ffffff;
-        padding: 25px 40px;
-        border-bottom: 1px solid #e5e7eb;
+    /* =====================================================
+       PAGE
+       ===================================================== */
+
+    .prescriptions-page {
+        min-height: 100vh;
+        background: #f5f7fa;
     }
 
-    .header h1 {
-        margin: 0;
-        font-size: 28px;
-        color: #1f2937;
-    }
+    /* =====================================================
+       HEADER
+       ===================================================== */
 
-    .header p {
-        margin: 7px 0 0 0;
-        color: #6b7280;
-        font-size: 15px;
-    }
-
-    .user-info {
-        margin-top: 15px;
-        color: #374151;
-        font-size: 14px;
-    }
-
-    .user-info strong {
-        color: #111827;
-    }
-
-    .navigation {
-        background: #ffffff;
-        padding: 15px 40px;
-        border-bottom: 1px solid #e5e7eb;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-
-    .navigation a {
-        text-decoration: none;
-        color: #374151;
-        background: #f3f4f6;
-        padding: 10px 16px;
-        border-radius: 7px;
-        font-size: 14px;
-        font-weight: 600;
-        transition: 0.2s;
-    }
-
-    .navigation a:hover {
-        background: #e5e7eb;
-    }
-
-    .navigation .active {
-        background: #2563eb;
+    .prescriptions-header {
+        background: #0f4c5c;
         color: white;
-    }
+        padding: 20px 35px;
 
-    .navigation .logout {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-
-    .container {
-        width: 94%;
-        max-width: 1500px;
-        margin: 30px auto;
-    }
-
-    .page-title {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
+        gap: 25px;
+    }
+
+    .prescriptions-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+    }
+
+    .prescriptions-hospital-title p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        opacity: 0.95;
+    }
+
+    .prescriptions-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .prescriptions-user-info p {
+        margin: 0;
+    }
+
+    .prescriptions-logout {
+        display: inline-block;
+        margin-top: 4px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .prescriptions-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =====================================================
+       NAVIGATION
+       ===================================================== */
+
+    .prescriptions-nav {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #d9dee3;
+
+        padding: 12px 35px;
+
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .prescriptions-nav a {
+        text-decoration: none;
+        color: #0f4c5c;
+
+        padding: 8px 13px;
+        border-radius: 6px;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        transition: 0.2s ease;
+    }
+
+    .prescriptions-nav a:hover {
+        background: #e8f1f3;
+    }
+
+    .prescriptions-nav .prescriptions-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =====================================================
+       MAIN CONTAINER
+       ===================================================== */
+
+    .prescriptions-container {
+        width: 92%;
+        max-width: 1400px;
+        margin: 30px auto 45px;
+    }
+
+    /* =====================================================
+       PAGE TITLE
+       ===================================================== */
+
+    .prescriptions-page-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
         gap: 15px;
         margin-bottom: 25px;
+
         flex-wrap: wrap;
     }
 
-    .page-title h2 {
+    .prescriptions-page-title h2 {
         margin: 0;
         font-size: 25px;
-        color: #111827;
+        color: #123;
     }
 
-    .back-button {
+    .prescriptions-back-button {
         text-decoration: none;
-        background: #374151;
-        color: white;
-        padding: 11px 18px;
-        border-radius: 7px;
-        font-weight: 600;
+        color: #0d6efd;
+        font-weight: bold;
         font-size: 14px;
     }
 
-    .back-button:hover {
-        background: #1f2937;
+    .prescriptions-back-button:hover {
+        text-decoration: underline;
     }
 
-    /* ================================
-       PRESCRIPTION SUMMARY CARDS
-    ================================= */
+    /* =====================================================
+       SUMMARY TITLE
+       ===================================================== */
 
-    .summary-title {
-        margin-bottom: 15px;
+    .prescriptions-summary-title {
+        margin: 0 0 15px;
         font-size: 21px;
-        color: #111827;
+        color: #123;
     }
 
-    .summary-grid {
+    /* =====================================================
+       SUMMARY CARDS
+       ===================================================== */
+
+    .prescriptions-summary-grid {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 20px;
+
         margin-bottom: 30px;
     }
 
-    .summary-card {
-        background: #ffffff;
-        border-radius: 12px;
+    .prescriptions-summary-card {
+        background: white;
+
+        border-radius: 10px;
         padding: 23px;
+
         min-height: 135px;
+
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+
         border: 2px solid transparent;
 
         display: flex;
@@ -149,41 +208,43 @@
 
         text-decoration: none;
         color: inherit;
+
         cursor: pointer;
 
-        transition: 0.2s;
+        transition: 0.2s ease;
     }
 
-    .summary-card:hover {
+    .prescriptions-summary-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 7px 18px rgba(0, 0, 0, 0.11);
     }
 
-    .summary-card.active {
-        border-color: #2563eb;
+    .prescriptions-summary-card.active {
+        border-color: #0f4c5c;
     }
 
-    .summary-content h3 {
-        margin: 0 0 10px 0;
+    .prescriptions-summary-content h3 {
+        margin: 0 0 10px;
         font-size: 15px;
-        color: #6b7280;
+        color: #666;
     }
 
-    .summary-number {
+    .prescriptions-summary-number {
         font-size: 32px;
         font-weight: bold;
-        color: #111827;
+        color: #123;
     }
 
-    .summary-description {
+    .prescriptions-summary-description {
         margin-top: 7px;
         font-size: 12px;
-        color: #9ca3af;
+        color: #999;
     }
 
-    .summary-icon {
+    .prescriptions-summary-icon {
         width: 58px;
         height: 58px;
+
         border-radius: 12px;
 
         display: flex;
@@ -193,42 +254,46 @@
         font-size: 27px;
     }
 
-    .total-icon {
+    .prescriptions-total-icon {
         background: #dbeafe;
     }
 
-    .pending-icon {
+    .prescriptions-pending-icon {
         background: #fef3c7;
     }
 
-    .dispensed-icon {
+    .prescriptions-dispensed-icon {
         background: #dcfce7;
     }
 
-    .cancelled-icon {
+    .prescriptions-cancelled-icon {
         background: #fee2e2;
     }
 
-    /* ================================
+    /* =====================================================
        FILTER INFORMATION
-    ================================= */
+       ===================================================== */
 
-    .filter-info {
+    .prescriptions-filter-info {
         display: none;
+
         background: #eff6ff;
-        border-left: 4px solid #2563eb;
+        border-left: 4px solid #0f4c5c;
+
         padding: 12px 15px;
         margin-bottom: 20px;
+
         border-radius: 5px;
+
         color: #1e40af;
         font-size: 13px;
     }
 
-    .filter-info.show {
+    .prescriptions-filter-info.show {
         display: block;
     }
 
-    .clear-filter {
+    .prescriptions-clear-filter {
         float: right;
         color: #1d4ed8;
         font-weight: bold;
@@ -236,347 +301,503 @@
         cursor: pointer;
     }
 
-    /* ================================
-       FORM
-    ================================= */
-
-    .form-card {
-        background: white;
-        border-radius: 10px;
-        padding: 25px;
-        margin-bottom: 30px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        border: 1px solid #e5e7eb;
+    .prescriptions-clear-filter:hover {
+        text-decoration: underline;
     }
 
-    .form-card h3 {
-        margin-top: 0;
-        margin-bottom: 22px;
-        color: #111827;
+    /* =====================================================
+       FORM CARD
+       ===================================================== */
+
+    .prescriptions-form-card {
+        background: white;
+
+        border-radius: 10px;
+        padding: 25px;
+
+        margin-bottom: 30px;
+
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+
+        border: 1px solid #edf0f2;
+    }
+
+    .prescriptions-form-card h3 {
+        margin: 0 0 22px;
+        color: #123;
         font-size: 20px;
     }
 
-    .form-grid {
+    /* =====================================================
+       INFO BOX
+       ===================================================== */
+
+    .prescriptions-info-box {
+        background: #eff6ff;
+        border-left: 4px solid #0f4c5c;
+
+        padding: 12px 15px;
+        margin-bottom: 20px;
+
+        border-radius: 5px;
+
+        color: #1e40af;
+        font-size: 13px;
+    }
+
+    /* =====================================================
+       FORM
+       ===================================================== */
+
+    .prescriptions-form-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 18px;
     }
 
-    .form-group {
+    .prescriptions-form-group {
         display: flex;
         flex-direction: column;
     }
 
-    .form-group.full-width {
+    .prescriptions-form-group.full-width {
         grid-column: 1 / -1;
     }
 
-    .form-group label {
+    .prescriptions-form-group label {
         font-size: 14px;
         font-weight: 600;
         color: #374151;
+
         margin-bottom: 7px;
     }
 
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
+    .prescriptions-form-group input,
+    .prescriptions-form-group select,
+    .prescriptions-form-group textarea {
+
         width: 100%;
+
         padding: 11px 12px;
+
         border: 1px solid #d1d5db;
         border-radius: 7px;
+
         font-size: 14px;
+
         background: white;
+
         outline: none;
     }
 
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    .prescriptions-form-group input:focus,
+    .prescriptions-form-group select:focus,
+    .prescriptions-form-group textarea:focus {
+
+        border-color: #0f4c5c;
+
+        box-shadow:
+            0 0 0 2px
+            rgba(15, 76, 92, 0.10);
     }
 
-    .form-group textarea {
+    .prescriptions-form-group textarea {
         min-height: 90px;
         resize: vertical;
     }
 
-    .submit-area {
+    .prescriptions-doctor-note {
+        color: #777;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .prescriptions-submit-area {
         margin-top: 22px;
     }
 
-    .submit-button {
+    .prescriptions-submit-button {
         border: none;
-        background: #2563eb;
+
+        background: #0f4c5c;
         color: white;
+
         padding: 12px 22px;
+
         border-radius: 7px;
+
         font-size: 14px;
         font-weight: 700;
+
         cursor: pointer;
     }
 
-    .submit-button:hover {
-        background: #1d4ed8;
+    .prescriptions-submit-button:hover {
+        background: #0b3d4a;
     }
 
-    /* ================================
-       TABLE
-    ================================= */
+    /* =====================================================
+       TABLE CARD
+       ===================================================== */
 
-    .table-card {
+    .prescriptions-table-card {
         background: white;
+
         border-radius: 10px;
         padding: 25px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        border: 1px solid #e5e7eb;
+
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+
+        border: 1px solid #edf0f2;
     }
 
-    .table-header {
+    .prescriptions-table-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+
         gap: 15px;
+
         margin-bottom: 20px;
+
         flex-wrap: wrap;
     }
 
-    .table-header h3 {
+    .prescriptions-table-header h3 {
         margin: 0;
         font-size: 20px;
-        color: #111827;
+        color: #123;
     }
 
-    .prescription-count {
+    .prescriptions-count {
         background: #eff6ff;
         color: #1d4ed8;
+
         padding: 8px 13px;
+
         border-radius: 20px;
+
         font-size: 13px;
         font-weight: 700;
     }
 
-    .table-wrapper {
+    /* =====================================================
+       TABLE
+       ===================================================== */
+
+    .prescriptions-table-wrapper {
         width: 100%;
         overflow-x: auto;
     }
 
-    table {
+    .prescriptions-table {
         width: 100%;
         border-collapse: collapse;
         min-width: 1200px;
     }
 
-    th {
-        background: #f3f4f6;
+    .prescriptions-table th {
+        background: #f1f3f5;
         color: #374151;
+
         text-align: left;
+
         padding: 13px 12px;
+
         font-size: 13px;
+
         border-bottom: 1px solid #d1d5db;
+
         white-space: nowrap;
     }
 
-    td {
+    .prescriptions-table td {
         padding: 13px 12px;
+
         border-bottom: 1px solid #e5e7eb;
+
         font-size: 13px;
+
         vertical-align: middle;
     }
 
-    tr:hover td {
-        background: #f9fafb;
+    .prescriptions-table tbody tr:hover td {
+        background: #f8f9fa;
     }
 
-    .medicine-name {
+    .prescriptions-medicine-name,
+    .prescriptions-patient-name {
         font-weight: 700;
-        color: #111827;
+        color: #123;
     }
 
-    .patient-name {
-        font-weight: 700;
-        color: #111827;
-    }
+    /* =====================================================
+       STATUS
+       ===================================================== */
 
-    .status {
+    .prescriptions-status {
         display: inline-block;
+
         padding: 6px 10px;
+
         border-radius: 20px;
+
         font-size: 12px;
         font-weight: 700;
     }
 
-    .status-pending {
+    .prescriptions-status-pending {
         background: #fef3c7;
         color: #92400e;
     }
 
-    .status-dispensed {
+    .prescriptions-status-dispensed {
         background: #dcfce7;
         color: #166534;
     }
 
-    .status-cancelled {
+    .prescriptions-status-cancelled {
         background: #fee2e2;
         color: #991b1b;
     }
 
-    .stock-good {
+    .prescriptions-stock-good {
         color: #166534;
         font-weight: 700;
     }
 
-    .stock-low {
+    .prescriptions-stock-low {
         color: #b91c1c;
         font-weight: 700;
     }
 
-    .actions {
+    /* =====================================================
+       ACTIONS
+       ===================================================== */
+
+    .prescriptions-actions {
         display: flex;
         gap: 7px;
         flex-wrap: wrap;
     }
 
-    .action-button {
+    .prescriptions-action-button {
         border: none;
+
         padding: 7px 10px;
+
         border-radius: 6px;
+
         font-size: 12px;
         font-weight: 700;
+
         cursor: pointer;
     }
 
-    .dispense-button {
+    .prescriptions-dispense-button {
         background: #dcfce7;
         color: #166534;
     }
 
-    .dispense-button:hover {
+    .prescriptions-dispense-button:hover {
         background: #bbf7d0;
     }
 
-    .cancel-button {
+    .prescriptions-cancel-button {
         background: #fee2e2;
         color: #991b1b;
     }
 
-    .cancel-button:hover {
+    .prescriptions-cancel-button:hover {
         background: #fecaca;
     }
 
-    .empty-state {
+    /* =====================================================
+       EMPTY STATE
+       ===================================================== */
+
+    .prescriptions-empty-state {
         text-align: center;
+
         padding: 45px 20px;
-        color: #6b7280;
+
+        color: #777;
     }
 
-    .empty-state .icon {
+    .prescriptions-empty-icon {
         font-size: 45px;
         margin-bottom: 12px;
     }
 
-    .empty-state h4 {
-        margin: 0 0 8px 0;
+    .prescriptions-empty-state h4 {
+        margin: 0 0 8px;
         color: #374151;
         font-size: 18px;
     }
 
-    .empty-state p {
+    .prescriptions-empty-state p {
         margin: 0;
         font-size: 14px;
     }
 
-    .info-box {
-        background: #eff6ff;
-        border-left: 4px solid #2563eb;
-        padding: 12px 15px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-        color: #1e40af;
-        font-size: 13px;
-    }
+    /* =====================================================
+       FOOTER
+       ===================================================== */
 
-    .doctor-note {
-        color: #6b7280;
-        font-size: 12px;
-        margin-top: 5px;
-    }
+    .prescriptions-footer {
+        background: #0f4c5c;
+        color: white;
 
-    .footer {
         text-align: center;
-        padding: 25px;
-        color: #6b7280;
+
+        padding: 18px;
+
         font-size: 13px;
     }
+
+    .prescriptions-footer p {
+        margin: 3px 0;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
 
     @media (max-width: 1000px) {
 
-        .form-grid {
+        .prescriptions-form-grid {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .summary-grid {
+        .prescriptions-summary-grid {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .header {
-            padding: 22px;
+    }
+
+    @media (max-width: 750px) {
+
+        .prescriptions-header {
+            flex-direction: column;
+            align-items: flex-start;
+
+            padding: 18px 20px;
         }
 
-        .navigation {
-            padding: 12px 22px;
+        .prescriptions-user-info {
+            text-align: left;
         }
 
-        .container {
-            width: 95%;
+        .prescriptions-nav {
+            padding: 10px 20px;
         }
+
+        .prescriptions-container {
+            width: 94%;
+        }
+
     }
 
     @media (max-width: 650px) {
 
-        .form-grid {
+        .prescriptions-form-grid {
             grid-template-columns: 1fr;
         }
 
-        .form-group.full-width {
+        .prescriptions-form-group.full-width {
             grid-column: auto;
         }
 
-        .summary-grid {
+        .prescriptions-summary-grid {
             grid-template-columns: 1fr;
         }
 
-        .page-title {
+        .prescriptions-page-title {
             align-items: flex-start;
         }
+
+        .prescriptions-table-card,
+        .prescriptions-form-card {
+            padding: 18px;
+        }
+
     }
 
 </style>
+```
 
 </head>
 
 <body>
 
-<div class="header">
+<div class="prescriptions-page">
 
-    <h1>💊 Pharmacy Management</h1>
+```
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-    <p>Hospital Data Analytics System</p>
+<header class="prescriptions-header">
 
-    <div class="user-info">
-        Welcome, <strong>{{ username }}</strong>
-        <br>
-        Role: <strong>{{ role }}</strong>
+    <div class="prescriptions-hospital-title">
+
+        <h1>
+            🏥 Hospital Data Analytics System
+        </h1>
+
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
+
     </div>
 
-</div>
+
+    <div class="prescriptions-user-info">
+
+        <p>
+            Welcome,
+            <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role:
+            <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="prescriptions-logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</header>
 
 
-<div class="navigation">
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
 
-    <a href="/">
+<nav class="prescriptions-nav">
+
+    <a href="{{ url_for('home') }}">
         🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
     </a>
 
     <a href="{{ url_for('pharmacy') }}">
@@ -587,7 +808,8 @@
         📦 Medicines
     </a>
 
-    <a href="{{ url_for('pharmacy_prescriptions') }}" class="active">
+    <a href="{{ url_for('pharmacy_prescriptions') }}"
+       class="prescriptions-active">
         📋 Prescriptions
     </a>
 
@@ -595,59 +817,86 @@
         📊 Pharmacy Report
     </a>
 
-    <a href="{{ url_for('logout') }}" class="logout">
-        🚪 Logout
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📊 Analytics
     </a>
 
-</div>
+    {% endif %}
+
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+</nav>
 
 
-<div class="container">
+<!-- =====================================================
+     MAIN CONTAINER
+     ===================================================== -->
 
-    <div class="page-title">
+<div class="prescriptions-container">
 
-        <h2>📋 Pharmacy Prescriptions</h2>
 
-        <a href="{{ url_for('pharmacy') }}" class="back-button">
+    <!-- =================================================
+         PAGE TITLE
+         ================================================= -->
+
+    <div class="prescriptions-page-title">
+
+        <h2>
+            📋 Pharmacy Prescriptions
+        </h2>
+
+        <a href="{{ url_for('pharmacy') }}"
+           class="prescriptions-back-button">
             ← Back to Pharmacy
         </a>
 
     </div>
 
 
-    <!-- =========================================
+    <!-- =================================================
          PRESCRIPTION SUMMARY
-    ========================================== -->
+         ================================================= -->
 
-    <h2 class="summary-title">
+    <h2 class="prescriptions-summary-title">
         Prescription Overview
     </h2>
 
 
-    <div class="summary-grid">
+    <div class="prescriptions-summary-grid">
+
 
         <!-- TOTAL -->
 
         <div
-            class="summary-card active"
+            class="prescriptions-summary-card active"
             data-filter="all"
         >
 
-            <div class="summary-content">
+            <div class="prescriptions-summary-content">
 
-                <h3>Total Prescriptions</h3>
+                <h3>
+                    Total Prescriptions
+                </h3>
 
-                <div class="summary-number">
+                <div class="prescriptions-summary-number">
                     {{ prescriptions|length }}
                 </div>
 
-                <div class="summary-description">
+                <div class="prescriptions-summary-description">
                     All pharmacy prescriptions
                 </div>
 
             </div>
 
-            <div class="summary-icon total-icon">
+            <div class="prescriptions-summary-icon prescriptions-total-icon">
                 📋
             </div>
 
@@ -657,15 +906,17 @@
         <!-- PENDING -->
 
         <div
-            class="summary-card"
+            class="prescriptions-summary-card"
             data-filter="Pending"
         >
 
-            <div class="summary-content">
+            <div class="prescriptions-summary-content">
 
-                <h3>Pending</h3>
+                <h3>
+                    Pending
+                </h3>
 
-                <div class="summary-number">
+                <div class="prescriptions-summary-number">
 
                     {% set pending_count = 0 %}
 
@@ -683,13 +934,13 @@
 
                 </div>
 
-                <div class="summary-description">
+                <div class="prescriptions-summary-description">
                     Waiting for dispensing
                 </div>
 
             </div>
 
-            <div class="summary-icon pending-icon">
+            <div class="prescriptions-summary-icon prescriptions-pending-icon">
                 ⏳
             </div>
 
@@ -699,15 +950,17 @@
         <!-- DISPENSED -->
 
         <div
-            class="summary-card"
+            class="prescriptions-summary-card"
             data-filter="Dispensed"
         >
 
-            <div class="summary-content">
+            <div class="prescriptions-summary-content">
 
-                <h3>Dispensed</h3>
+                <h3>
+                    Dispensed
+                </h3>
 
-                <div class="summary-number">
+                <div class="prescriptions-summary-number">
 
                     {% set dispensed_count = 0 %}
 
@@ -725,13 +978,13 @@
 
                 </div>
 
-                <div class="summary-description">
+                <div class="prescriptions-summary-description">
                     Successfully dispensed
                 </div>
 
             </div>
 
-            <div class="summary-icon dispensed-icon">
+            <div class="prescriptions-summary-icon prescriptions-dispensed-icon">
                 💊
             </div>
 
@@ -741,15 +994,17 @@
         <!-- CANCELLED -->
 
         <div
-            class="summary-card"
+            class="prescriptions-summary-card"
             data-filter="Cancelled"
         >
 
-            <div class="summary-content">
+            <div class="prescriptions-summary-content">
 
-                <h3>Cancelled</h3>
+                <h3>
+                    Cancelled
+                </h3>
 
-                <div class="summary-number">
+                <div class="prescriptions-summary-number">
 
                     {% set cancelled_count = 0 %}
 
@@ -767,52 +1022,57 @@
 
                 </div>
 
-                <div class="summary-description">
+                <div class="prescriptions-summary-description">
                     Cancelled prescriptions
                 </div>
 
             </div>
 
-            <div class="summary-icon cancelled-icon">
+            <div class="prescriptions-summary-icon prescriptions-cancelled-icon">
                 ❌
             </div>
 
         </div>
 
+
     </div>
 
 
-    <!-- =========================================
+    <!-- =================================================
          FILTER INFORMATION
-    ========================================== -->
+         ================================================= -->
 
-    <div id="filterInfo" class="filter-info">
+    <div id="filterInfo"
+         class="prescriptions-filter-info">
 
         Showing:
-        <strong id="filterName">All Prescriptions</strong>
+        <strong id="filterName">
+            All Prescriptions
+        </strong>
 
-        <a
-            href="#"
-            class="clear-filter"
-            id="clearFilter"
-        >
+        <a href="#"
+           class="prescriptions-clear-filter"
+           id="clearFilter">
             Clear Filter
         </a>
 
     </div>
 
 
-    <!-- =========================================
+    <!-- =================================================
          ADD PRESCRIPTION
-    ========================================== -->
+         ================================================= -->
 
     {% if role == "Admin" or role == "Doctor" %}
 
-    <div class="form-card">
+    <div class="prescriptions-form-card">
 
-        <h3>➕ Add New Prescription</h3>
+        <h3>
+            ➕ Add New Prescription
+        </h3>
 
-        <div class="info-box">
+
+        <div class="prescriptions-info-box">
 
             Prescriptions created here will initially have
             <strong>Pending</strong> status and will be available
@@ -820,14 +1080,25 @@
 
         </div>
 
+
         <form
             method="POST"
             action="{{ url_for('add_pharmacy_prescription') }}"
         >
 
-            <div class="form-grid">
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
 
-                <div class="form-group">
+
+            <div class="prescriptions-form-grid">
+
+
+                <!-- PATIENT -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="patient_id">
                         Patient *
@@ -858,7 +1129,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- DOCTOR -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="doctor_id">
                         Doctor *
@@ -886,9 +1159,10 @@
 
                     </select>
 
+
                     {% if role == "Doctor" %}
 
-                    <div class="doctor-note">
+                    <div class="prescriptions-doctor-note">
 
                         Your prescription will automatically be
                         associated with your Doctor Profile.
@@ -900,7 +1174,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- MEDICAL RECORD -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="medical_record_id">
                         Medical Record ID
@@ -917,7 +1193,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- MEDICINE -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="medicine_id">
                         Medicine *
@@ -954,7 +1232,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- DOSAGE -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="dosage">
                         Dosage
@@ -970,7 +1250,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- FREQUENCY -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="frequency">
                         Frequency
@@ -986,7 +1268,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- DURATION -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="duration">
                         Duration
@@ -1002,7 +1286,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- QUANTITY -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="quantity">
                         Quantity *
@@ -1020,7 +1306,9 @@
                 </div>
 
 
-                <div class="form-group">
+                <!-- PRESCRIBED DATE -->
+
+                <div class="prescriptions-form-group">
 
                     <label for="prescribed_date">
                         Prescribed Date
@@ -1035,7 +1323,9 @@
                 </div>
 
 
-                <div class="form-group full-width">
+                <!-- INSTRUCTIONS -->
+
+                <div class="prescriptions-form-group full-width">
 
                     <label for="instructions">
                         Instructions
@@ -1049,14 +1339,15 @@
 
                 </div>
 
+
             </div>
 
 
-            <div class="submit-area">
+            <div class="prescriptions-submit-area">
 
                 <button
                     type="submit"
-                    class="submit-button"
+                    class="prescriptions-submit-button"
                 >
                     💊 Create Prescription
                 </button>
@@ -1070,19 +1361,20 @@
     {% endif %}
 
 
-    <!-- =========================================
+    <!-- =================================================
          PRESCRIPTION TABLE
-    ========================================== -->
+         ================================================= -->
 
-    <div class="table-card">
+    <div class="prescriptions-table-card">
 
-        <div class="table-header">
+
+        <div class="prescriptions-table-header">
 
             <h3>
                 📋 Prescription Records
             </h3>
 
-            <div class="prescription-count">
+            <div class="prescriptions-count">
 
                 Total:
                 <span id="visibleCount">
@@ -1096,9 +1388,13 @@
 
         {% if prescriptions %}
 
-        <div class="table-wrapper">
 
-            <table id="prescriptionTable">
+        <div class="prescriptions-table-wrapper">
+
+            <table
+                class="prescriptions-table"
+                id="prescriptionTable"
+            >
 
                 <thead>
 
@@ -1137,12 +1433,14 @@
 
                 <tbody>
 
+
                     {% for prescription in prescriptions %}
 
                     <tr
                         class="prescription-row"
                         data-status="{{ prescription['status'] }}"
                     >
+
 
                         <td>
                             #{{ prescription['id'] }}
@@ -1151,28 +1449,22 @@
 
                         <td>
 
-                            <span class="patient-name">
-
+                            <span class="prescriptions-patient-name">
                                 {{ prescription['patient_name'] }}
-
                             </span>
 
                         </td>
 
 
                         <td>
-
                             {{ prescription['doctor_name'] }}
-
                         </td>
 
 
                         <td>
 
-                            <span class="medicine-name">
-
+                            <span class="prescriptions-medicine-name">
                                 {{ prescription['medicine_name'] }}
-
                             </span>
 
                             {% if prescription['unit'] %}
@@ -1191,13 +1483,9 @@
                         <td>
 
                             {% if prescription['dosage'] %}
-
                                 {{ prescription['dosage'] }}
-
                             {% else %}
-
                                 —
-
                             {% endif %}
 
                         </td>
@@ -1206,13 +1494,9 @@
                         <td>
 
                             {% if prescription['frequency'] %}
-
                                 {{ prescription['frequency'] }}
-
                             {% else %}
-
                                 —
-
                             {% endif %}
 
                         </td>
@@ -1221,13 +1505,9 @@
                         <td>
 
                             {% if prescription['duration'] %}
-
                                 {{ prescription['duration'] }}
-
                             {% else %}
-
                                 —
-
                             {% endif %}
 
                         </td>
@@ -1248,7 +1528,7 @@
 
                                 {% if prescription['stock_quantity'] >= prescription['quantity'] %}
 
-                                <span class="stock-good">
+                                <span class="prescriptions-stock-good">
 
                                     {{ prescription['stock_quantity'] }}
 
@@ -1256,7 +1536,7 @@
 
                                 {% else %}
 
-                                <span class="stock-low">
+                                <span class="prescriptions-stock-low">
 
                                     {{ prescription['stock_quantity'] }}
 
@@ -1275,27 +1555,31 @@
 
                         <td>
 
+
                             {% if prescription['status'] == "Pending" %}
 
-                            <span class="status status-pending">
+                            <span class="prescriptions-status prescriptions-status-pending">
                                 Pending
                             </span>
 
+
                             {% elif prescription['status'] == "Dispensed" %}
 
-                            <span class="status status-dispensed">
+                            <span class="prescriptions-status prescriptions-status-dispensed">
                                 Dispensed
                             </span>
 
+
                             {% elif prescription['status'] == "Cancelled" %}
 
-                            <span class="status status-cancelled">
+                            <span class="prescriptions-status prescriptions-status-cancelled">
                                 Cancelled
                             </span>
 
+
                             {% else %}
 
-                            <span class="status">
+                            <span class="prescriptions-status">
                                 {{ prescription['status'] }}
                             </span>
 
@@ -1305,22 +1589,16 @@
 
 
                         <td>
-
                             {{ prescription['prescribed_date'] }}
-
                         </td>
 
 
                         <td>
 
                             {% if prescription['dispensed_date'] %}
-
                                 {{ prescription['dispensed_date'] }}
-
                             {% else %}
-
                                 —
-
                             {% endif %}
 
                         </td>
@@ -1328,21 +1606,35 @@
 
                         <td>
 
-                            <div class="actions">
+
+                            <div class="prescriptions-actions">
+
 
                                 {% if prescription['status'] == "Pending" %}
+
 
                                     {% if role == "Admin" or role == "Pharmacist" %}
 
                                     <form
                                         method="POST"
-                                        action="{{ url_for('dispense_prescription', prescription_id=prescription['id']) }}"
-                                        onsubmit="return confirm('Are you sure you want to dispense this prescription?');"
+                                        action="{{ url_for(
+                                            'dispense_prescription',
+                                            prescription_id=prescription['id']
+                                        ) }}"
+                                        onsubmit="return confirm(
+                                            'Are you sure you want to dispense this prescription?'
+                                        );"
                                     >
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
 
                                         <button
                                             type="submit"
-                                            class="action-button dispense-button"
+                                            class="prescriptions-action-button prescriptions-dispense-button"
                                         >
                                             💊 Dispense
                                         </button>
@@ -1356,13 +1648,24 @@
 
                                     <form
                                         method="POST"
-                                        action="{{ url_for('cancel_prescription', prescription_id=prescription['id']) }}"
-                                        onsubmit="return confirm('Are you sure you want to cancel this prescription?');"
+                                        action="{{ url_for(
+                                            'cancel_prescription',
+                                            prescription_id=prescription['id']
+                                        ) }}"
+                                        onsubmit="return confirm(
+                                            'Are you sure you want to cancel this prescription?'
+                                        );"
                                     >
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
 
                                         <button
                                             type="submit"
-                                            class="action-button cancel-button"
+                                            class="prescriptions-action-button prescriptions-cancel-button"
                                         >
                                             ✖ Cancel
                                         </button>
@@ -1371,21 +1674,26 @@
 
                                     {% endif %}
 
+
                                 {% else %}
 
-                                    <span style="color: #9ca3af;">
-                                        No actions
-                                    </span>
+                                <span style="color: #999;">
+                                    No actions
+                                </span>
 
                                 {% endif %}
 
+
                             </div>
 
+
                         </td>
+
 
                     </tr>
 
                     {% endfor %}
+
 
                 </tbody>
 
@@ -1393,11 +1701,13 @@
 
         </div>
 
+
         {% else %}
 
-        <div class="empty-state">
 
-            <div class="icon">
+        <div class="prescriptions-empty-state">
+
+            <div class="prescriptions-empty-icon">
                 📋
             </div>
 
@@ -1412,197 +1722,262 @@
 
         </div>
 
+
         {% endif %}
+
 
     </div>
 
-</div>
-
-
-<div class="footer">
-
-    Hospital Data Analytics System
-    <br>
-    Pharmacy Management Module
 
 </div>
 
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="prescriptions-footer">
+
+    <p>
+        <strong>
+            🏥 Hospital Data Analytics System
+        </strong>
+    </p>
+
+    <p>
+        Pharmacy Management Module
+    </p>
+
+</footer>
+```
+
+</div>
 
 <script>
 
-    document.addEventListener("DOMContentLoaded", function () {
-
-        /* =========================================
-           DEFAULT PRESCRIBED DATE
-        ========================================== */
-
-        const dateInput =
-            document.getElementById("prescribed_date");
-
-        if (dateInput && !dateInput.value) {
-
-            const today = new Date();
-
-            const year =
-                today.getFullYear();
-
-            const month =
-                String(
-                    today.getMonth() + 1
-                ).padStart(2, "0");
-
-            const day =
-                String(
-                    today.getDate()
-                ).padStart(2, "0");
-
-            dateInput.value =
-                year + "-" + month + "-" + day;
-
-        }
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
 
 
-        /* =========================================
-           PRESCRIPTION CARD FILTER
-        ========================================== */
+            /* =========================================
+               DEFAULT PRESCRIBED DATE
+            ========================================== */
 
-        const cards =
-            document.querySelectorAll(
-                ".summary-card"
-            );
-
-        const rows =
-            document.querySelectorAll(
-                ".prescription-row"
-            );
-
-        const filterInfo =
-            document.getElementById(
-                "filterInfo"
-            );
-
-        const filterName =
-            document.getElementById(
-                "filterName"
-            );
-
-        const clearFilter =
-            document.getElementById(
-                "clearFilter"
-            );
-
-        const visibleCount =
-            document.getElementById(
-                "visibleCount"
-            );
+            const dateInput =
+                document.getElementById(
+                    "prescribed_date"
+                );
 
 
-        function applyFilter(filter) {
+            if (
+                dateInput &&
+                !dateInput.value
+            ) {
 
-            let visible = 0;
+                const today =
+                    new Date();
 
-            rows.forEach(function (row) {
 
-                if (
-                    filter === "all"
-                    ||
-                    row.dataset.status === filter
-                ) {
+                const year =
+                    today.getFullYear();
 
-                    row.style.display = "";
 
-                    visible++;
+                const month =
+                    String(
+                        today.getMonth() + 1
+                    ).padStart(
+                        2,
+                        "0"
+                    );
+
+
+                const day =
+                    String(
+                        today.getDate()
+                    ).padStart(
+                        2,
+                        "0"
+                    );
+
+
+                dateInput.value =
+                    year +
+                    "-" +
+                    month +
+                    "-" +
+                    day;
+
+            }
+
+
+            /* =========================================
+               PRESCRIPTION CARD FILTER
+            ========================================== */
+
+            const cards =
+                document.querySelectorAll(
+                    ".prescriptions-summary-card"
+                );
+
+
+            const rows =
+                document.querySelectorAll(
+                    ".prescription-row"
+                );
+
+
+            const filterInfo =
+                document.getElementById(
+                    "filterInfo"
+                );
+
+
+            const filterName =
+                document.getElementById(
+                    "filterName"
+                );
+
+
+            const clearFilter =
+                document.getElementById(
+                    "clearFilter"
+                );
+
+
+            const visibleCount =
+                document.getElementById(
+                    "visibleCount"
+                );
+
+
+            function applyFilter(filter) {
+
+                let visible = 0;
+
+
+                rows.forEach(
+                    function (row) {
+
+                        if (
+                            filter === "all"
+                            ||
+                            row.dataset.status === filter
+                        ) {
+
+                            row.style.display =
+                                "";
+
+                            visible++;
+
+                        } else {
+
+                            row.style.display =
+                                "none";
+
+                        }
+
+                    }
+                );
+
+
+                visibleCount.textContent =
+                    visible;
+
+
+                cards.forEach(
+                    function (card) {
+
+                        card.classList.remove(
+                            "active"
+                        );
+
+                    }
+                );
+
+
+                const selectedCard =
+                    document.querySelector(
+                        '.prescriptions-summary-card[data-filter="' +
+                        filter +
+                        '"]'
+                    );
+
+
+                if (selectedCard) {
+
+                    selectedCard.classList.add(
+                        "active"
+                    );
+
+                }
+
+
+                if (filter === "all") {
+
+                    filterInfo.classList.remove(
+                        "show"
+                    );
 
                 } else {
 
-                    row.style.display = "none";
+                    filterInfo.classList.add(
+                        "show"
+                    );
+
+                    filterName.textContent =
+                        filter +
+                        " Prescriptions";
 
                 }
 
-            });
-
-
-            visibleCount.textContent =
-                visible;
-
-
-            cards.forEach(function (card) {
-
-                card.classList.remove(
-                    "active"
-                );
-
-            });
-
-
-            const selectedCard =
-                document.querySelector(
-                    '.summary-card[data-filter="' +
-                    filter +
-                    '"]'
-                );
-
-            if (selectedCard) {
-
-                selectedCard.classList.add(
-                    "active"
-                );
-
             }
 
 
-            if (filter === "all") {
+            cards.forEach(
+                function (card) {
 
-                filterInfo.classList.remove(
-                    "show"
-                );
+                    card.addEventListener(
+                        "click",
+                        function () {
 
-            } else {
+                            const filter =
+                                card.dataset.filter;
 
-                filterInfo.classList.add(
-                    "show"
-                );
+                            applyFilter(
+                                filter
+                            );
 
-                filterName.textContent =
-                    filter +
-                    " Prescriptions";
-
-            }
-
-        }
-
-
-        cards.forEach(function (card) {
-
-            card.addEventListener(
-                "click",
-                function () {
-
-                    const filter =
-                        card.dataset.filter;
-
-                    applyFilter(filter);
+                        }
+                    );
 
                 }
             );
 
-        });
 
+            if (clearFilter) {
 
-        clearFilter.addEventListener(
-            "click",
-            function (event) {
+                clearFilter.addEventListener(
+                    "click",
+                    function (event) {
 
-                event.preventDefault();
+                        event.preventDefault();
 
-                applyFilter("all");
+                        applyFilter(
+                            "all"
+                        );
+
+                    }
+                );
 
             }
-        );
 
-    });
+
+        }
+    );
 
 </script>
 
 </body>
+
 </html>

@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
 <title>Enter Laboratory Result</title>
 
@@ -15,10 +16,115 @@
 
 <style>
 
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
     .result-page {
-        width: 95%;
-        max-width: 1100px;
-        margin: 30px auto;
+        min-height: 100vh;
+        background: #f1f5f9;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .result-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .result-hospital-title h1 {
+        margin: 0 0 5px 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .result-hospital-title p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.95;
+    }
+
+    .result-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .result-user-info p {
+        margin: 0;
+    }
+
+    .result-logout {
+        display: inline-block;
+        margin-top: 3px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .result-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =========================================================
+       NAVIGATION
+       ========================================================= */
+
+    .result-nav {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 35px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .result-nav a {
+        color: #334155;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .result-nav a:hover {
+        background: #e2e8f0;
+        color: #0f4c5c;
+    }
+
+    .result-nav a.result-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =========================================================
+       MAIN CONTAINER
+       ========================================================= */
+
+    .result-container {
+        width: 92%;
+        max-width: 1250px;
+        margin: 30px auto 45px;
     }
 
     .page-header {
@@ -26,19 +132,32 @@
     }
 
     .page-header h1 {
-        margin-bottom: 8px;
+        margin: 0 0 8px 0;
+        color: #0f4c5c;
+        font-size: 28px;
     }
 
     .page-header p {
+        margin: 0;
         color: #64748b;
+        font-size: 15px;
     }
+
+    /* =========================================================
+       RESULT CARD
+       ========================================================= */
 
     .result-card {
         background: white;
         border-radius: 12px;
         padding: 30px;
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
     }
+
+    /* =========================================================
+       REQUEST SUMMARY
+       ========================================================= */
 
     .request-summary {
         display: grid;
@@ -51,7 +170,7 @@
         background: #f8fafc;
         border-radius: 8px;
         padding: 15px;
-        border-left: 4px solid #2563eb;
+        border-left: 4px solid #0f4c5c;
     }
 
     .summary-item strong {
@@ -62,9 +181,16 @@
     }
 
     .summary-item span {
+        display: block;
         font-weight: 700;
         color: #1e293b;
+        line-height: 1.4;
+        word-break: break-word;
     }
+
+    /* =========================================================
+       FORM
+       ========================================================= */
 
     .form-grid {
         display: grid;
@@ -85,6 +211,7 @@
         font-weight: 600;
         margin-bottom: 7px;
         color: #334155;
+        font-size: 14px;
     }
 
     input,
@@ -95,32 +222,38 @@
         border: 1px solid #cbd5e1;
         border-radius: 7px;
         font-size: 14px;
-        box-sizing: border-box;
         background: white;
-    }
-
-    textarea {
-        min-height: 120px;
-        resize: vertical;
+        color: #1e293b;
     }
 
     input:focus,
     select:focus,
     textarea:focus {
         outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+        border-color: #0f4c5c;
+        box-shadow: 0 0 0 2px rgba(15, 76, 92, 0.12);
+    }
+
+    textarea {
+        min-height: 120px;
+        resize: vertical;
+        font-family: Arial, sans-serif;
     }
 
     .form-help {
         color: #64748b;
         font-size: 12px;
         margin-top: 5px;
+        line-height: 1.4;
     }
 
     .required {
         color: #dc2626;
     }
+
+    /* =========================================================
+       ACTION BUTTONS
+       ========================================================= */
 
     .form-actions {
         margin-top: 30px;
@@ -130,12 +263,14 @@
     }
 
     .btn {
+        display: inline-block;
         padding: 11px 18px;
         border-radius: 7px;
         border: none;
         text-decoration: none;
         font-weight: 600;
         cursor: pointer;
+        font-size: 14px;
     }
 
     .btn-success {
@@ -143,12 +278,75 @@
         color: white;
     }
 
+    .btn-success:hover {
+        background: #15803d;
+    }
+
     .btn-secondary {
         background: #475569;
         color: white;
     }
 
-    @media (max-width: 800px) {
+    .btn-secondary:hover {
+        background: #334155;
+    }
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .result-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 18px 20px;
+        font-size: 13px;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 900px) {
+
+        .request-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .result-header {
+            align-items: flex-start;
+        }
+
+    }
+
+    @media (max-width: 750px) {
+
+        .result-header {
+            padding: 18px 20px;
+            flex-direction: column;
+        }
+
+        .result-user-info {
+            text-align: left;
+        }
+
+        .result-nav {
+            padding: 10px 20px;
+        }
+
+        .result-nav a {
+            font-size: 13px;
+            padding: 7px 9px;
+        }
+
+        .result-container {
+            width: 94%;
+            margin-top: 25px;
+        }
+
+        .result-card {
+            padding: 20px;
+        }
 
         .request-summary {
             grid-template-columns: 1fr;
@@ -164,6 +362,35 @@
 
     }
 
+    @media (max-width: 500px) {
+
+        .result-hospital-title h1 {
+            font-size: 20px;
+        }
+
+        .result-hospital-title p {
+            font-size: 12px;
+        }
+
+        .page-header h1 {
+            font-size: 23px;
+        }
+
+        .result-card {
+            padding: 15px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+
 </style>
 
 </head>
@@ -172,9 +399,114 @@
 
 <div class="result-page">
 
+```
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
+
+<header class="result-header">
+
+    <div class="result-hospital-title">
+
+        <h1>🏥 Hospital Data Analytics System</h1>
+
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
+
+    </div>
+
+    <div class="result-user-info">
+
+        <p>
+            Welcome, <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role: <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="result-logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
+
+<nav class="result-nav">
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('laboratory') }}">
+        🔬 Laboratory
+    </a>
+
+    <a href="{{ url_for('laboratory_tests') }}">
+        🧪 Laboratory Tests
+    </a>
+
+    <a href="{{ url_for('laboratory_requests') }}"
+       class="result-active">
+        📝 Lab Requests
+    </a>
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📈 Analytics
+    </a>
+
+    {% endif %}
+
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
+
+<main class="result-container">
+
     <div class="page-header">
 
-        <h1>Enter Laboratory Result</h1>
+        <h1>🧪 Enter Laboratory Result</h1>
 
         <p>
             Record the result and findings for the
@@ -186,6 +518,10 @@
 
     <div class="result-card">
 
+
+        <!-- =================================================
+             REQUEST SUMMARY
+             ================================================= -->
 
         <div class="request-summary">
 
@@ -257,15 +593,27 @@
         </div>
 
 
+        <!-- =================================================
+             RESULT FORM
+             ================================================= -->
+
         <form method="POST"
               action="{{ url_for(
                   'enter_laboratory_result',
                   request_id=laboratory_request['id']
               ) }}">
 
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
 
             <div class="form-grid">
 
+
+                <!-- RESULT VALUE -->
 
                 <div class="form-group">
 
@@ -273,11 +621,13 @@
                         Result Value
                     </label>
 
-                    <input type="text"
-                           id="result_value"
-                           name="result_value"
-                           value="{{ result['result_value'] if result else '' }}"
-                           placeholder="e.g. Positive, 95 mg/dL, Normal">
+                    <input
+                        type="text"
+                        id="result_value"
+                        name="result_value"
+                        value="{{ result['result_value'] if result else '' }}"
+                        placeholder="e.g. Positive, 95 mg/dL, Normal"
+                    >
 
                     <div class="form-help">
                         Enter the measured value or main
@@ -287,23 +637,30 @@
                 </div>
 
 
+                <!-- RESULT DATE -->
+
                 <div class="form-group">
 
                     <label for="result_date">
 
                         Result Date
+
                         <span class="required">*</span>
 
                     </label>
 
-                    <input type="date"
-                           id="result_date"
-                           name="result_date"
-                           value="{{ result['result_date'] if result else '' }}"
-                           required>
+                    <input
+                        type="date"
+                        id="result_date"
+                        name="result_date"
+                        value="{{ result['result_date'] if result else '' }}"
+                        required
+                    >
 
                 </div>
 
+
+                <!-- FINDINGS -->
 
                 <div class="form-group full-width">
 
@@ -311,12 +668,16 @@
                         Findings
                     </label>
 
-                    <textarea id="finding"
-                              name="finding"
-                              placeholder="Describe the findings observed during the test...">{{ result['finding'] if result else '' }}</textarea>
+                    <textarea
+                        id="finding"
+                        name="finding"
+                        placeholder="Describe the findings observed during the test..."
+                    >{{ result['finding'] if result else '' }}</textarea>
 
                 </div>
 
+
+                <!-- INTERPRETATION -->
 
                 <div class="form-group full-width">
 
@@ -324,12 +685,16 @@
                         Interpretation
                     </label>
 
-                    <textarea id="interpretation"
-                              name="interpretation"
-                              placeholder="Enter the professional interpretation of the result...">{{ result['interpretation'] if result else '' }}</textarea>
+                    <textarea
+                        id="interpretation"
+                        name="interpretation"
+                        placeholder="Enter the professional interpretation of the result..."
+                    >{{ result['interpretation'] if result else '' }}</textarea>
 
                 </div>
 
+
+                <!-- RECOMMENDED SPECIALTY -->
 
                 <div class="form-group">
 
@@ -337,8 +702,10 @@
                         Recommended Specialty
                     </label>
 
-                    <select id="recommended_specialty"
-                            name="recommended_specialty">
+                    <select
+                        id="recommended_specialty"
+                        name="recommended_specialty"
+                    >
 
                         <option value="">
                             Select Specialty
@@ -350,70 +717,84 @@
                             else laboratory_request['recommended_specialty']
                         %}
 
+
                         <option value="Internal Medicine"
                             {% if current_specialty == 'Internal Medicine' %}selected{% endif %}>
                             Internal Medicine
                         </option>
+
 
                         <option value="Hematology"
                             {% if current_specialty == 'Hematology' %}selected{% endif %}>
                             Hematology
                         </option>
 
+
                         <option value="Orthopedic"
                             {% if current_specialty == 'Orthopedic' %}selected{% endif %}>
                             Orthopedic
                         </option>
+
 
                         <option value="Pulmonology"
                             {% if current_specialty == 'Pulmonology' %}selected{% endif %}>
                             Pulmonology
                         </option>
 
+
                         <option value="Ophthalmology"
                             {% if current_specialty == 'Ophthalmology' %}selected{% endif %}>
                             Ophthalmology
                         </option>
+
 
                         <option value="Cardiology"
                             {% if current_specialty == 'Cardiology' %}selected{% endif %}>
                             Cardiology
                         </option>
 
+
                         <option value="Neurology"
                             {% if current_specialty == 'Neurology' %}selected{% endif %}>
                             Neurology
                         </option>
+
 
                         <option value="Pediatrics"
                             {% if current_specialty == 'Pediatrics' %}selected{% endif %}>
                             Pediatrics
                         </option>
 
+
                         <option value="Gynecology"
                             {% if current_specialty == 'Gynecology' %}selected{% endif %}>
                             Gynecology
                         </option>
+
 
                         <option value="Urology"
                             {% if current_specialty == 'Urology' %}selected{% endif %}>
                             Urology
                         </option>
 
+
                         <option value="Dermatology"
                             {% if current_specialty == 'Dermatology' %}selected{% endif %}>
                             Dermatology
                         </option>
+
 
                         <option value="ENT"
                             {% if current_specialty == 'ENT' %}selected{% endif %}>
                             ENT
                         </option>
 
+
                         <option value="General Practice"
                             {% if current_specialty == 'General Practice' %}selected{% endif %}>
                             General Practice
                         </option>
+
 
                         <option value="Other"
                             {% if current_specialty == 'Other' %}selected{% endif %}>
@@ -430,14 +811,18 @@
                 </div>
 
 
+                <!-- ASSIGN DOCTOR -->
+
                 <div class="form-group">
 
                     <label for="doctor_id">
                         Assign Doctor
                     </label>
 
-                    <select id="doctor_id"
-                            name="doctor_id">
+                    <select
+                        id="doctor_id"
+                        name="doctor_id"
+                    >
 
                         <option value="">
                             Select Doctor
@@ -445,14 +830,13 @@
 
                         {% for doctor in doctors %}
 
-                        <option value="{{ doctor['id'] }}"
-                            {% if result and result['doctor_id'] == doctor['id'] %}selected{% endif %}>
-
+                        <option
+                            value="{{ doctor['id'] }}"
+                            {% if result and result['doctor_id'] == doctor['id'] %}selected{% endif %}
+                        >
                             {{ doctor['full_name'] }}
-
                             -
                             {{ doctor['specialization'] }}
-
                         </option>
 
                         {% endfor %}
@@ -470,16 +854,24 @@
             </div>
 
 
+            <!-- =================================================
+                 FORM ACTIONS
+                 ================================================= -->
+
             <div class="form-actions">
 
-                <button type="submit"
-                        class="btn btn-success">
-                    Save Laboratory Result
+                <button
+                    type="submit"
+                    class="btn btn-success"
+                >
+                    💾 Save Laboratory Result
                 </button>
 
-                <a href="{{ url_for('laboratory_requests') }}"
-                   class="btn btn-secondary">
-                    Cancel
+                <a
+                    href="{{ url_for('laboratory_requests') }}"
+                    class="btn btn-secondary"
+                >
+                    ↩ Cancel
                 </a>
 
             </div>
@@ -488,6 +880,20 @@
         </form>
 
     </div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="result-footer">
+
+    Hospital Data Analytics System
+
+</footer>
+```
 
 </div>
 

@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 
 <html lang="en">
@@ -6,43 +7,556 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Doctors - Hospital Data Analytics System</title>
+    <title>
+        Doctors - Hospital Data Analytics System
+    </title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+
+    <style>
+
+        /* =====================================================
+           DOCTORS PAGE - ISOLATED STYLES
+        ===================================================== */
+
+        .doctors-page,
+        .doctors-page * {
+            box-sizing: border-box;
+        }
+
+
+        .doctors-page {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #f4f7fb;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .doctors-header {
+            width: 100%;
+            background: #0f4c5c;
+            color: white;
+            padding: 20px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+        }
+
+
+        .doctors-hospital-title {
+            flex: 1;
+            min-width: 250px;
+        }
+
+
+        .doctors-hospital-title h1 {
+            margin: 0;
+            font-size: 25px;
+            line-height: 1.3;
+        }
+
+
+        .doctors-hospital-title p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+
+        .doctors-user-info {
+            min-width: 180px;
+            text-align: right;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+
+        .doctors-user-info p {
+            margin: 2px 0;
+        }
+
+
+        .doctors-logout {
+            display: inline-block;
+            margin-top: 7px;
+            color: #fecaca;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+
+        .doctors-logout:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .doctors-nav {
+            width: 100%;
+            background: white;
+            border-bottom: 1px solid #dbe3ea;
+            padding: 12px 35px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+
+        .doctors-nav a {
+            display: inline-block;
+            padding: 9px 13px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #0f4c5c;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+
+        .doctors-nav a:hover {
+            background: #e8f1f4;
+        }
+
+
+        .doctors-nav .doctors-active {
+            background: #0f4c5c;
+            color: white;
+        }
+
+
+        /* =====================================================
+           MAIN CONTENT
+        ===================================================== */
+
+        .doctors-container {
+            width: 92%;
+            max-width: 1250px;
+            margin: 30px auto 45px;
+        }
+
+
+        /* =====================================================
+           PAGE TITLE
+        ===================================================== */
+
+        .doctors-page-title {
+            margin-bottom: 25px;
+        }
+
+
+        .doctors-page-title h2 {
+            margin: 0;
+            color: #0f4c5c;
+            font-size: 27px;
+            line-height: 1.3;
+        }
+
+
+        .doctors-page-title p {
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           ERROR MESSAGE
+        ===================================================== */
+
+        .error-message {
+            width: 100%;
+            background: #f8d7da;
+            color: #842029;
+            padding: 14px 18px;
+            margin-bottom: 25px;
+            border-radius: 7px;
+            font-weight: bold;
+        }
+
+
+        /* =====================================================
+           CONTENT CARD
+        ===================================================== */
+
+        .doctors-content-card {
+            width: 100%;
+            background: white;
+            padding: 28px 30px;
+            border-radius: 10px;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+
+        .doctors-content-card h2 {
+            margin: 0 0 15px;
+            color: #1769c2;
+            font-size: 22px;
+        }
+
+
+        .doctors-content-card p {
+            color: #555;
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           ADD DOCTOR FORM
+        ===================================================== */
+
+        .doctor-form {
+            margin-top: 25px;
+        }
+
+
+        .doctor-form-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+
+        .doctor-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .doctor-form-group label {
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #333;
+        }
+
+
+        .doctor-form-group input,
+        .doctor-form-group select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+
+
+        .doctor-form-group input:focus,
+        .doctor-form-group select:focus {
+            outline: none;
+            border-color: #1769c2;
+            box-shadow:
+                0 0 0 2px rgba(23, 105, 194, 0.12);
+        }
+
+
+        .doctor-help-text {
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+
+        .doctor-form-actions {
+            margin-top: 25px;
+        }
+
+
+        /* =====================================================
+           BUTTON
+        ===================================================== */
+
+        .doctor-register-button {
+            display: inline-block;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #1769c2;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .doctor-register-button:hover {
+            background: #12549b;
+        }
+
+
+        /* =====================================================
+           REGISTERED DOCTORS
+        ===================================================== */
+
+        .registered-doctors-title {
+            margin: 0 0 22px;
+            color: #1769c2;
+            font-size: 22px;
+        }
+
+
+        /* =====================================================
+           TABLE CONTAINER
+        ===================================================== */
+
+        .doctors-table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+
+
+        /* =====================================================
+           DOCTORS TABLE
+        ===================================================== */
+
+        .doctors-table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+
+        .doctors-table th {
+            background: #1769c2;
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+
+        .doctors-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #dee2e6;
+            color: #222;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+
+        .doctors-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+
+        .doctors-table tbody tr:hover {
+            background: #eef5fb;
+        }
+
+
+        /* =====================================================
+           TABLE ACTIONS
+        ===================================================== */
+
+        .doctor-actions {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+
+        .doctor-actions form {
+            display: inline;
+            margin: 0;
+        }
+
+
+        .doctor-edit-button {
+            display: inline-block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #ffc107;
+            color: #212529;
+            font-size: 13px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+
+        .doctor-edit-button:hover {
+            background: #e0a800;
+        }
+
+
+        .doctor-delete-button {
+            display: inline-block;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background: #dc3545;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .doctor-delete-button:hover {
+            background: #b02a37;
+        }
+
+
+        /* =====================================================
+           NO DOCTORS
+        ===================================================== */
+
+        .no-doctors {
+            background: white;
+            border: 1px solid #e1e7ed;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .doctors-footer {
+            width: 100%;
+            background: #0f4c5c;
+            color: white;
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 750px) {
+
+            .doctors-header {
+                padding: 18px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+
+            .doctors-user-info {
+                text-align: left;
+                width: 100%;
+            }
+
+
+            .doctors-nav {
+                padding: 10px 20px;
+            }
+
+
+            .doctors-container {
+                width: 94%;
+                margin-top: 22px;
+            }
+
+
+            .doctors-page-title h2 {
+                font-size: 23px;
+            }
+
+
+            .doctor-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
 
 </head>
 
 
 <body>
 
+<div class="doctors-page">
+
 
     <!-- =====================================================
          HOSPITAL HEADER
-         ===================================================== -->
+    ===================================================== -->
 
-    <header>
+    <header class="doctors-header">
 
-        <h1>
-            🏥 Hospital Data Analytics System
-        </h1>
 
-        <p>
-            Hospital Management & Data Analytics Platform
-        </p>
+        <div class="doctors-hospital-title">
+
+            <h1>
+                🏥 Hospital Data Analytics System
+            </h1>
+
+            <p>
+                Hospital Management &amp; Data Analytics Platform
+            </p>
+
+        </div>
+
+
+        <div class="doctors-user-info">
+
+            <p>
+                Welcome,
+                <strong>{{ username }}</strong>
+            </p>
+
+            <p>
+                Role:
+                <strong>{{ role }}</strong>
+            </p>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="doctors-logout"
+            >
+                🚪 Logout
+            </a>
+
+        </div>
 
     </header>
 
 
-
     <!-- =====================================================
-         NAVIGATION BAR
-         ===================================================== -->
+         NAVIGATION
+    ===================================================== -->
 
-    <nav>
+    <nav class="doctors-nav">
+
 
         <a href="{{ url_for('home') }}">
             🏠 Dashboard
@@ -54,7 +568,10 @@
         </a>
 
 
-        <a href="{{ url_for('doctors') }}">
+        <a
+            href="{{ url_for('doctors') }}"
+            class="doctors-active"
+        >
             👨‍⚕️ Doctors
         </a>
 
@@ -64,7 +581,79 @@
         </a>
 
 
-        {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+        {% if role in [
+            "Admin",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst"
+        ] %}
+
+        <a href="{{ url_for('medical_records') }}">
+            📋 Medical Records
+        </a>
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Pharmacist",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst"
+        ] %}
+
+        <a href="{{ url_for('pharmacy') }}">
+            💊 Pharmacy
+        </a>
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Laboratorian",
+            "Patient",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst"
+        ] %}
+
+        <a href="{{ url_for('laboratory') }}">
+            🧪 Laboratory
+        </a>
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Receptionist",
+            "Doctor"
+        ] %}
+
+            {% if role == "Doctor" %}
+
+            <a href="{{ url_for('emergency_cases') }}">
+                🚨 EMD
+            </a>
+
+            {% else %}
+
+            <a href="{{ url_for('emergency_register') }}">
+                🚨 EMD
+            </a>
+
+            {% endif %}
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Doctor",
+            "Data Analyst"
+        ] %}
 
         <a href="{{ url_for('analytics') }}">
             📊 Analytics
@@ -75,6 +664,10 @@
 
         {% if role == "Admin" %}
 
+        <a href="{{ url_for('reports') }}">
+            📑 Reports
+        </a>
+
         <a href="{{ url_for('users') }}">
             👤 Users
         </a>
@@ -82,380 +675,462 @@
         {% endif %}
 
 
-        <a href="{{ url_for('logout') }}">
-            🚪 Logout
-        </a>
-
     </nav>
 
 
+    <!-- =====================================================
+         MAIN CONTENT
+    ===================================================== -->
+
+    <main class="doctors-container">
+
+
+        <!-- =================================================
+             PAGE TITLE
+        ================================================= -->
+
+        <section class="doctors-page-title">
+
+            <h2>
+                👨‍⚕️ Doctors
+            </h2>
+
+            <p>
+                Manage and view registered hospital doctors.
+            </p>
+
+        </section>
+
+
+        <!-- =================================================
+             ERROR MESSAGE
+        ================================================= -->
+
+        {% if error %}
+
+        <div class="error-message">
+
+            ❌ {{ error }}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             ADD DOCTOR
+             ADMIN ONLY
+        ================================================= -->
+
+        {% if role == "Admin" %}
+
+        <section class="doctors-content-card">
+
+
+            <h2>
+                Register New Doctor
+            </h2>
+
+
+            <form
+                method="POST"
+                action="{{ url_for('add_doctor') }}"
+                class="doctor-form"
+            >
+
+
+                <!-- CSRF PROTECTION -->
+
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
+
+
+                <div class="doctor-form-grid">
+
+
+                    <!-- FULL NAME -->
+
+                    <div class="doctor-form-group">
+
+                        <label for="full_name">
+                            Full Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="full_name"
+                            name="full_name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- GENDER -->
+
+                    <div class="doctor-form-group">
+
+                        <label for="gender">
+                            Gender
+                        </label>
+
+                        <select
+                            id="gender"
+                            name="gender"
+                            required
+                        >
+
+                            <option value="">
+                                -- Select Gender --
+                            </option>
+
+                            <option value="Male">
+                                Male
+                            </option>
+
+                            <option value="Female">
+                                Female
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- SPECIALIZATION -->
+
+                    <div class="doctor-form-group">
+
+                        <label for="specialization">
+                            Specialization
+                        </label>
+
+                        <input
+                            type="text"
+                            id="specialization"
+                            name="specialization"
+                            placeholder="e.g. Cardiologist"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="doctor-form-group">
+
+                        <label for="phone">
+                            Phone
+                        </label>
+
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            pattern="(06|07)[0-9]{8}"
+                            minlength="10"
+                            maxlength="10"
+                            inputmode="numeric"
+                            placeholder="07XXXXXXXX"
+                            title="Phone number must start with 06 or 07 and contain exactly 10 digits."
+                        >
+
+                        <small class="doctor-help-text">
+
+                            Phone must start with 06 or 07
+                            and contain exactly 10 digits.
+
+                        </small>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="doctor-form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                        >
+
+                    </div>
+
+
+                    <!-- DEPARTMENT -->
+
+                    <div class="doctor-form-group">
+
+                        <label for="department">
+                            Department
+                        </label>
+
+                        <input
+                            type="text"
+                            id="department"
+                            name="department"
+                            placeholder="e.g. Outpatient Department"
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="doctor-form-actions">
+
+                    <button
+                        type="submit"
+                        class="doctor-register-button"
+                    >
+                        Register Doctor
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- =================================================
+             DOCTOR LIST
+        ================================================= -->
+
+        <section class="doctors-content-card">
+
+
+            <h2 class="registered-doctors-title">
+
+                Registered Doctors
+
+            </h2>
+
+
+            {% if doctors %}
+
+
+            <div class="doctors-table-container">
+
+
+                <table class="doctors-table">
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Full Name
+                            </th>
+
+                            <th>
+                                Gender
+                            </th>
+
+                            <th>
+                                Specialization
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Department
+                            </th>
+
+
+                            {% if role == "Admin" %}
+
+                            <th>
+                                Actions
+                            </th>
+
+                            {% endif %}
+
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for doctor in doctors %}
+
+
+                        <tr>
+
+
+                            <td>
+                                {{ doctor["id"] }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["full_name"] }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["gender"] }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["specialization"] }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["phone"] }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["email"] }}
+                            </td>
+
+
+                            <td>
+                                {{ doctor["department"] }}
+                            </td>
+
+
+                            <!-- =================================
+                                 ACTIONS
+                                 ADMIN ONLY
+                            ================================== -->
+
+                            {% if role == "Admin" %}
+
+                            <td>
+
+                                <div class="doctor-actions">
+
+
+                                    <a
+                                        href="{{ url_for(
+                                            'edit_doctor',
+                                            doctor_id=doctor['id']
+                                        ) }}"
+                                        class="doctor-edit-button"
+                                    >
+                                        ✏️ Edit
+                                    </a>
+
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'delete_doctor',
+                                            doctor_id=doctor['id']
+                                        ) }}"
+                                        onsubmit="return confirm(
+                                            'Are you sure you want to delete this doctor?'
+                                        );"
+                                    >
+
+
+                                        <!-- CSRF PROTECTION -->
+
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
+
+
+                                        <button
+                                            type="submit"
+                                            class="doctor-delete-button"
+                                        >
+                                            🗑️ Delete
+                                        </button>
+
+
+                                    </form>
+
+
+                                </div>
+
+                            </td>
+
+                            {% endif %}
+
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+            {% else %}
+
+
+            <div class="no-doctors">
+
+                No doctors have been registered yet.
+
+            </div>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
 
     <!-- =====================================================
-         LOGGED-IN USER
-         ===================================================== -->
+         FOOTER
+    ===================================================== -->
 
-    <div class="user-info">
+    <footer class="doctors-footer">
 
-        <p>
-            Welcome,
-            <strong>{{ username }}</strong>
-        </p>
+        Hospital Data Analytics System
 
-        <p>
-            Role:
-            <strong>{{ role }}</strong>
-        </p>
+    </footer>
 
-    </div>
 
-
-
-    <!-- =====================================================
-         PAGE TITLE
-         ===================================================== -->
-
-    <h2>
-        👨‍⚕️ Doctors
-    </h2>
-
-    <p>
-        Manage and view registered hospital doctors.
-    </p>
-
-
-
-    <!-- =====================================================
-         ERROR MESSAGE
-         ===================================================== -->
-
-    {% if error %}
-
-    <div class="error-message">
-
-        ❌ {{ error }}
-
-    </div>
-
-    {% endif %}
-
-
-
-    <!-- =====================================================
-         ADD DOCTOR
-         ADMIN ONLY
-         ===================================================== -->
-
-    {% if role == "Admin" %}
-
-    <h2>
-        Register New Doctor
-    </h2>
-
-
-    <form method="POST"
-          action="{{ url_for('add_doctor') }}">
-
-
-        <label for="full_name">
-            Full Name:
-        </label>
-
-        <br>
-
-        <input type="text"
-               id="full_name"
-               name="full_name"
-               required>
-
-        <br><br>
-
-
-
-        <label for="gender">
-            Gender:
-        </label>
-
-        <br>
-
-        <select id="gender"
-                name="gender"
-                required>
-
-            <option value="">
-                -- Select Gender --
-            </option>
-
-            <option value="Male">
-                Male
-            </option>
-
-            <option value="Female">
-                Female
-            </option>
-
-        </select>
-
-        <br><br>
-
-
-
-        <label for="specialization">
-            Specialization:
-        </label>
-
-        <br>
-
-        <input type="text"
-               id="specialization"
-               name="specialization"
-               placeholder="e.g. Cardiologist"
-               required>
-
-        <br><br>
-
-
-
-        <label for="phone">
-            Phone:
-        </label>
-
-        <br>
-
-        <input type="tel"
-               id="phone"
-               name="phone"
-               pattern="(06|07)[0-9]{8}"
-               minlength="10"
-               maxlength="10"
-               inputmode="numeric"
-               placeholder="07XXXXXXXX"
-               title="Phone number must start with 06 or 07 and contain exactly 10 digits.">
-
-        <br>
-
-        <small>
-            Phone must start with 06 or 07 and contain exactly 10 digits.
-        </small>
-
-        <br><br>
-
-
-
-        <label for="email">
-            Email:
-        </label>
-
-        <br>
-
-        <input type="email"
-               id="email"
-               name="email">
-
-        <br><br>
-
-
-
-        <label for="department">
-            Department:
-        </label>
-
-        <br>
-
-        <input type="text"
-               id="department"
-               name="department"
-               placeholder="e.g. Outpatient Department">
-
-        <br><br>
-
-
-
-        <button type="submit">
-            Register Doctor
-        </button>
-
-    </form>
-
-    {% endif %}
-
-
-
-    <!-- =====================================================
-         DOCTOR LIST
-         ===================================================== -->
-
-    <h2>
-        Registered Doctors
-    </h2>
-
-
-    {% if doctors %}
-
-    <table>
-
-        <thead>
-
-            <tr>
-
-                <th>
-                    ID
-                </th>
-
-                <th>
-                    Full Name
-                </th>
-
-                <th>
-                    Gender
-                </th>
-
-                <th>
-                    Specialization
-                </th>
-
-                <th>
-                    Phone
-                </th>
-
-                <th>
-                    Email
-                </th>
-
-                <th>
-                    Department
-                </th>
-
-
-                {% if role == "Admin" %}
-
-                <th>
-                    Actions
-                </th>
-
-                {% endif %}
-
-            </tr>
-
-        </thead>
-
-
-        <tbody>
-
-            {% for doctor in doctors %}
-
-            <tr>
-
-                <td>
-                    {{ doctor["id"] }}
-                </td>
-
-                <td>
-                    {{ doctor["full_name"] }}
-                </td>
-
-                <td>
-                    {{ doctor["gender"] }}
-                </td>
-
-                <td>
-                    {{ doctor["specialization"] }}
-                </td>
-
-                <td>
-                    {{ doctor["phone"] }}
-                </td>
-
-                <td>
-                    {{ doctor["email"] }}
-                </td>
-
-                <td>
-                    {{ doctor["department"] }}
-                </td>
-
-
-
-                <!-- =========================================
-                     ACTIONS
-                     ADMIN ONLY
-                     ========================================= -->
-
-                {% if role == "Admin" %}
-
-                <td>
-
-                    <a href="{{ url_for(
-                        'edit_doctor',
-                        doctor_id=doctor['id']
-                    ) }}">
-
-                        ✏️ Edit
-
-                    </a>
-
-
-                    <form method="POST"
-                          action="{{ url_for(
-                              'delete_doctor',
-                              doctor_id=doctor['id']
-                          ) }}"
-                          style="display:inline;"
-                          onsubmit="return confirm(
-                              'Are you sure you want to delete this doctor?'
-                          );">
-
-                        <button type="submit">
-
-                            🗑️ Delete
-
-                        </button>
-
-                    </form>
-
-                </td>
-
-                {% endif %}
-
-            </tr>
-
-            {% endfor %}
-
-        </tbody>
-
-    </table>
-
-
-    {% else %}
-
-    <p>
-        No doctors have been registered yet.
-    </p>
-
-    {% endif %}
-
-
-
-    <!-- =====================================================
-         FOOTER INFORMATION
-         ===================================================== -->
-
-    <hr>
-
-
-    <p>
-
-        <strong>
-            🏥 Hospital Data Analytics System
-        </strong>
-
-    </p>
-
-
-    <p>
-        Role-Based Access Control Enabled
-    </p>
-
+</div>
 
 </body>
 
 </html>
+```

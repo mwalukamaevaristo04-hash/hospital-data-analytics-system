@@ -1,50 +1,221 @@
+```html
 <!DOCTYPE html>
 
 <html lang="en">
 
 <head>
 
+    <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        Hospital Data Analytics System
+    </title>
 
-<title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 
-    Hospital Data Analytics System
+    <style>
 
-</title>
+        /* =====================================================
+           DASHBOARD HEADER
+           ===================================================== */
 
-<link rel="stylesheet"
+        .dashboard-header {
 
-      href="{{ url_for('static', filename='style.css') }}">
+            position: relative;
 
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            padding: 22px 30px;
+
+            box-sizing: border-box;
+
+        }
+
+
+        .dashboard-hospital-info {
+
+            margin: 0;
+
+            padding: 0;
+
+        }
+
+
+        .dashboard-hospital-info h1 {
+
+            margin: 0 0 5px 0;
+
+        }
+
+
+        .dashboard-hospital-info p {
+
+            margin: 0;
+
+        }
+
+
+        .dashboard-user-info {
+
+            text-align: right;
+
+            margin-left: 30px;
+
+            white-space: nowrap;
+
+        }
+
+
+        .dashboard-welcome {
+
+            margin-bottom: 5px;
+
+        }
+
+
+        .dashboard-role {
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .dashboard-logout {
+
+            color: #dc3545;
+
+            font-weight: bold;
+
+            text-decoration: none;
+
+        }
+
+
+        .dashboard-logout:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        @media (max-width: 768px) {
+
+            .dashboard-header {
+
+                flex-direction: column;
+
+                align-items: flex-start;
+
+                gap: 15px;
+
+            }
+
+
+            .dashboard-user-info {
+
+                text-align: left;
+
+                margin-left: 0;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
+
 <body>
+
 
 <!-- =====================================================
      HOSPITAL HEADER
      ===================================================== -->
 
-<header>
+<header class="dashboard-header">
 
 
-<h1>
+    <div class="dashboard-hospital-info">
 
-    🏥 Hospital Data Analytics System
+        <h1>
 
-</h1>
+            🏥 Hospital Data Analytics System
 
-<p>
+        </h1>
 
-    Hospital Management & Data Analytics Platform
 
-</p>
+        <p>
+
+            Hospital Management &amp; Data Analytics Platform
+
+        </p>
+
+    </div>
+
+
+    <!-- =================================================
+         USER INFORMATION - TOP RIGHT
+         ================================================= -->
+
+    <div class="dashboard-user-info">
+
+
+        <div class="dashboard-welcome">
+
+            Welcome,
+
+            <strong>
+
+                {{ username }}
+
+            </strong>
+
+        </div>
+
+
+        <div class="dashboard-role">
+
+            Role:
+
+            <strong>
+
+                {{ role }}
+
+            </strong>
+
+        </div>
+
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="dashboard-logout"
+        >
+
+            🚪 Logout
+
+        </a>
+
+    </div>
 
 
 </header>
+
+
+
+
 
 <!-- =====================================================
      NAVIGATION BAR
@@ -52,1497 +223,1822 @@
 
 <nav>
 
+    <a href="{{ url_for('home') }}">
 
-<a href="{{ url_for('home') }}">
+        🏠 Dashboard
 
-    🏠 Dashboard
+    </a>
 
-</a>
 
 
-{% if role in [
+    {% if role in [
 
-    "Admin",
+        "Admin",
 
-    "Doctor",
+        "Doctor",
 
-    "Receptionist",
+        "Receptionist",
 
-    "Data Analyst"
+        "Data Analyst"
 
-] %}
+    ] %}
 
-<a href="{{ url_for('patients') }}">
+        <a href="{{ url_for('patients') }}">
 
-    👥 Patients
+            👥 Patients
 
-</a>
+        </a>
 
-{% endif %}
+    {% endif %}
 
 
-{% if role in [
 
-    "Admin",
 
-    "Doctor",
 
-    "Receptionist",
 
-    "Data Analyst"
 
-] %}
+    {% if role in [
 
-<a href="{{ url_for('doctors') }}">
+        "Admin",
 
-    👨‍⚕️ Doctors
+        "Doctor",
 
-</a>
+        "Receptionist",
 
-{% endif %}
+        "Data Analyst"
 
+    ] %}
 
-{% if role in [
+        <a href="{{ url_for('doctors') }}">
 
-    "Admin",
+            👨‍⚕️ Doctors
 
-    "Doctor",
+        </a>
 
-    "Receptionist",
+    {% endif %}
 
-    "Data Analyst"
 
-] %}
 
-<a href="{{ url_for('appointments') }}">
 
-    📅 Appointments
 
-</a>
 
-{% endif %}
 
+    {% if role in [
 
-{% if role in [
+        "Admin",
 
-    "Admin",
+        "Doctor",
 
-    "Doctor",
+        "Receptionist",
 
-    "Receptionist",
+        "Data Analyst"
 
-    "Data Analyst"
+    ] %}
 
-] %}
+        <a href="{{ url_for('appointments') }}">
 
-<a href="{{ url_for('medical_records') }}">
+            📅 Appointments
 
-    📋 Medical Records
+        </a>
 
-</a>
+    {% endif %}
 
-{% endif %}
 
 
-{% if role in [
 
-    "Admin",
 
-    "Pharmacist",
 
-    "Doctor",
 
-    "Receptionist",
+    {% if role in [
 
-    "Data Analyst"
+        "Admin",
 
-] %}
+        "Doctor",
 
-<a href="{{ url_for('pharmacy') }}">
+        "Receptionist",
 
-    💊 Pharmacy
+        "Data Analyst"
 
-</a>
+    ] %}
 
-{% endif %}
+        <a href="{{ url_for('medical_records') }}">
 
+            📋 Medical Records
 
-{% if role in [
+        </a>
 
-    "Admin",
+    {% endif %}
 
-    "Laboratory",
 
-    "Patient",
 
-    "Doctor",
 
-    "Receptionist",
 
-    "Data Analyst"
 
-] %}
 
-<a href="{{ url_for('laboratory') }}">
+    {% if role in [
 
-    🧪 Laboratory
+        "Admin",
 
-</a>
+        "Pharmacist",
 
-{% endif %}
+        "Doctor",
 
+        "Receptionist",
 
-{% if role in [
+        "Data Analyst"
 
-    "Admin",
+    ] %}
 
-    "Doctor",
+        <a href="{{ url_for('pharmacy') }}">
 
-    "Data Analyst"
+            💊 Pharmacy
 
-] %}
+        </a>
 
-<a href="{{ url_for('analytics') }}">
+    {% endif %}
 
-    📊 Analytics
 
-</a>
 
-{% endif %}
 
 
-<!-- =================================================
-     REPORTS NAVIGATION - ADMIN ONLY
-     ================================================= -->
 
-{% if role == "Admin" %}
 
-<a href="{{ url_for('reports') }}">
+    {% if role in [
 
-    📑 Reports
+        "Admin",
 
-</a>
+        "Laboratorian",
 
-{% endif %}
+        "Patient",
 
+        "Doctor",
 
-{% if role == "Admin" %}
+        "Receptionist",
 
-<a href="{{ url_for('users') }}">
+        "Data Analyst"
 
-    👤 Users
+    ] %}
 
-</a>
+        <a href="{{ url_for('laboratory') }}">
 
-{% endif %}
+            🧪 Laboratory
 
+        </a>
 
-<a href="{{ url_for('logout') }}">
+    {% endif %}
 
-    🚪 Logout
 
-</a>
 
+
+
+
+
+    <!-- =================================================
+         EMERGENCY MEDICAL DEPARTMENT
+         ADMIN + RECEPTIONIST + DOCTOR
+         ================================================= -->
+
+    {% if role in [
+
+        "Admin",
+
+        "Receptionist",
+
+        "Doctor"
+
+    ] %}
+
+        {% if role == "Doctor" %}
+
+            <a href="{{ url_for('emergency_cases') }}">
+
+                🚨 EMD
+
+            </a>
+
+        {% else %}
+
+            <a href="{{ url_for('emergency_register') }}">
+
+                🚨 EMD
+
+            </a>
+
+        {% endif %}
+
+    {% endif %}
+
+
+
+
+
+
+
+    {% if role in [
+
+        "Admin",
+
+        "Doctor",
+
+        "Data Analyst"
+
+    ] %}
+
+        <a href="{{ url_for('analytics') }}">
+
+            📊 Analytics
+
+        </a>
+
+    {% endif %}
+
+
+
+
+
+
+
+    <!-- =================================================
+         REPORTS - ADMIN ONLY
+         ================================================= -->
+
+    {% if role == "Admin" %}
+
+        <a href="{{ url_for('reports') }}">
+
+            📑 Reports
+
+        </a>
+
+    {% endif %}
+
+
+
+
+
+
+
+    <!-- =================================================
+         USER MANAGEMENT - ADMIN ONLY
+         ================================================= -->
+
+    {% if role == "Admin" %}
+
+        <a href="{{ url_for('users') }}">
+
+            👤 Users
+
+        </a>
+
+    {% endif %}
 
 </nav>
 
-<!-- =====================================================
-     LOGGED-IN USER
-     ===================================================== -->
-
-<div class="user-info">
 
 
-<p>
 
-    Welcome,
-
-    <strong>{{ username }}</strong>
-
-</p>
-
-<p>
-
-    Role:
-
-    <strong>{{ role }}</strong>
-
-</p>
-
-
-</div>
-
-<!-- =====================================================
-     DASHBOARD
-     ===================================================== -->
 
 <h2>
 
-
-Dashboard
-
+    Dashboard
 
 </h2>
 
+
+
+
+
 <p>
 
-
-Welcome to the Hospital Data Analytics System.
-
+    Welcome to the Hospital Data Analytics System.
 
 </p>
 
+
+
+
+
 <!-- =====================================================
-     MAIN MODULE CARDS
+     DASHBOARD CARDS
      ===================================================== -->
 
 <div class="cards">
 
 
-<!-- =================================================
-     PATIENTS MODULE
-     ================================================= -->
 
-{% if role in [
 
-"Admin",
 
-"Doctor",
+    <!-- =================================================
+         PATIENTS
+         ================================================= -->
 
-"Receptionist",
+    {% if role in [
 
-"Data Analyst"
+        "Admin",
 
-] %}
+        "Doctor",
 
-<a href="{{ url_for('patients') }}"
+        "Receptionist",
 
-   class="card">
+        "Data Analyst"
 
-    <h3>
+    ] %}
 
-        👥 Patients
+        <a
+            href="{{ url_for('patients') }}"
+            class="card"
+        >
 
-    </h3>
+            <h3>
 
-    <p class="number">
+                👥 Patients
 
-        {{ patient_count }}
+            </h3>
 
-    </p>
+            <p class="number">
 
-    <p>
+                {{ patient_count }}
 
-        Patient Management
+            </p>
 
-    </p>
+            <p>
 
-</a>
+                Patient Management
 
-{% endif %}
+            </p>
 
+        </a>
 
-<!-- =================================================
-     DOCTORS MODULE
-     ================================================= -->
+    {% endif %}
 
-{% if role in [
 
-"Admin",
 
-"Doctor",
 
-"Receptionist",
 
-"Data Analyst"
 
-] %}
 
-<a href="{{ url_for('doctors') }}"
+    <!-- =================================================
+         DOCTORS
+         ================================================= -->
 
-   class="card">
+    {% if role in [
 
-    <h3>
+        "Admin",
 
-        👨‍⚕️ Doctors
+        "Doctor",
 
-    </h3>
+        "Receptionist",
 
-    <p class="number">
+        "Data Analyst"
 
-        {{ doctor_count }}
+    ] %}
 
-    </p>
+        <a
+            href="{{ url_for('doctors') }}"
+            class="card"
+        >
 
-    <p>
+            <h3>
 
-        Doctor Management
+                👨‍⚕️ Doctors
 
-    </p>
+            </h3>
 
-</a>
+            <p class="number">
 
-{% endif %}
+                {{ doctor_count }}
 
+            </p>
 
-<!-- =================================================
-     APPOINTMENTS MODULE
-     ================================================= -->
+            <p>
 
-{% if role in [
+                Doctor Management
 
-"Admin",
+            </p>
 
-"Doctor",
+        </a>
 
-"Receptionist",
+    {% endif %}
 
-"Data Analyst"
 
-] %}
 
-<a href="{{ url_for('appointments') }}"
 
-   class="card">
 
-    <h3>
 
-        📅 Appointments
 
-    </h3>
+    <!-- =================================================
+         APPOINTMENTS
+         ================================================= -->
 
-    <p class="number">
+    {% if role in [
 
-        {{ appointment_count }}
+        "Admin",
 
-    </p>
+        "Doctor",
 
-    <p>
+        "Receptionist",
 
-        Appointment Management
+        "Data Analyst"
 
-    </p>
+    ] %}
 
-</a>
+        <a
+            href="{{ url_for('appointments') }}"
+            class="card"
+        >
 
-{% endif %}
+            <h3>
 
+                📅 Appointments
 
-<!-- =================================================
-     MEDICAL RECORDS MODULE
-     ================================================= -->
+            </h3>
 
-{% if role in [
+            <p class="number">
 
-"Admin",
+                {{ appointment_count }}
 
-"Doctor",
+            </p>
 
-"Receptionist",
+            <p>
 
-"Data Analyst"
+                Appointment Management
 
-] %}
+            </p>
 
-<a href="{{ url_for('medical_records') }}"
+        </a>
 
-   class="card">
+    {% endif %}
 
-    <h3>
 
-        📋 Medical Records
 
-    </h3>
 
-    <p class="number">
 
-        🩺
 
-    </p>
 
-    <p>
+    <!-- =================================================
+         MEDICAL RECORDS
+         ================================================= -->
 
-        Patient Medical Records
+    {% if role in [
 
-    </p>
+        "Admin",
 
-</a>
+        "Doctor",
 
-{% endif %}
+        "Receptionist",
 
+        "Data Analyst"
 
-<!-- =================================================
-     PHARMACY MODULE
-     ================================================= -->
+    ] %}
 
-{% if role in [
+        <a
+            href="{{ url_for('medical_records') }}"
+            class="card"
+        >
 
-"Admin",
+            <h3>
 
-"Pharmacist",
+                📋 Medical Records
 
-"Doctor",
+            </h3>
 
-"Receptionist",
+            <p class="number">
 
-"Data Analyst"
+                🩺
 
-] %}
+            </p>
 
-<a href="{{ url_for('pharmacy') }}"
+            <p>
 
-   class="card">
+                Patient Medical Records
 
-    <h3>
+            </p>
 
-        💊 Pharmacy
+        </a>
 
-    </h3>
+    {% endif %}
 
-    <p class="number">
 
-        {{ medicine_count }}
 
-    </p>
 
-    <p>
 
-        Pharmacy Management
 
-    </p>
 
-</a>
+    <!-- =================================================
+         PHARMACY
+         ================================================= -->
 
-{% endif %}
+    {% if role in [
 
+        "Admin",
 
-<!-- =================================================
-     LABORATORY MODULE
-     ================================================= -->
+        "Pharmacist",
 
-{% if role in [
+        "Doctor",
 
-"Admin",
+        "Receptionist",
 
-"Laboratory",
+        "Data Analyst"
 
-"Patient",
+    ] %}
 
-"Doctor",
+        <a
+            href="{{ url_for('pharmacy') }}"
+            class="card"
+        >
 
-"Receptionist",
+            <h3>
 
-"Data Analyst"
+                💊 Pharmacy
 
-] %}
+            </h3>
 
-<a href="{{ url_for('laboratory') }}"
+            <p class="number">
 
-   class="card">
+                {{ medicine_count }}
 
-    <h3>
+            </p>
 
-        🧪 Laboratory
+            <p>
 
-    </h3>
+                Pharmacy Management
 
-    <p class="number">
+            </p>
 
-        {{ laboratory_test_count }}
+        </a>
 
-    </p>
+    {% endif %}
 
-    <p>
 
-        Laboratory & Diagnostics
 
-    </p>
 
-</a>
 
-{% endif %}
 
 
-<!-- =================================================
-     ANALYTICS MODULE
-     ================================================= -->
+    <!-- =================================================
+         LABORATORY CARD FOR NON-LABORATORIAN ROLES
+         ================================================= -->
 
-{% if role in [
+    {% if role in [
 
-"Admin",
+        "Admin",
 
-"Doctor",
+        "Patient",
 
-"Data Analyst"
+        "Doctor",
 
-] %}
+        "Receptionist",
 
-<a href="{{ url_for('analytics') }}"
+        "Data Analyst"
 
-   class="card">
+    ] %}
 
-    <h3>
+        <a
+            href="{{ url_for('laboratory') }}"
+            class="card"
+        >
 
-        📊 Analytics
+            <h3>
 
-    </h3>
+                🧪 Laboratory
 
-    <p class="number">
+            </h3>
 
-        📈
+            <p class="number">
 
-    </p>
+                {{ laboratory_test_count }}
 
-    <p>
+            </p>
 
-        Hospital Data Analytics
+            <p>
 
-    </p>
+                Laboratory &amp; Diagnostics
 
-</a>
+            </p>
 
-{% endif %}
+        </a>
 
+    {% endif %}
 
-<!-- =================================================
-     REPORTS MODULE
-     ADMIN ONLY
-     ================================================= -->
 
-{% if role == "Admin" %}
 
-<a href="{{ url_for('reports') }}"
 
-   class="card">
 
-    <h3>
 
-        📑 Reports
 
-    </h3>
+    <!-- =================================================
+         EMD - EMERGENCY MEDICAL DEPARTMENT
+         ADMIN + RECEPTIONIST + DOCTOR
+         ================================================= -->
 
-    <p class="number">
+    {% if role in [
 
-        📊
+        "Admin",
 
-    </p>
+        "Receptionist",
 
-    <p>
+        "Doctor"
 
-        Hospital Reports
+    ] %}
 
-    </p>
+        <a
+            href="{% if role == 'Doctor' %}{{ url_for('emergency_cases') }}{% else %}{{ url_for('emergency_register') }}{% endif %}"
+            class="card"
+        >
 
-</a>
+            <h3>
 
-{% endif %}
+                🚨 Emergency Medical Department
 
+            </h3>
 
-<!-- =================================================
-     USER MANAGEMENT MODULE
-     ADMIN ONLY
-     ================================================= -->
+            <p class="number">
 
-{% if role == "Admin" %}
+                🚑
 
-<a href="{{ url_for('users') }}"
+            </p>
 
-   class="card user-management-card">
+            <p>
 
-    <h3>
+                {% if role == "Doctor" %}
 
-        👤 User Management
+                    Emergency Patient Cases
 
-    </h3>
+                {% else %}
 
-    <p class="number">
+                    Emergency Patient Registration
 
-        🔐
+                {% endif %}
 
-    </p>
+            </p>
 
-    <p>
+        </a>
 
-        Manage System Users
+    {% endif %}
 
-    </p>
 
-</a>
 
-{% endif %}
+
+
+
+
+    <!-- =================================================
+         LABORATORIAN DASHBOARD CARDS
+         ================================================= -->
+
+    {% if role == "Laboratorian" %}
+
+
+
+
+
+        <!-- LABORATORY -->
+
+        <a
+            href="{{ url_for('laboratory') }}"
+            class="card"
+        >
+
+            <h3>
+
+                🧪 Laboratory
+
+            </h3>
+
+            <p class="number">
+
+                {{ laboratory_test_count }}
+
+            </p>
+
+            <p>
+
+                Laboratory Management
+
+            </p>
+
+        </a>
+
+
+
+
+
+
+
+        <!-- PENDING REQUESTS -->
+
+        <a
+            href="{{ url_for('laboratory') }}"
+            class="card"
+        >
+
+            <h3>
+
+                ⏳ Pending Requests
+
+            </h3>
+
+            <p class="number">
+
+                {{ pending_lab_count }}
+
+            </p>
+
+            <p>
+
+                Requests Awaiting Processing
+
+            </p>
+
+        </a>
+
+
+
+
+
+
+
+        <!-- LABORATORY TESTS -->
+
+        <a
+            href="{{ url_for('laboratory') }}"
+            class="card"
+        >
+
+            <h3>
+
+                🔬 Laboratory Tests
+
+            </h3>
+
+            <p class="number">
+
+                {{ laboratory_test_count }}
+
+            </p>
+
+            <p>
+
+                Available Diagnostic Tests
+
+            </p>
+
+        </a>
+
+
+
+
+
+
+
+        <!-- LABORATORY RESULTS -->
+
+        <a
+            href="{{ url_for('laboratory') }}"
+            class="card"
+        >
+
+            <h3>
+
+                📝 Laboratory Results
+
+            </h3>
+
+            <p class="number">
+
+                {{ completed_lab_count }}
+
+            </p>
+
+            <p>
+
+                Completed Laboratory Results
+
+            </p>
+
+        </a>
+
+    {% endif %}
+
+
+
+
+
+
+
+    <!-- =================================================
+         ANALYTICS
+         ================================================= -->
+
+    {% if role in [
+
+        "Admin",
+
+        "Doctor",
+
+        "Data Analyst"
+
+    ] %}
+
+        <a
+            href="{{ url_for('analytics') }}"
+            class="card"
+        >
+
+            <h3>
+
+                📊 Analytics
+
+            </h3>
+
+            <p class="number">
+
+                📈
+
+            </p>
+
+            <p>
+
+                Hospital Data Analytics
+
+            </p>
+
+        </a>
+
+    {% endif %}
+
+
+
+
+
+
+
+    <!-- =================================================
+         REPORTS - ADMIN ONLY
+         ================================================= -->
+
+    {% if role == "Admin" %}
+
+        <a
+            href="{{ url_for('reports') }}"
+            class="card"
+        >
+
+            <h3>
+
+                📑 Reports
+
+            </h3>
+
+            <p class="number">
+
+                📊
+
+            </p>
+
+            <p>
+
+                Hospital Reports
+
+            </p>
+
+        </a>
+
+    {% endif %}
+
+
+
+
+
+
+
+    <!-- =================================================
+         USER MANAGEMENT - ADMIN ONLY
+         ================================================= -->
+
+    {% if role == "Admin" %}
+
+        <a
+            href="{{ url_for('users') }}"
+            class="card user-management-card"
+        >
+
+            <h3>
+
+                👤 User Management
+
+            </h3>
+
+            <p class="number">
+
+                🔐
+
+            </p>
+
+            <p>
+
+                Manage System Users
+
+            </p>
+
+        </a>
+
+    {% endif %}
+
+
+
 
 
 </div>
 
-<!-- =====================================================
-     ROLE INFORMATION
-     ===================================================== -->
+
+
+
 
 <hr>
 
+
+
+
+
+<!-- =====================================================
+     ROLE ACCESS LEVEL
+     ===================================================== -->
+
 <h2>
 
-
-Your Access Level
-
+    Your Access Level
 
 </h2>
+
+
+
+
 
 <div class="role-bubbles">
 
 
-<!-- =====================================================
-     ADMIN
-     ===================================================== -->
-
-{% if role == "Admin" %}
-
-<div class="role-bubble admin-bubble">
-
-    <h3>
-
-        🛡️ Administrator Access
-
-    </h3>
 
 
-    <div class="access-item">
 
-        <strong>
+    <!-- =================================================
+         ADMIN
+         ================================================= -->
 
-            🔐 Full Access
+    {% if role == "Admin" %}
 
-        </strong>
+        <div class="role-bubble admin-bubble">
 
-        <p>
+            <h3>
 
-            You have full administrative access
+                🛡️ Administrator Access
 
-            to the hospital system.
-
-        </p>
-
-    </div>
+            </h3>
 
 
-    <div class="access-item">
+            <div class="access-item">
 
-        <strong>
+                <strong>
 
-            ⚙️ System Management
+                    🔐 Full Access
 
-        </strong>
+                </strong>
 
-        <p>
+                <p>
 
-            You can manage the hospital system,
+                    You have full administrative access
+                    to the hospital system.
 
-            doctors, users, appointments, medical records,
+                </p>
 
-            pharmacy, laboratory and analytics.
+            </div>
 
-        </p>
 
-    </div>
+            <div class="access-item">
+
+                <strong>
+
+                    ⚙️ System Management
+
+                </strong>
+
+                <p>
+
+                    You can manage the hospital system,
+                    doctors, users, appointments, medical
+                    records, pharmacy, laboratory and analytics.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    <!-- =================================================
+         DOCTOR
+         ================================================= -->
+
+    {% elif role == "Doctor" %}
+
+        <div class="role-bubble doctor-bubble">
+
+            <h3>
+
+                👨‍⚕️ Doctor Access
+
+            </h3>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📋 Hospital Information
+
+                </strong>
+
+                <p>
+
+                    You can view patient information,
+                    doctor information, appointments
+                    and medical records.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📅 Appointment Management
+
+                </strong>
+
+                <p>
+
+                    You can manage your assigned appointments
+                    by accepting, rejecting or completing them.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🩺 Medical Records
+
+                </strong>
+
+                <p>
+
+                    You can create, view and update medical
+                    records related to your assigned doctor profile.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    💊 Pharmacy
+
+                </strong>
+
+                <p>
+
+                    You can manage prescriptions related
+                    to your patients and prescribe medicines.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🧪 Laboratory
+
+                </strong>
+
+                <p>
+
+                    You can view completed laboratory results
+                    relevant to your medical specialty.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🔒 Access Restrictions
+
+                </strong>
+
+                <p>
+
+                    You can only access information according
+                    to your assigned responsibilities.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    <!-- =================================================
+         RECEPTIONIST
+         ================================================= -->
+
+    {% elif role == "Receptionist" %}
+
+        <div class="role-bubble receptionist-bubble">
+
+            <h3>
+
+                🧑‍💼 Receptionist Access
+
+            </h3>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    👥 Patient Management
+
+                </strong>
+
+                <p>
+
+                    You can register and manage patients
+                    and schedule appointments.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    👤 Patient Accounts
+
+                </strong>
+
+                <p>
+
+                    You can create and manage patient
+                    system accounts when required.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    👨‍⚕️ Doctor Information
+
+                </strong>
+
+                <p>
+
+                    You can view doctor information.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📋 Medical Records
+
+                </strong>
+
+                <p>
+
+                    You can view patient medical records
+                    for hospital information and follow-up.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    💊 Pharmacy
+
+                </strong>
+
+                <p>
+
+                    You can access pharmacy information
+                    for patient service and follow-up.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🧪 Laboratory
+
+                </strong>
+
+                <p>
+
+                    You can view laboratory tests, requests
+                    and completed results.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    <!-- =================================================
+         DATA ANALYST
+         ================================================= -->
+
+    {% elif role == "Data Analyst" %}
+
+        <div class="role-bubble analyst-bubble">
+
+            <h3>
+
+                📊 Data Analyst Access
+
+            </h3>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📈 Data &amp; Analytics
+
+                </strong>
+
+                <p>
+
+                    You have access to hospital data and
+                    analytics for analysis and reporting.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📋 Medical Records
+
+                </strong>
+
+                <p>
+
+                    You can view medical records for
+                    data analysis and reporting purposes.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    💊 Pharmacy Data
+
+                </strong>
+
+                <p>
+
+                    You can view medicine inventory,
+                    prescriptions and pharmacy reports.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🧪 Laboratory Data
+
+                </strong>
+
+                <p>
+
+                    You can view laboratory requests,
+                    results and laboratory reports.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    👁️ Read-Only Access
+
+                </strong>
+
+                <p>
+
+                    Your access is read-only.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    <!-- =================================================
+         PHARMACIST
+         ================================================= -->
+
+    {% elif role == "Pharmacist" %}
+
+        <div class="role-bubble pharmacist-bubble">
+
+            <h3>
+
+                💊 Pharmacist Access
+
+            </h3>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    💊 Pharmacy Management
+
+                </strong>
+
+                <p>
+
+                    You can access and manage the pharmacy
+                    module and medicine inventory.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📦 Medicine Inventory
+
+                </strong>
+
+                <p>
+
+                    You can add, edit and delete medicines
+                    and monitor available stock.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    ⚠️ Stock Monitoring
+
+                </strong>
+
+                <p>
+
+                    You can monitor low-stock medicines
+                    and identify medicines requiring restocking.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🧾 Prescriptions
+
+                </strong>
+
+                <p>
+
+                    You can view pending prescriptions
+                    and dispense medicines to patients.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📊 Pharmacy Reports
+
+                </strong>
+
+                <p>
+
+                    You can access pharmacy reports and
+                    monitor medicine inventory information.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🔒 Access Restrictions
+
+                </strong>
+
+                <p>
+
+                    Your access is focused on pharmacy
+                    operations and medicine management.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    <!-- =================================================
+         LABORATORIAN
+         ================================================= -->
+
+    {% elif role == "Laboratorian" %}
+
+        <div class="role-bubble laboratory-bubble">
+
+            <h3>
+
+                🧪 Laboratory Access
+
+            </h3>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🧪 Laboratory Management
+
+                </strong>
+
+                <p>
+
+                    You can access and manage laboratory
+                    services and diagnostic testing.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🔬 Laboratory Tests
+
+                </strong>
+
+                <p>
+
+                    You can manage available laboratory
+                    and diagnostic tests.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    ⏳ Test Requests
+
+                </strong>
+
+                <p>
+
+                    You can process patient laboratory
+                    requests and update their status.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📝 Laboratory Results
+
+                </strong>
+
+                <p>
+
+                    You can enter findings, interpretations
+                    and completed laboratory results.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    👨‍⚕️ Doctor Assignment
+
+                </strong>
+
+                <p>
+
+                    You can connect completed results with
+                    the relevant medical specialty and doctor.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📊 Laboratory Reports
+
+                </strong>
+
+                <p>
+
+                    You can access laboratory reports and
+                    monitor laboratory service performance.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🔒 Access Restrictions
+
+                </strong>
+
+                <p>
+
+                    Your access is focused on laboratory
+                    and diagnostic service operations.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+    <!-- =================================================
+         PATIENT
+         ================================================= -->
+
+    {% elif role == "Patient" %}
+
+        <div class="role-bubble patient-bubble">
+
+            <h3>
+
+                🧑‍🦱 Patient Access
+
+            </h3>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🧪 Laboratory Services
+
+                </strong>
+
+                <p>
+
+                    You can view available laboratory and
+                    diagnostic tests and request the services
+                    you need.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📝 Test Requests
+
+                </strong>
+
+                <p>
+
+                    You can submit laboratory test requests
+                    through the hospital system.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    ⏳ Request Status
+
+                </strong>
+
+                <p>
+
+                    You can monitor the status of your
+                    laboratory requests.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    📄 Laboratory Results
+
+                </strong>
+
+                <p>
+
+                    You can view your completed laboratory
+                    and diagnostic results.
+
+                </p>
+
+            </div>
+
+
+            <div class="access-item">
+
+                <strong>
+
+                    🔒 Privacy
+
+                </strong>
+
+                <p>
+
+                    You can only access your own patient
+                    information and laboratory results.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    {% endif %}
 
 </div>
 
 
-<!-- =====================================================
-     DOCTOR
-     ===================================================== -->
 
-{% elif role == "Doctor" %}
 
-<div class="role-bubble doctor-bubble">
-
-    <h3>
-
-        👨‍⚕️ Doctor Access
-
-    </h3>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📋 Hospital Information
-
-        </strong>
-
-        <p>
-
-            You can view patient information,
-
-            doctor information, appointments
-
-            and medical records.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📅 Appointment Management
-
-        </strong>
-
-        <p>
-
-            You can manage your assigned appointments
-
-            by accepting, rejecting or completing them.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🩺 Medical Records
-
-        </strong>
-
-        <p>
-
-            You can create, view and update medical records
-
-            related to your assigned doctor profile.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            💊 Pharmacy
-
-        </strong>
-
-        <p>
-
-            You can manage prescriptions related to
-
-            your patients and prescribe medicines.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🧪 Laboratory
-
-        </strong>
-
-        <p>
-
-            You can view completed laboratory results
-
-            relevant to your medical specialty.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🔒 Access Restrictions
-
-        </strong>
-
-        <p>
-
-            You can only access information according
-
-            to your assigned responsibilities.
-
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     RECEPTIONIST
-     ===================================================== -->
-
-{% elif role == "Receptionist" %}
-
-<div class="role-bubble receptionist-bubble">
-
-    <h3>
-
-        🧑‍💼 Receptionist Access
-
-    </h3>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            👥 Patient Management
-
-        </strong>
-
-        <p>
-
-            You can register and manage patients
-
-            and schedule appointments.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            👤 Patient Accounts
-
-        </strong>
-
-        <p>
-
-            You can create and manage patient
-
-            system accounts when required.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            👨‍⚕️ Doctor Information
-
-        </strong>
-
-        <p>
-
-            You can view doctor information.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📋 Medical Records
-
-        </strong>
-
-        <p>
-
-            You can view patient medical records
-
-            for hospital information and follow-up.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            💊 Pharmacy
-
-        </strong>
-
-        <p>
-
-            You can access pharmacy information
-
-            for patient service and follow-up.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🧪 Laboratory
-
-        </strong>
-
-        <p>
-
-            You can view laboratory tests,
-
-            requests and completed results.
-
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     DATA ANALYST
-     ===================================================== -->
-
-{% elif role == "Data Analyst" %}
-
-<div class="role-bubble analyst-bubble">
-
-    <h3>
-
-        📊 Data Analyst Access
-
-    </h3>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📈 Data & Analytics
-
-        </strong>
-
-        <p>
-
-            You have access to hospital data
-
-            and analytics for analysis and reporting.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📋 Medical Records
-
-        </strong>
-
-        <p>
-
-            You can view medical records for
-
-            data analysis and reporting purposes.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            💊 Pharmacy Data
-
-        </strong>
-
-        <p>
-
-            You can view medicine inventory,
-
-            prescriptions and pharmacy reports.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🧪 Laboratory Data
-
-        </strong>
-
-        <p>
-
-            You can view laboratory requests,
-
-            results and laboratory reports.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            👁️ Read-Only Access
-
-        </strong>
-
-        <p>
-
-            Your access is read-only.
-
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     PHARMACIST
-     ===================================================== -->
-
-{% elif role == "Pharmacist" %}
-
-<div class="role-bubble pharmacist-bubble">
-
-    <h3>
-
-        💊 Pharmacist Access
-
-    </h3>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            💊 Pharmacy Management
-
-        </strong>
-
-        <p>
-
-            You can access and manage the pharmacy
-
-            module and medicine inventory.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📦 Medicine Inventory
-
-        </strong>
-
-        <p>
-
-            You can add, edit and delete medicines
-
-            and monitor available stock.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            ⚠️ Stock Monitoring
-
-        </strong>
-
-        <p>
-
-            You can monitor low-stock medicines
-
-            and identify medicines requiring restocking.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🧾 Prescriptions
-
-        </strong>
-
-        <p>
-
-            You can view pending prescriptions
-
-            and dispense medicines to patients.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📊 Pharmacy Reports
-
-        </strong>
-
-        <p>
-
-            You can access pharmacy reports and
-
-            monitor medicine inventory information.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🔒 Access Restrictions
-
-        </strong>
-
-        <p>
-
-            Your access is focused on pharmacy
-
-            operations and medicine management.
-
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     LABORATORY
-     ===================================================== -->
-
-{% elif role == "Laboratory" %}
-
-<div class="role-bubble laboratory-bubble">
-
-    <h3>
-
-        🧪 Laboratory Access
-
-    </h3>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🧪 Laboratory Management
-
-        </strong>
-
-        <p>
-
-            You can access and manage laboratory
-
-            services and diagnostic testing.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🔬 Laboratory Tests
-
-        </strong>
-
-        <p>
-
-            You can manage available laboratory
-
-            and diagnostic tests.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            ⏳ Test Requests
-
-        </strong>
-
-        <p>
-
-            You can process patient laboratory requests
-
-            and update their status.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📝 Laboratory Results
-
-        </strong>
-
-        <p>
-
-            You can enter findings, interpretations
-
-            and completed laboratory results.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            👨‍⚕️ Doctor Assignment
-
-        </strong>
-
-        <p>
-
-            You can connect completed results with
-
-            the relevant medical specialty and doctor.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📊 Laboratory Reports
-
-        </strong>
-
-        <p>
-
-            You can access laboratory reports and
-
-            monitor laboratory service performance.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🔒 Access Restrictions
-
-        </strong>
-
-        <p>
-
-            Your access is focused on laboratory
-
-            and diagnostic service operations.
-
-        </p>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     PATIENT
-     ===================================================== -->
-
-{% elif role == "Patient" %}
-
-<div class="role-bubble patient-bubble">
-
-    <h3>
-
-        🧑‍🦱 Patient Access
-
-    </h3>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🧪 Laboratory Services
-
-        </strong>
-
-        <p>
-
-            You can view available laboratory and
-
-            diagnostic tests and request the services
-
-            you need.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📝 Test Requests
-
-        </strong>
-
-        <p>
-
-            You can submit laboratory test requests
-
-            through the hospital system.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            ⏳ Request Status
-
-        </strong>
-
-        <p>
-
-            You can monitor the status of your
-
-            laboratory requests.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            📄 Laboratory Results
-
-        </strong>
-
-        <p>
-
-            You can view your completed laboratory
-
-            and diagnostic results.
-
-        </p>
-
-    </div>
-
-
-    <div class="access-item">
-
-        <strong>
-
-            🔒 Privacy
-
-        </strong>
-
-        <p>
-
-            You can only access your own patient
-
-            information and laboratory results.
-
-        </p>
-
-    </div>
-
-</div>
-
-{% endif %}
-
-
-</div>
-
-<!-- =====================================================
-     SYSTEM INFORMATION
-     ===================================================== -->
 
 <hr>
 
-<p>
 
 
-<strong>
-
-    🏥 Hospital Data Analytics System
-
-</strong>
 
 
-</p>
+<!-- =====================================================
+     FOOTER INFORMATION
+     ===================================================== -->
 
 <p>
 
-Role-Based Access Control Enabled
+    <strong>
+
+        🏥 Hospital Data Analytics System
+
+    </strong>
 
 </p>
+
+
+
+
+
+<p>
+
+    Role-Based Access Control Enabled
+
+</p>
+
+
+
+
 
 </body>
 
 </html>
+```

@@ -1,147 +1,406 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>
-        Patient Dashboard - Hospital Data Analytics System
-    </title>
+<title>
+    Patient Dashboard - Hospital Data Analytics System
+</title>
 
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}"
-    >
+<style>
 
-    <style>
+    * {
+        box-sizing: border-box;
+    }
 
-        .patient-dashboard {
-            max-width: 1200px;
-            margin: 30px auto;
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+    }
+
+    /* =================================================
+       PATIENT PAGE
+    ================================================= */
+
+    .patient-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* =================================================
+       HEADER
+    ================================================= */
+
+    .patient-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .patient-hospital-title {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .patient-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+        line-height: 1.3;
+    }
+
+    .patient-hospital-title p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        line-height: 1.5;
+        opacity: 0.9;
+    }
+
+    .patient-user-info {
+        min-width: 180px;
+        text-align: right;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .patient-user-info p {
+        margin: 2px 0;
+    }
+
+    .patient-logout {
+        display: inline-block;
+        margin-top: 5px;
+        color: #fecaca;
+        text-decoration: none;
+        font-size: 13px;
+    }
+
+    .patient-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =================================================
+       NAVIGATION
+    ================================================= */
+
+    .patient-nav {
+        background: white;
+        padding: 12px 35px;
+        border-bottom: 1px solid #dbe3ea;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .patient-nav a {
+        display: inline-block;
+        padding: 9px 13px;
+        border-radius: 6px;
+        text-decoration: none;
+        color: #0f4c5c;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .patient-nav a:hover {
+        background: #e8f1f4;
+    }
+
+    .patient-nav .patient-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =================================================
+       MAIN CONTAINER
+    ================================================= */
+
+    .patient-container {
+        width: 92%;
+        max-width: 1250px;
+        margin: 30px auto 45px;
+        flex: 1;
+    }
+
+    /* =================================================
+       WELCOME SECTION
+    ================================================= */
+
+    .welcome-section {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid #0f4c5c;
+    }
+
+    .welcome-section h2 {
+        margin: 0 0 10px;
+        color: #0f4c5c;
+        font-size: 25px;
+    }
+
+    .welcome-section p {
+        margin: 7px 0;
+        color: #4b5563;
+        line-height: 1.6;
+    }
+
+    /* =================================================
+       DASHBOARD CARDS
+    ================================================= */
+
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e1e7ed;
+    }
+
+    .dashboard-card h3 {
+        margin: 0 0 10px;
+        color: #0f4c5c;
+        font-size: 17px;
+    }
+
+    .dashboard-card .number {
+        font-size: 32px;
+        font-weight: bold;
+        color: #0f766e;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-card p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    /* =================================================
+       PATIENT SERVICES
+    ================================================= */
+
+    .quick-actions {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e1e7ed;
+    }
+
+    .quick-actions h2 {
+        margin: 0;
+        color: #0f4c5c;
+        font-size: 22px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .action-grid {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .action-button {
+        display: block;
+        padding: 18px;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 7px;
+        background: #f1f5f9;
+        color: #0f4c5c;
+        font-weight: bold;
+        border: 1px solid #dbe3ea;
+        transition: 0.2s;
+    }
+
+    .action-button:hover {
+        background: #e8f1f4;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+
+    /* =================================================
+       FOOTER
+    ================================================= */
+
+    .patient-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 13px;
+        margin-top: auto;
+    }
+
+    /* =================================================
+       RESPONSIVE
+    ================================================= */
+
+    @media (max-width: 750px) {
+
+        .patient-header {
+            padding: 18px 20px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .patient-user-info {
+            width: 100%;
+            text-align: left;
+        }
+
+        .patient-nav {
+            padding: 10px 20px;
+        }
+
+        .patient-container {
+            width: 94%;
+            margin-top: 22px;
+        }
+
+        .welcome-section,
+        .quick-actions {
             padding: 20px;
         }
 
-        .welcome-section {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        }
-
         .welcome-section h2 {
-            margin-top: 0;
+            font-size: 22px;
         }
 
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(
-                auto-fit,
-                minmax(220px, 1fr)
-            );
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .dashboard-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .dashboard-card h3 {
-            margin-bottom: 10px;
-        }
-
-        .dashboard-card .number {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .quick-actions {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .quick-actions h2 {
-            margin-top: 0;
-        }
-
+        .dashboard-cards,
         .action-grid {
-            display: grid;
-            grid-template-columns: repeat(
-                auto-fit,
-                minmax(220px, 1fr)
-            );
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: 1fr;
         }
 
-        .action-button {
-            display: block;
-            padding: 18px;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 8px;
-            background: #f1f5f9;
-            color: #1e293b;
-            font-weight: bold;
-            transition: 0.2s;
-        }
+    }
 
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-        }
-
-        .logout-button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 18px;
-            text-decoration: none;
-            border-radius: 7px;
-            background: #dc2626;
-            color: white;
-            font-weight: bold;
-        }
-
-        .logout-button:hover {
-            background: #b91c1c;
-        }
-
-    </style>
+</style>
+```
 
 </head>
 
-
 <body>
 
+<div class="patient-page">
 
-<header>
+```
+<!-- =====================================================
+     HOSPITAL HEADER
+===================================================== -->
 
-    <div class="header-title">
-        🏥 Hospital Data Analytics System
+<header class="patient-header">
+
+    <div class="patient-hospital-title">
+
+        <h1>
+            🏥 Hospital Data Analytics System
+        </h1>
+
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
+
     </div>
 
-    <div class="header-subtitle">
-        Patient Dashboard
+
+    <div class="patient-user-info">
+
+        <p>
+            Welcome,
+            <strong>{{ patient["full_name"] }}</strong>
+        </p>
+
+        <p>
+            Role:
+            <strong>Patient</strong>
+        </p>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="patient-logout"
+        >
+            🚪 Logout
+        </a>
+
     </div>
 
 </header>
 
 
-<main class="patient-dashboard">
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="patient-nav">
+
+    <a
+        href="{{ url_for('home') }}"
+        class="patient-active"
+    >
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 My Appointments
+    </a>
+
+    <a href="{{ url_for('request_laboratory_test') }}">
+        🧪 Laboratory
+    </a>
+
+    <a href="{{ url_for('laboratory_requests') }}">
+        🔬 My Lab Requests
+    </a>
+
+    <a href="{{ url_for('laboratory_tests') }}">
+        🧪 Available Tests
+    </a>
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="patient-container">
 
 
     <!-- =========================================
@@ -162,13 +421,6 @@
             From this dashboard you can manage your
             appointments and laboratory services.
         </p>
-
-        <a
-            href="{{ url_for('logout') }}"
-            class="logout-button"
-        >
-            Logout
-        </a>
 
     </section>
 
@@ -311,6 +563,19 @@
 
 </main>
 
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="patient-footer">
+
+    Hospital Data Analytics System
+
+</footer>
+```
+
+</div>
 
 </body>
 

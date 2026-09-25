@@ -7,34 +7,143 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
-<title>
-    Request Laboratory Test
-</title>
+<title>Request Laboratory Test</title>
 
 <link rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}">
 
 <style>
 
+    /* =========================================================
+       REQUEST LABORATORY TEST PAGE
+       EMD-STYLE PAGE STRUCTURE
+       ========================================================= */
+
     .request-page {
-        width: 95%;
-        max-width: 900px;
-        margin: 30px auto;
+        min-height: 100vh;
+        background: #f8fafc;
     }
 
-    .request-header {
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .request-header-bar {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .request-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .request-hospital-title p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .request-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .request-user-info p {
+        margin: 0;
+    }
+
+    .request-logout {
+        display: inline-block;
+        margin-top: 3px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .request-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =========================================================
+       NAVIGATION
+       ========================================================= */
+
+    .request-nav {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 35px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        box-sizing: border-box;
+    }
+
+    .request-nav a {
+        text-decoration: none;
+        color: #334155;
+        padding: 8px 13px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .request-nav a:hover {
+        background: #e2e8f0;
+    }
+
+    .request-nav .request-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =========================================================
+       MAIN CONTAINER
+       ========================================================= */
+
+    .request-container {
+        width: 92%;
+        max-width: 900px;
+        margin: 30px auto 45px;
+    }
+
+    /* =========================================================
+       PAGE TITLE
+       ========================================================= */
+
+    .request-page-title {
         margin-bottom: 25px;
     }
 
-    .request-header h1 {
-        margin-bottom: 8px;
+    .request-page-title h2 {
+        margin: 0;
+        color: #0f172a;
+        font-size: 27px;
     }
 
-    .request-header p {
+    .request-page-title p {
         color: #64748b;
+        margin: 7px 0 0;
+        font-size: 15px;
     }
+
+    /* =========================================================
+       PATIENT NOTICE
+       ========================================================= */
 
     .patient-notice {
         margin-bottom: 20px;
@@ -43,7 +152,25 @@
         background: #eff6ff;
         border-left: 4px solid #2563eb;
         color: #1e3a8a;
+        line-height: 1.6;
     }
+
+    /* =========================================================
+       ERROR MESSAGE
+       ========================================================= */
+
+    .error-message {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        background: #fef2f2;
+        border-left: 4px solid #dc2626;
+        color: #991b1b;
+    }
+
+    /* =========================================================
+       FORM CARD
+       ========================================================= */
 
     .request-card {
         background: white;
@@ -82,6 +209,7 @@
         font-size: 14px;
         box-sizing: border-box;
         background: white;
+        color: #334155;
     }
 
     select:focus,
@@ -96,6 +224,10 @@
         resize: vertical;
     }
 
+    /* =========================================================
+       TEST INFORMATION
+       ========================================================= */
+
     .test-info {
         margin-top: 20px;
         padding: 18px;
@@ -106,17 +238,24 @@
 
     .test-info h3 {
         margin-top: 0;
+        margin-bottom: 15px;
+        color: #334155;
     }
 
     .test-info p {
         margin: 7px 0;
         color: #475569;
+        line-height: 1.5;
     }
 
     .price-display {
         font-weight: 700;
         color: #15803d;
     }
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
 
     .form-actions {
         margin-top: 25px;
@@ -126,12 +265,15 @@
     }
 
     .btn {
+        display: inline-block;
         padding: 11px 18px;
         border-radius: 7px;
         border: none;
         text-decoration: none;
         font-weight: 600;
         cursor: pointer;
+        font-size: 14px;
+        transition: 0.2s ease;
     }
 
     .btn-primary {
@@ -139,25 +281,66 @@
         color: white;
     }
 
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+
     .btn-secondary {
         background: #475569;
         color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #334155;
     }
 
     .required {
         color: #dc2626;
     }
 
-    .error-message {
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        background: #fef2f2;
-        border-left: 4px solid #dc2626;
-        color: #991b1b;
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .request-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 18px;
+        font-size: 13px;
+        margin-top: 45px;
     }
 
-    @media (max-width: 700px) {
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+
+    @media (max-width: 750px) {
+
+        .request-header-bar {
+            padding: 18px 20px;
+        }
+
+        .request-hospital-title h1 {
+            font-size: 21px;
+        }
+
+        .request-user-info {
+            text-align: left;
+        }
+
+        .request-nav {
+            padding: 10px 20px;
+        }
+
+        .request-container {
+            width: 94%;
+            margin-top: 25px;
+        }
+
+        .request-page-title h2 {
+            font-size: 23px;
+        }
 
         .form-grid {
             grid-template-columns: 1fr;
@@ -173,6 +356,32 @@
 
     }
 
+    @media (max-width: 600px) {
+
+        .request-hospital-title h1 {
+            font-size: 19px;
+        }
+
+        .request-hospital-title p {
+            font-size: 13px;
+        }
+
+        .request-nav a {
+            font-size: 13px;
+            padding: 7px 10px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .form-actions .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+    }
+
 </style>
 
 </head>
@@ -181,11 +390,212 @@
 
 <div class="request-page">
 
-    <div class="request-header">
+```
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-        <h1>
-            🧪 Request Laboratory Test
-        </h1>
+<header class="request-header-bar">
+
+    <div class="request-hospital-title">
+
+        <h1>🏥 Hospital Data Analytics System</h1>
+
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
+
+    </div>
+
+
+    <div class="request-user-info">
+
+        <p>
+            Welcome, <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role: <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="request-logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
+
+<nav class="request-nav">
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst', 'Patient'] %}
+
+    <a href="{{ url_for('patients') }}">
+        👤 Patients
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst'] %}
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst', 'Patient'] %}
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor', 'Data Analyst', 'Patient'] %}
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('medicines') }}">
+        📦 Medicines
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('pharmacy_prescriptions') }}">
+        📋 Prescriptions
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Pharmacist'] %}
+
+    <a href="{{ url_for('pharmacy_report') }}">
+        📊 Pharmacy Report
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Laboratorian', 'Laboratory'] %}
+
+    <a href="{{ url_for('laboratory') }}">
+        🔬 Laboratory
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Receptionist', 'Data Analyst', 'Patient', 'Laboratorian', 'Laboratory'] %}
+
+    <a href="{{ url_for('laboratory_tests') }}">
+        🧪 Laboratory Tests
+    </a>
+
+    {% endif %}
+
+
+    <a href="{{ url_for('laboratory_requests') }}">
+        📝 Lab Requests
+    </a>
+
+
+    {% if role in ['Admin', 'Patient'] %}
+
+    <a href="{{ url_for('request_laboratory_test') }}"
+       class="request-active">
+        ➕ Request Test
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Doctor', 'Data Analyst'] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📈 Analytics
+    </a>
+
+    {% endif %}
+
+
+    {% if role == 'Admin' %}
+
+    <a href="{{ url_for('reports') }}">
+        📄 Reports
+    </a>
+
+    <a href="{{ url_for('users') }}">
+        👥 User Management
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ['Admin', 'Receptionist', 'Doctor'] %}
+
+    {% if role == 'Doctor' %}
+
+    <a href="{{ url_for('emergency_cases') }}">
+        🚨 EMD
+    </a>
+
+    {% else %}
+
+    <a href="{{ url_for('emergency_register') }}">
+        🚨 EMD
+    </a>
+
+    {% endif %}
+
+    {% endif %}
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
+
+<main class="request-container">
+
+    <div class="request-page-title">
+
+        <h2>🧪 Request Laboratory Test</h2>
 
         <p>
             Select the laboratory or diagnostic
@@ -194,6 +604,10 @@
 
     </div>
 
+
+    <!-- =================================================
+         ERROR MESSAGE
+         ================================================= -->
 
     {% if error %}
 
@@ -205,6 +619,10 @@
 
     {% endif %}
 
+
+    <!-- =================================================
+         PATIENT NOTICE
+         ================================================= -->
 
     {% if role == "Patient" %}
 
@@ -227,10 +645,20 @@
     {% endif %}
 
 
+    <!-- =================================================
+         REQUEST FORM
+         ================================================= -->
+
     <div class="request-card">
 
         <form method="POST"
               action="{{ url_for('request_laboratory_test') }}">
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
 
 
             <div class="form-grid">
@@ -319,9 +747,7 @@
                 <div class="form-group full-width">
 
                     <label for="notes">
-
                         Notes
-
                     </label>
 
                     <textarea id="notes"
@@ -334,6 +760,10 @@
             </div>
 
 
+            <!-- =================================================
+                 SELECTED TEST INFORMATION
+                 ================================================= -->
+
             <div id="testInformation"
                  class="test-info"
                  style="display: none;">
@@ -341,6 +771,7 @@
                 <h3>
                     🔬 Selected Test Information
                 </h3>
+
 
                 <p>
 
@@ -415,6 +846,10 @@
             </div>
 
 
+            <!-- =================================================
+                 FORM ACTIONS
+                 ================================================= -->
+
             <div class="form-actions">
 
                 <button type="submit"
@@ -439,8 +874,21 @@
 
     </div>
 
-</div>
+</main>
 
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="request-footer">
+
+    Hospital Data Analytics System
+
+</footer>
+```
+
+</div>
 
 <script>
 

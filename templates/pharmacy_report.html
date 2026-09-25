@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
 <title>
     Pharmacy Report - Hospital Data Analytics System
@@ -27,75 +27,116 @@
         color: #1f2937;
     }
 
-    .header {
-        background: #ffffff;
-        padding: 25px 40px;
-        border-bottom: 1px solid #e5e7eb;
+    /* =========================================================
+       PAGE WRAPPER
+       ========================================================= */
+
+    .pharmacy-report-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
     }
 
-    .header h1 {
+    /* =========================================================
+       HEADER
+       ========================================================= */
+
+    .pharmacy-report-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .pharmacy-report-hospital-title h1 {
         margin: 0;
-        font-size: 28px;
-        color: #1f2937;
+        font-size: 25px;
+        font-weight: 700;
     }
 
-    .header p {
-        margin: 7px 0 0 0;
-        color: #6b7280;
-        font-size: 15px;
-    }
-
-    .user-info {
-        margin-top: 15px;
-        color: #374151;
+    .pharmacy-report-hospital-title p {
+        margin: 5px 0 0 0;
         font-size: 14px;
+        color: #e2e8f0;
     }
 
-    .user-info strong {
-        color: #111827;
+    .pharmacy-report-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
     }
 
-    .navigation {
+    .pharmacy-report-user-info p {
+        margin: 0;
+    }
+
+    .pharmacy-report-logout {
+        display: inline-block;
+        margin-top: 3px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .pharmacy-report-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =========================================================
+       NAVIGATION
+       ========================================================= */
+
+    .pharmacy-report-nav {
+        width: 100%;
         background: #ffffff;
-        padding: 15px 40px;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid #dbe3e8;
+        padding: 12px 35px;
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
     }
 
-    .navigation a {
+    .pharmacy-report-nav a {
         text-decoration: none;
         color: #374151;
-        background: #f3f4f6;
-        padding: 10px 16px;
-        border-radius: 7px;
-        font-size: 14px;
+        padding: 9px 13px;
+        border-radius: 6px;
+        font-size: 13px;
         font-weight: 600;
         transition: 0.2s;
     }
 
-    .navigation a:hover {
-        background: #e5e7eb;
+    .pharmacy-report-nav a:hover {
+        background: #e6f0f3;
+        color: #0f4c5c;
     }
 
-    .navigation .active {
-        background: #2563eb;
+    .pharmacy-report-nav .active {
+        background: #0f4c5c;
         color: white;
     }
 
-    .navigation .logout {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
+    /* =========================================================
+       MAIN CONTAINER
+       ========================================================= */
 
-    .container {
-        width: 94%;
+    .pharmacy-report-container {
+        width: 92%;
         max-width: 1500px;
-        margin: 30px auto;
+        margin: 30px auto 45px;
+        flex: 1;
     }
 
-    .page-title {
+    /* =========================================================
+       PAGE TITLE
+       ========================================================= */
+
+    .pharmacy-report-page-title {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -104,13 +145,13 @@
         flex-wrap: wrap;
     }
 
-    .page-title h2 {
+    .pharmacy-report-page-title h2 {
         margin: 0;
         font-size: 25px;
         color: #111827;
     }
 
-    .back-button {
+    .pharmacy-report-back-button {
         text-decoration: none;
         background: #374151;
         color: white;
@@ -120,23 +161,31 @@
         font-size: 14px;
     }
 
-    .back-button:hover {
+    .pharmacy-report-back-button:hover {
         background: #1f2937;
     }
 
-    .section-title {
+    /* =========================================================
+       SECTION TITLE
+       ========================================================= */
+
+    .pharmacy-report-section-title {
         margin: 30px 0 18px 0;
         font-size: 20px;
         color: #111827;
     }
 
-    .cards {
+    /* =========================================================
+       OVERVIEW CARDS
+       ========================================================= */
+
+    .pharmacy-report-cards {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 20px;
     }
 
-    .card {
+    .pharmacy-report-card {
         background: #ffffff;
         border-radius: 10px;
         padding: 22px;
@@ -146,43 +195,47 @@
         transition: 0.2s;
     }
 
-    .card:hover {
+    .pharmacy-report-card:hover {
         transform: translateY(-3px);
         box-shadow: 0 5px 14px rgba(0, 0, 0, 0.10);
     }
 
-    .card-title {
+    .pharmacy-report-card-title {
         font-size: 14px;
         font-weight: 600;
         color: #6b7280;
         margin-bottom: 12px;
     }
 
-    .card-value {
+    .pharmacy-report-card-value {
         font-size: 30px;
         font-weight: 700;
         color: #111827;
     }
 
-    .card-description {
+    .pharmacy-report-card-description {
         margin-top: 8px;
         color: #6b7280;
         font-size: 13px;
     }
 
-    .icon {
+    .pharmacy-report-icon {
         font-size: 28px;
         margin-bottom: 10px;
     }
 
-    .report-grid {
+    /* =========================================================
+       REPORT GRID
+       ========================================================= */
+
+    .pharmacy-report-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 25px;
         margin-top: 25px;
     }
 
-    .report-card {
+    .pharmacy-report-panel {
         background: #ffffff;
         border-radius: 10px;
         padding: 25px;
@@ -190,24 +243,28 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
-    .report-card h3 {
+    .pharmacy-report-panel h3 {
         margin-top: 0;
         margin-bottom: 20px;
         font-size: 19px;
         color: #111827;
     }
 
-    .table-wrapper {
+    /* =========================================================
+       TABLE
+       ========================================================= */
+
+    .pharmacy-report-table-wrapper {
         width: 100%;
         overflow-x: auto;
     }
 
-    table {
+    .pharmacy-report-table {
         width: 100%;
         border-collapse: collapse;
     }
 
-    th {
+    .pharmacy-report-table th {
         background: #f3f4f6;
         color: #374151;
         text-align: left;
@@ -217,41 +274,49 @@
         white-space: nowrap;
     }
 
-    td {
+    .pharmacy-report-table td {
         padding: 13px 12px;
         border-bottom: 1px solid #e5e7eb;
         font-size: 13px;
     }
 
-    tr:hover td {
+    .pharmacy-report-table tr:hover td {
         background: #f9fafb;
     }
 
-    .medicine-name {
+    .pharmacy-report-medicine-name {
         font-weight: 700;
         color: #111827;
     }
 
-    .number {
+    .pharmacy-report-number {
         font-weight: 700;
     }
 
-    .currency {
+    .pharmacy-report-currency {
         font-weight: 700;
     }
 
-    .empty-state {
+    /* =========================================================
+       EMPTY STATE
+       ========================================================= */
+
+    .pharmacy-report-empty-state {
         text-align: center;
         padding: 35px 15px;
         color: #6b7280;
     }
 
-    .empty-state .empty-icon {
+    .pharmacy-report-empty-icon {
         font-size: 40px;
         margin-bottom: 10px;
     }
 
-    .summary-card {
+    /* =========================================================
+       SUMMARY CARD
+       ========================================================= */
+
+    .pharmacy-report-summary-card {
         background: #ffffff;
         border-radius: 10px;
         padding: 25px;
@@ -260,20 +325,20 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
-    .summary-card h3 {
+    .pharmacy-report-summary-card h3 {
         margin-top: 0;
         margin-bottom: 18px;
         font-size: 19px;
         color: #111827;
     }
 
-    .summary-list {
+    .pharmacy-report-summary-list {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 15px;
     }
 
-    .summary-item {
+    .pharmacy-report-summary-item {
         background: #f9fafb;
         border-radius: 8px;
         padding: 18px;
@@ -281,85 +346,114 @@
         transition: 0.2s;
     }
 
-    .summary-item:hover {
+    .pharmacy-report-summary-item:hover {
         background: #f3f4f6;
         transform: translateY(-2px);
     }
 
-    .summary-label {
+    .pharmacy-report-summary-label {
         color: #6b7280;
         font-size: 13px;
         margin-bottom: 8px;
     }
 
-    .summary-value {
+    .pharmacy-report-summary-value {
         font-size: 23px;
         font-weight: 700;
         color: #111827;
     }
 
-    .report-note {
+    /* =========================================================
+       REPORT NOTE
+       ========================================================= */
+
+    .pharmacy-report-note {
         background: #f9fafb;
-        border-left: 4px solid #2563eb;
+        border-left: 4px solid #0f4c5c;
         padding: 18px;
         border-radius: 6px;
         margin-top: 10px;
     }
 
-    .report-note p {
+    .pharmacy-report-note p {
         margin: 0;
         color: #6b7280;
         line-height: 1.7;
         font-size: 14px;
     }
 
-    .footer {
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+
+    .pharmacy-report-footer {
+        background: #0f4c5c;
+        color: white;
         text-align: center;
-        padding: 25px;
-        color: #6b7280;
+        padding: 20px;
         font-size: 13px;
+        line-height: 1.7;
     }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
 
     @media (max-width: 1100px) {
 
-        .cards {
+        .pharmacy-report-cards {
             grid-template-columns: repeat(2, 1fr);
         }
 
-        .report-grid {
+        .pharmacy-report-grid {
             grid-template-columns: 1fr;
         }
 
-        .summary-list {
+        .pharmacy-report-summary-list {
             grid-template-columns: repeat(2, 1fr);
+        }
+
+    }
+
+    @media (max-width: 750px) {
+
+        .pharmacy-report-header {
+            padding: 20px 22px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .pharmacy-report-user-info {
+            text-align: left;
+        }
+
+        .pharmacy-report-nav {
+            padding: 12px 22px;
+        }
+
+        .pharmacy-report-container {
+            width: 94%;
         }
 
     }
 
     @media (max-width: 650px) {
 
-        .cards {
+        .pharmacy-report-cards {
             grid-template-columns: 1fr;
         }
 
-        .summary-list {
+        .pharmacy-report-summary-list {
             grid-template-columns: 1fr;
         }
 
-        .header {
-            padding: 22px;
-        }
-
-        .navigation {
-            padding: 12px 22px;
-        }
-
-        .container {
-            width: 95%;
-        }
-
-        .page-title h2 {
+        .pharmacy-report-page-title h2 {
             font-size: 21px;
+        }
+
+        .pharmacy-report-panel,
+        .pharmacy-report-summary-card {
+            padding: 18px;
         }
 
     }
@@ -370,36 +464,86 @@
 
 <body>
 
-<div class="header">
+<div class="pharmacy-report-page">
 
-    <h1>
-        💊 Pharmacy Management
-    </h1>
+```
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-    <p>
-        Hospital Data Analytics System
-    </p>
+<header class="pharmacy-report-header">
 
-    <div class="user-info">
+    <div class="pharmacy-report-hospital-title">
 
-        Welcome,
-        <strong>{{ username }}</strong>
+        <h1>
+            🏥 Hospital Data Analytics System
+        </h1>
 
-        <br>
-
-        Role:
-        <strong>{{ role }}</strong>
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
 
     </div>
 
-</div>
+    <div class="pharmacy-report-user-info">
+
+        <p>
+            Welcome,
+            <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role:
+            <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="pharmacy-report-logout">
+
+            🚪 Logout
+
+        </a>
+
+    </div>
+
+</header>
 
 
-<div class="navigation">
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
 
-    <a href="/">
+<nav class="pharmacy-report-nav">
+
+    <a href="{{ url_for('home') }}">
         🏠 Dashboard
     </a>
+
+    {% if role in ["Admin", "Receptionist", "Doctor", "Data Analyst", "Patient"] %}
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    {% endif %}
+
+
+    {% if role in ["Admin", "Receptionist", "Doctor", "Data Analyst"] %}
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        🏥 Medical Records
+    </a>
+
+    {% endif %}
+
 
     <a href="{{ url_for('pharmacy') }}">
         💊 Pharmacy
@@ -418,25 +562,42 @@
         📊 Pharmacy Report
     </a>
 
-    <a href="{{ url_for('logout') }}"
-       class="logout">
-        🚪 Logout
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📈 Analytics
     </a>
 
-</div>
+    {% endif %}
 
 
-<div class="container">
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+</nav>
 
 
-    <div class="page-title">
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
+
+<main class="pharmacy-report-container">
+
+
+    <div class="pharmacy-report-page-title">
 
         <h2>
             📊 Pharmacy Report
         </h2>
 
         <a href="{{ url_for('pharmacy') }}"
-           class="back-button">
+           class="pharmacy-report-back-button">
 
             ← Back to Pharmacy
 
@@ -445,95 +606,99 @@
     </div>
 
 
-    <h3 class="section-title">
+    <h3 class="pharmacy-report-section-title">
         Pharmacy Overview
     </h3>
 
 
-    <div class="cards">
+    <!-- =================================================
+         OVERVIEW CARDS
+         ================================================= -->
+
+    <div class="pharmacy-report-cards">
 
 
-        <div class="card">
+        <div class="pharmacy-report-card">
 
-            <div class="icon">
+            <div class="pharmacy-report-icon">
                 💊
             </div>
 
-            <div class="card-title">
+            <div class="pharmacy-report-card-title">
                 Total Medicines
             </div>
 
-            <div class="card-value">
+            <div class="pharmacy-report-card-value">
                 {{ total_medicines }}
             </div>
 
-            <div class="card-description">
+            <div class="pharmacy-report-card-description">
                 Medicines registered in pharmacy
             </div>
 
         </div>
 
 
-        <div class="card">
+        <div class="pharmacy-report-card">
 
-            <div class="icon">
+            <div class="pharmacy-report-icon">
                 💰
             </div>
 
-            <div class="card-title">
+            <div class="pharmacy-report-card-title">
                 Total Stock Value
             </div>
 
-            <div class="card-value">
+            <div class="pharmacy-report-card-value">
 
                 TZS
                 {{ "{:,.2f}".format(total_stock_value or 0) }}
 
             </div>
 
-            <div class="card-description">
+            <div class="pharmacy-report-card-description">
                 Current value of available stock
             </div>
 
         </div>
 
 
-        <div class="card">
+        <div class="pharmacy-report-card">
 
-            <div class="icon">
+            <div class="pharmacy-report-icon">
                 📦
             </div>
 
-            <div class="card-title">
+            <div class="pharmacy-report-card-title">
                 Dispensed Prescriptions
             </div>
 
-            <div class="card-value">
+            <div class="pharmacy-report-card-value">
                 {{ dispensed_prescriptions }}
             </div>
 
-            <div class="card-description">
+            <div class="pharmacy-report-card-description">
                 Prescriptions already dispensed
             </div>
 
         </div>
 
 
-        <div class="card">
+        <div class="pharmacy-report-card">
 
-            <div class="icon">
+            <div class="pharmacy-report-icon">
                 📋
             </div>
 
-            <div class="card-title">
+            <div class="pharmacy-report-card-title">
                 Pending Prescriptions
             </div>
 
-            <div class="card-value">
+            <div class="pharmacy-report-card-value">
                 {{ pending_prescriptions }}
             </div>
 
-            <div class="card-description">
+            <div class="pharmacy-report-card-description">
                 Prescriptions waiting for dispensing
             </div>
 
@@ -543,22 +708,26 @@
     </div>
 
 
-    <div class="summary-card">
+    <!-- =================================================
+         PRESCRIPTION SUMMARY
+         ================================================= -->
+
+    <div class="pharmacy-report-summary-card">
 
         <h3>
             📌 Prescription Summary
         </h3>
 
-        <div class="summary-list">
+        <div class="pharmacy-report-summary-list">
 
 
-            <div class="summary-item">
+            <div class="pharmacy-report-summary-item">
 
-                <div class="summary-label">
+                <div class="pharmacy-report-summary-label">
                     Total Prescriptions
                 </div>
 
-                <div class="summary-value">
+                <div class="pharmacy-report-summary-value">
 
                     {{
                         (dispensed_prescriptions or 0)
@@ -573,39 +742,39 @@
             </div>
 
 
-            <div class="summary-item">
+            <div class="pharmacy-report-summary-item">
 
-                <div class="summary-label">
+                <div class="pharmacy-report-summary-label">
                     Dispensed
                 </div>
 
-                <div class="summary-value">
+                <div class="pharmacy-report-summary-value">
                     {{ dispensed_prescriptions }}
                 </div>
 
             </div>
 
 
-            <div class="summary-item">
+            <div class="pharmacy-report-summary-item">
 
-                <div class="summary-label">
+                <div class="pharmacy-report-summary-label">
                     Pending
                 </div>
 
-                <div class="summary-value">
+                <div class="pharmacy-report-summary-value">
                     {{ pending_prescriptions }}
                 </div>
 
             </div>
 
 
-            <div class="summary-item">
+            <div class="pharmacy-report-summary-item">
 
-                <div class="summary-label">
+                <div class="pharmacy-report-summary-label">
                     Cancelled
                 </div>
 
-                <div class="summary-value">
+                <div class="pharmacy-report-summary-value">
                     {{ cancelled_prescriptions }}
                 </div>
 
@@ -617,10 +786,16 @@
     </div>
 
 
-    <div class="report-grid">
+    <!-- =================================================
+         REPORT TABLES
+         ================================================= -->
+
+    <div class="pharmacy-report-grid">
 
 
-        <div class="report-card">
+        <!-- STOCK BY CATEGORY -->
+
+        <div class="pharmacy-report-panel">
 
             <h3>
                 📦 Stock by Medicine Category
@@ -629,9 +804,9 @@
 
             {% if category_data %}
 
-            <div class="table-wrapper">
+            <div class="pharmacy-report-table-wrapper">
 
-                <table>
+                <table class="pharmacy-report-table">
 
                     <thead>
 
@@ -675,14 +850,14 @@
                             </td>
 
 
-                            <td class="number">
+                            <td class="pharmacy-report-number">
 
                                 {{ category['total_medicines'] }}
 
                             </td>
 
 
-                            <td class="number">
+                            <td class="pharmacy-report-number">
 
                                 {{ category['total_stock'] }}
 
@@ -700,9 +875,9 @@
 
             {% else %}
 
-            <div class="empty-state">
+            <div class="pharmacy-report-empty-state">
 
-                <div class="empty-icon">
+                <div class="pharmacy-report-empty-icon">
                     📦
                 </div>
 
@@ -717,7 +892,9 @@
         </div>
 
 
-        <div class="report-card">
+        <!-- MOST DISPESED -->
+
+        <div class="pharmacy-report-panel">
 
             <h3>
                 🏆 Most Dispensed Medicines
@@ -726,9 +903,9 @@
 
             {% if most_dispensed %}
 
-            <div class="table-wrapper">
+            <div class="pharmacy-report-table-wrapper">
 
-                <table>
+                <table class="pharmacy-report-table">
 
                     <thead>
 
@@ -757,7 +934,7 @@
 
                         <tr>
 
-                            <td class="number">
+                            <td class="pharmacy-report-number">
 
                                 {{ loop.index }}
 
@@ -766,7 +943,7 @@
 
                             <td>
 
-                                <span class="medicine-name">
+                                <span class="pharmacy-report-medicine-name">
 
                                     {{ medicine['medicine_name'] }}
 
@@ -775,7 +952,7 @@
                             </td>
 
 
-                            <td class="number">
+                            <td class="pharmacy-report-number">
 
                                 {{ medicine['total_quantity'] }}
 
@@ -793,9 +970,9 @@
 
             {% else %}
 
-            <div class="empty-state">
+            <div class="pharmacy-report-empty-state">
 
-                <div class="empty-icon">
+                <div class="pharmacy-report-empty-icon">
                     🏆
                 </div>
 
@@ -813,13 +990,17 @@
     </div>
 
 
-    <div class="summary-card">
+    <!-- =================================================
+         REPORT INTERPRETATION
+         ================================================= -->
+
+    <div class="pharmacy-report-summary-card">
 
         <h3>
             📈 Report Interpretation
         </h3>
 
-        <div class="report-note">
+        <div class="pharmacy-report-note">
 
             <p>
 
@@ -846,16 +1027,23 @@
     </div>
 
 
-</div>
+</main>
 
 
-<div class="footer">
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="pharmacy-report-footer">
 
     Hospital Data Analytics System
 
     <br>
 
     Pharmacy Management Module
+
+</footer>
+```
 
 </div>
 

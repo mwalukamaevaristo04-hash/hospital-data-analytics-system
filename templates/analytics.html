@@ -1,8 +1,10 @@
+```html
 <!DOCTYPE html>
 
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta name="viewport"
@@ -15,7 +17,6 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -26,25 +27,129 @@
 
         body {
             margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
         }
+
+        /* =========================================================
+           ANALYTICS PAGE
+        ========================================================= */
+
+        .analytics-page {
+            min-height: 100vh;
+        }
+
+        /* =========================================================
+           HEADER - EMD STANDARD
+        ========================================================= */
+
+        .analytics-header-bar {
+            background: #0f4c5c;
+            color: white;
+            padding: 20px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .analytics-hospital-title h1 {
+            margin: 0;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .analytics-hospital-title p {
+            margin: 6px 0 0 0;
+            font-size: 14px;
+            color: #dbeafe;
+        }
+
+        .analytics-user-info {
+            text-align: right;
+            min-width: 180px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .analytics-user-info p {
+            margin: 2px 0;
+        }
+
+        .analytics-logout {
+            display: inline-block;
+            margin-top: 4px;
+            color: #fecaca;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .analytics-logout:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        /* =========================================================
+           NAVIGATION - EMD STANDARD
+        ========================================================= */
+
+        .analytics-nav {
+            width: 100%;
+            background: white;
+            border-bottom: 1px solid #dbe4ea;
+            padding: 12px 35px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .analytics-nav a {
+            text-decoration: none;
+            color: #374151;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .analytics-nav a:hover {
+            background: #e6f1f4;
+            color: #0f4c5c;
+        }
+
+        .analytics-nav .active {
+            background: #0f4c5c;
+            color: white;
+        }
+
+        /* =========================================================
+           MAIN CONTAINER
+        ========================================================= */
 
         .analytics-container {
-            max-width: 1250px;
-            margin: 0 auto;
-            padding: 30px 20px 50px;
+            width: 92%;
+            max-width: 1400px;
+            margin: 30px auto 45px auto;
         }
 
-        .analytics-header {
+        /* =========================================================
+           PAGE INTRODUCTION
+        ========================================================= */
+
+        .analytics-intro {
             text-align: center;
             margin-bottom: 35px;
         }
 
-        .analytics-header h1 {
+        .analytics-intro h1 {
             margin: 0 0 10px;
             font-size: 32px;
+            color: #111827;
         }
 
-        .analytics-header p {
+        .analytics-intro p {
             margin: 0 auto;
             max-width: 750px;
             color: #666;
@@ -56,11 +161,15 @@
             margin-top: 15px;
             padding: 7px 15px;
             border-radius: 20px;
-            background: #eef5ff;
-            color: #1769aa;
+            background: #e6f1f4;
+            color: #0f4c5c;
             font-size: 13px;
             font-weight: bold;
         }
+
+        /* =========================================================
+           SECTION TITLE
+        ========================================================= */
 
         .section-title {
             margin-bottom: 18px;
@@ -68,6 +177,7 @@
 
         .section-title h2 {
             margin: 0 0 5px;
+            color: #111827;
         }
 
         .section-title p {
@@ -75,6 +185,10 @@
             color: #777;
             font-size: 14px;
         }
+
+        /* =========================================================
+           QUICK ANALYSIS
+        ========================================================= */
 
         .analytics-grid {
             display: grid;
@@ -86,10 +200,10 @@
 
         .analysis-card {
             background: white;
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 24px 18px;
             text-align: center;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
             cursor: pointer;
             transition: all 0.25s ease;
             border: 2px solid transparent;
@@ -100,15 +214,15 @@
         }
 
         .analysis-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 9px 22px rgba(0,0,0,0.13);
-            border-color: #007bff;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-color: #0f4c5c;
         }
 
         .analysis-card.selected {
-            border-color: #007bff;
-            background: #f5f9ff;
-            transform: translateY(-3px);
+            border-color: #0f4c5c;
+            background: #f2f8fa;
+            transform: translateY(-2px);
         }
 
         .analysis-icon {
@@ -119,6 +233,7 @@
         .analysis-card h3 {
             margin: 5px 0 8px;
             font-size: 18px;
+            color: #111827;
         }
 
         .analysis-card p {
@@ -128,11 +243,15 @@
             margin: 0;
         }
 
+        /* =========================================================
+           WORKSPACE
+        ========================================================= */
+
         .workspace {
             background: white;
-            border-radius: 14px;
+            border-radius: 12px;
             padding: 30px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
             margin-bottom: 30px;
         }
 
@@ -146,6 +265,7 @@
 
         .workspace-header h2 {
             margin: 0 0 7px;
+            color: #111827;
         }
 
         .workspace-header p {
@@ -155,13 +275,18 @@
         }
 
         .step-badge {
-            background: #f1f3f5;
+            background: #e6f1f4;
+            color: #0f4c5c;
             padding: 8px 13px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
             white-space: nowrap;
         }
+
+        /* =========================================================
+           STEPS
+        ========================================================= */
 
         .steps {
             display: grid;
@@ -182,9 +307,13 @@
         }
 
         .step.active {
-            background: #eaf3ff;
-            color: #0069d9;
+            background: #e6f1f4;
+            color: #0f4c5c;
         }
+
+        /* =========================================================
+           FORM
+        ========================================================= */
 
         .form-grid {
             display: grid;
@@ -228,16 +357,20 @@
 
         .form-group select:focus,
         .form-group input:focus {
-            border-color: #007bff;
+            border-color: #0f4c5c;
             box-shadow:
-                0 0 0 3px rgba(0,123,255,0.10);
+                0 0 0 3px rgba(15,76,92,0.10);
         }
+
+        /* =========================================================
+           FILTER PANEL
+        ========================================================= */
 
         .filter-panel {
             margin-top: 25px;
             padding: 20px;
             border-radius: 10px;
-            background: #f8f9fa;
+            background: #f8fafc;
             border: 1px solid #e4e6e8;
         }
 
@@ -252,6 +385,10 @@
                 repeat(2, minmax(0, 1fr));
             gap: 18px;
         }
+
+        /* =========================================================
+           BUTTONS
+        ========================================================= */
 
         .button-row {
             margin-top: 25px;
@@ -275,8 +412,12 @@
         }
 
         .primary-button {
-            background: #007bff;
+            background: #0f4c5c;
             color: white;
+        }
+
+        .primary-button:hover {
+            background: #0b3d49;
         }
 
         .secondary-button {
@@ -289,9 +430,9 @@
             color: #333;
         }
 
-        /* =========================
+        /* =========================================================
            CHART AREA
-        ========================== */
+        ========================================================= */
 
         .chart-container {
             position: relative;
@@ -312,7 +453,7 @@
             margin-bottom: 15px;
             padding: 13px 15px;
             border-radius: 8px;
-            background: #f8f9fa;
+            background: #f8fafc;
             border: 1px solid #e5e7e9;
             color: #555;
             font-size: 13px;
@@ -325,15 +466,15 @@
             color: #777;
         }
 
-        /* =========================
+        /* =========================================================
            DOWNLOAD SECTION
-        ========================== */
+        ========================================================= */
 
         .download-panel {
             margin-top: 25px;
             padding: 22px;
             border-radius: 12px;
-            background: #f8f9fa;
+            background: #f8fafc;
             border: 1px solid #e1e5e8;
         }
 
@@ -403,6 +544,10 @@
             font-size: 13px;
         }
 
+        /* =========================================================
+           PREVIEW
+        ========================================================= */
+
         .preview-box {
             min-height: 180px;
             border: 2px dashed #d7dce1;
@@ -430,6 +575,10 @@
             line-height: 1.6;
             font-size: 14px;
         }
+
+        /* =========================================================
+           STATISTICS
+        ========================================================= */
 
         .statistics-grid {
             display: grid;
@@ -459,15 +608,22 @@
             color: #222;
         }
 
+        /* =========================================================
+           EXISTING ANALYTICS
+        ========================================================= */
+
         .old-analytics {
-            background: #f8f9fa;
+            background: white;
             border-radius: 12px;
             padding: 22px;
             border: 1px solid #e5e7e9;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            margin-bottom: 30px;
         }
 
         .old-analytics h3 {
             margin-top: 0;
+            color: #111827;
         }
 
         .old-analytics p {
@@ -480,7 +636,24 @@
             margin-top: 8px;
             text-decoration: none;
             font-weight: bold;
+            color: #0f4c5c;
         }
+
+        /* =========================================================
+           FOOTER - EMD STANDARD
+        ========================================================= */
+
+        .analytics-footer {
+            background: #0f4c5c;
+            color: white;
+            text-align: center;
+            padding: 18px 20px;
+            font-size: 13px;
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
 
         @media (max-width: 1000px) {
 
@@ -503,8 +676,28 @@
 
         @media (max-width: 700px) {
 
+            .analytics-header-bar {
+                padding: 20px 22px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .analytics-user-info {
+                text-align: left;
+                min-width: auto;
+            }
+
+            .analytics-nav {
+                padding: 12px 22px;
+            }
+
             .analytics-container {
-                padding: 20px 12px 40px;
+                width: 92%;
+                padding: 20px 0 40px;
+            }
+
+            .analytics-intro h1 {
+                font-size: 25px;
             }
 
             .analytics-grid {
@@ -553,8 +746,17 @@
 
         @media (max-width: 450px) {
 
-            .analytics-header h1 {
-                font-size: 25px;
+            .analytics-hospital-title h1 {
+                font-size: 21px;
+            }
+
+            .analytics-hospital-title p {
+                font-size: 13px;
+            }
+
+            .analytics-nav a {
+                font-size: 12px;
+                padding: 7px 9px;
             }
 
             .steps {
@@ -573,817 +775,880 @@
 
 <body>
 
-<header class="main-header">
-
-    <div>
-
-        <h1>
-            🏥 Hospital Data Analytics System
-        </h1>
-
-        <p>
-            Hospital Management &amp;
-            Data Analytics Platform
-        </p>
-
-    </div>
-
-    <div class="user-info">
-
-        <strong>
-            Welcome, {{ session.get('username') }}
-        </strong>
-
-        <span>
-            Role: {{ session.get('role') }}
-        </span>
-
-        <a href="{{ url_for('logout') }}">
-            Logout
-        </a>
-
-    </div>
-
-</header>
-
-<nav class="navbar">
-
-    <a href="/">
-        Dashboard
-    </a>
-
-    <a href="{{ url_for('patients') }}">
-        Patients
-    </a>
-
-    <a href="{{ url_for('doctors') }}">
-        Doctors
-    </a>
-
-    <a href="{{ url_for('appointments') }}">
-        Appointments
-    </a>
-
-    {% if session.get('role') in
-          ['Admin', 'Doctor', 'Data Analyst'] %}
-
-    <a href="{{ url_for('analytics') }}"
-       class="active">
-        Analytics
-    </a>
-
-    {% endif %}
-
-    {% if session.get('role') == 'Admin' %}
-
-    <a href="{{ url_for('users') }}">
-        Users
-    </a>
-
-    {% endif %}
-
-</nav>
-
-<main class="analytics-container">
-
-    <section class="analytics-header">
-
-        <h1>
-            📊 Analytics Workspace
-        </h1>
-
-        <p>
-            Explore hospital data, select an analysis
-            method, configure variables and generate
-            analytical results directly from the hospital database.
-        </p>
-
-        <div class="analyst-badge">
-            👨‍💻 Data Analyst Workspace
-        </div>
-
-    </section>
+<div class="analytics-page">
 
 
-    <!-- =================================================
-         QUICK ANALYSIS
-    ================================================== -->
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
-    <section>
+    <header class="analytics-header-bar">
 
-        <div class="section-title">
+        <div class="analytics-hospital-title">
 
-            <h2>
-                ⚡ Quick Analysis
-            </h2>
+            <h1>
+                🏥 Hospital Data Analytics System
+            </h1>
 
             <p>
-                Select an analysis method to quickly
-                configure the workspace.
+                Hospital Management &amp;
+                Data Analytics Platform
             </p>
 
         </div>
 
+        <div class="analytics-user-info">
 
-        <div class="analytics-grid">
+            <p>
+                Welcome,
+                <strong>
+                    {{ session.get('username') }}
+                </strong>
+            </p>
 
+            <p>
+                Role:
+                <strong>
+                    {{ session.get('role') }}
+                </strong>
+            </p>
 
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Pie Chart', this)">
-
-                <div class="analysis-icon">
-                    🥧
-                </div>
-
-                <h3>
-                    Pie Chart
-                </h3>
-
-                <p>
-                    Analyze proportions and
-                    categorical distributions.
-                </p>
-
-            </div>
-
-
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Bar Chart', this)">
-
-                <div class="analysis-icon">
-                    📊
-                </div>
-
-                <h3>
-                    Bar Chart
-                </h3>
-
-                <p>
-                    Compare values between
-                    different categories.
-                </p>
-
-            </div>
-
-
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Histogram', this)">
-
-                <div class="analysis-icon">
-                    📈
-                </div>
-
-                <h3>
-                    Histogram
-                </h3>
-
-                <p>
-                    Analyze the distribution
-                    of numerical data.
-                </p>
-
-            </div>
-
-
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Line Chart', this)">
-
-                <div class="analysis-icon">
-                    📉
-                </div>
-
-                <h3>
-                    Line Chart
-                </h3>
-
-                <p>
-                    Analyze trends and changes
-                    over time.
-                </p>
-
-            </div>
-
-
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Scatter Plot', this)">
-
-                <div class="analysis-icon">
-                    🔵
-                </div>
-
-                <h3>
-                    Scatter Plot
-                </h3>
-
-                <p>
-                    Explore relationships between
-                    data observations.
-                </p>
-
-            </div>
-
-
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Doughnut Chart', this)">
-
-                <div class="analysis-icon">
-                    🍩
-                </div>
-
-                <h3>
-                    Doughnut Chart
-                </h3>
-
-                <p>
-                    Display categorical data
-                    in circular format.
-                </p>
-
-            </div>
-
-
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Area Chart', this)">
-
-                <div class="analysis-icon">
-                    📊
-                </div>
-
-                <h3>
-                    Area Chart
-                </h3>
-
-                <p>
-                    Visualize changes and
-                    cumulative trends.
-                </p>
-
-            </div>
-
-
-            <div class="analysis-card"
-                 onclick="selectAnalysis('Statistics', this)">
-
-                <div class="analysis-icon">
-                    🧮
-                </div>
-
-                <h3>
-                    Statistics
-                </h3>
-
-                <p>
-                    Calculate descriptive statistics
-                    from the returned data.
-                </p>
-
-            </div>
+            <a href="{{ url_for('logout') }}"
+               class="analytics-logout">
+                🚪 Logout
+            </a>
 
         </div>
 
-    </section>
+    </header>
 
 
-    <!-- =================================================
-         BUILD ANALYSIS
-    ================================================== -->
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
 
-    <section class="workspace">
+    <nav class="analytics-nav">
 
-        <div class="workspace-header">
+        <a href="{{ url_for('home') }}">
+            🏠 Dashboard
+        </a>
 
-            <div>
+        <a href="{{ url_for('patients') }}">
+            👥 Patients
+        </a>
 
-                <h2>
-                    🔬 Build Your Analysis
-                </h2>
+        <a href="{{ url_for('doctors') }}">
+            👨‍⚕️ Doctors
+        </a>
 
-                <p>
-                    Configure your dataset, analysis
-                    method and variables.
-                </p>
+        <a href="{{ url_for('appointments') }}">
+            📅 Appointments
+        </a>
 
-            </div>
+        <a href="{{ url_for('medical_records') }}">
+            📋 Medical Records
+        </a>
 
-            <div class="step-badge">
-                Step 1 of 4
-            </div>
+        <a href="{{ url_for('pharmacy') }}">
+            💊 Pharmacy
+        </a>
 
-        </div>
+        <a href="{{ url_for('laboratory') }}">
+            🧪 Laboratory
+        </a>
 
+        <a href="{{ url_for('emergency_cases') }}">
+            🚨 EMD
+        </a>
 
-        <div class="steps">
+        {% if session.get('role') in
+              ['Admin', 'Doctor', 'Data Analyst'] %}
 
-            <div class="step active">
-                1. Dataset
-            </div>
+        <a href="{{ url_for('analytics') }}"
+           class="active">
+            📊 Analytics
+        </a>
 
-            <div class="step">
-                2. Analysis
-            </div>
+        {% endif %}
 
-            <div class="step">
-                3. Variables
-            </div>
+        {% if session.get('role') == 'Admin' %}
 
-            <div class="step">
-                4. Generate
-            </div>
+        <a href="{{ url_for('users') }}">
+            👤 Users
+        </a>
 
-        </div>
+        {% endif %}
 
+    </nav>
 
-        <div class="form-grid">
 
+    <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
 
-            <div class="form-group">
-
-                <label for="dataset">
-                    🗂️ Select Dataset
-                </label>
-
-                <select id="dataset"
-                        onchange="updateWorkspace()">
-
-                    <option value="">
-                        -- Select Dataset --
-                    </option>
-
-                    <option value="patients">
-                        Patients
-                    </option>
-
-                    <option value="doctors">
-                        Doctors
-                    </option>
-
-                    <option value="appointments">
-                        Appointments
-                    </option>
-
-                    <option value="medical_records">
-                        Medical Records
-                    </option>
-
-                    <option value="laboratory">
-                        Laboratory
-                    </option>
-
-                    <option value="pharmacy">
-                        Pharmacy
-                    </option>
-
-                </select>
-
-                <span class="form-help">
-                    Choose the hospital data you want to analyze.
-                </span>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="analysis_type">
-                    📊 Analysis Type
-                </label>
-
-                <select id="analysis_type"
-                        onchange="updateWorkspace()">
-
-                    <option value="">
-                        -- Select Analysis --
-                    </option>
-
-                    <option value="pie">
-                        Pie Chart
-                    </option>
-
-                    <option value="bar">
-                        Bar Chart
-                    </option>
-
-                    <option value="histogram">
-                        Histogram
-                    </option>
-
-                    <option value="line">
-                        Line Chart
-                    </option>
-
-                    <option value="scatter">
-                        Scatter Plot
-                    </option>
-
-                    <option value="doughnut">
-                        Doughnut Chart
-                    </option>
-
-                    <option value="area">
-                        Area Chart
-                    </option>
-
-                    <option value="statistics">
-                        Statistical Analysis
-                    </option>
-
-                </select>
-
-                <span class="form-help">
-                    Choose how you want to visualize or analyze the data.
-                </span>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="x_variable">
-                    ↔️ X-Axis / Category
-                </label>
-
-                <select id="x_variable">
-
-                    <option value="">
-                        -- Select Variable --
-                    </option>
-
-                    <option value="age">
-                        Age
-                    </option>
-
-                    <option value="gender">
-                        Gender
-                    </option>
-
-                    <option value="doctor">
-                        Doctor
-                    </option>
-
-                    <option value="specialization">
-                        Specialization
-                    </option>
-
-                    <option value="status">
-                        Status
-                    </option>
-
-                    <option value="date">
-                        Date
-                    </option>
-
-                    <option value="diagnosis">
-                        Diagnosis
-                    </option>
-
-                </select>
-
-                <span class="form-help">
-                    Select the category or field to analyze.
-                </span>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="y_variable">
-                    ↕️ Y-Axis / Value
-                </label>
-
-                <select id="y_variable">
-
-                    <option value="">
-                        -- Select Variable --
-                    </option>
-
-                    <option value="count">
-                        Count
-                    </option>
-
-                    <option value="age">
-                        Age
-                    </option>
-
-                    <option value="quantity">
-                        Quantity
-                    </option>
-
-                    <option value="price">
-                        Price
-                    </option>
-
-                    <option value="appointments">
-                        Number of Appointments
-                    </option>
-
-                    <option value="patients">
-                        Number of Patients
-                    </option>
-
-                </select>
-
-                <span class="form-help">
-                    Select the value that should be measured.
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="filter-panel">
-
-            <h3>
-                🔎 Optional Filters
-            </h3>
-
-            <div class="filter-grid">
-
-                <div class="form-group">
-
-                    <label for="date_from">
-                        Date From
-                    </label>
-
-                    <input type="date"
-                           id="date_from">
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="date_to">
-                        Date To
-                    </label>
-
-                    <input type="date"
-                           id="date_to">
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <div class="button-row">
-
-            <button type="button"
-                    class="analysis-button primary-button"
-                    onclick="generateAnalysis()">
-
-                🚀 Generate Analysis
-
-            </button>
-
-
-            <button type="button"
-                    class="analysis-button secondary-button"
-                    onclick="resetAnalysis()">
-
-                🔄 Reset
-
-            </button>
-
-
-            <button type="button"
-                    class="analysis-button light-button"
-                    onclick="scrollToPreview()">
-
-                👁️ Preview
-
-            </button>
-
-        </div>
-
-    </section>
-
-
-    <!-- =================================================
-         ANALYSIS PREVIEW
-    ================================================== -->
-
-    <section class="workspace"
-             id="chartSection">
-
-        <div class="workspace-header">
-
-            <div>
-
-                <h2>
-                    📊 Analysis Preview
-                </h2>
-
-                <p id="chartDescription">
-                    Your selected analysis will appear here.
-                </p>
-
-            </div>
-
-            <div class="step-badge">
-                Preview
-            </div>
-
-        </div>
-
-
-        <div id="analysisMessage"
-             class="preview-box">
-
-            <div class="preview-content">
-
-                <div class="preview-icon">
-                    📊
-                </div>
-
-                <h3>
-                    Ready for Analysis
-                </h3>
-
-                <p>
-                    Select a dataset and analysis method,
-                    then click Generate Analysis.
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <div id="chartLoading"
-             class="chart-loading">
-
-            ⏳ Loading real hospital data...
-
-        </div>
-
-
-        <div id="chartWrapper"
-             class="chart-container"
-             style="display:none;">
-
-            <div id="chartInfo"
-                 class="chart-info">
-            </div>
-
-            <canvas id="analyticsChart"></canvas>
-
-        </div>
+    <main class="analytics-container">
 
 
         <!-- =================================================
-             DOWNLOAD ANALYSIS
+             ANALYTICS INTRODUCTION
         ================================================== -->
 
-        <div class="download-panel">
+        <section class="analytics-intro">
 
-            <div class="download-header">
+            <h1>
+                📊 Analytics Workspace
+            </h1>
 
-                <h3>
-                    📥 Download Analysis
-                </h3>
+            <p>
+                Explore hospital data, select an analysis
+                method, configure variables and generate
+                analytical results directly from the hospital database.
+            </p>
 
-                <p>
-                    Download the generated analysis
-                    and chart.
-                </p>
-
+            <div class="analyst-badge">
+                👨‍💻 Data Analyst Workspace
             </div>
 
-
-            <div class="download-grid">
-
-                <button type="button"
-                        class="download-button pdf"
-                        onclick="downloadAnalysis('PDF')">
-
-                    📄 Download PDF
-
-                </button>
+        </section>
 
 
-                <button type="button"
-                        class="download-button excel"
-                        onclick="downloadAnalysis('Excel')">
+        <!-- =================================================
+             QUICK ANALYSIS
+        ================================================== -->
 
-                    📊 Download Excel
+        <section>
 
-                </button>
-
-
-                <button type="button"
-                        class="download-button csv"
-                        onclick="downloadAnalysis('CSV')">
-
-                    📑 Download CSV
-
-                </button>
-
-
-                <button type="button"
-                        class="download-button png"
-                        onclick="downloadAnalysis('PNG')">
-
-                    🖼️ Download Chart
-
-                </button>
-
-            </div>
-
-
-            <div id="downloadStatus"
-                 class="download-status">
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- =================================================
-         STATISTICS
-    ================================================== -->
-
-    <section class="workspace"
-             id="statisticsSection"
-             style="display:none;">
-
-        <div class="workspace-header">
-
-            <div>
+            <div class="section-title">
 
                 <h2>
-                    🧮 Statistical Summary
+                    ⚡ Quick Analysis
                 </h2>
 
                 <p>
-                    Descriptive statistics calculated
-                    from the data returned by the hospital database.
+                    Select an analysis method to quickly
+                    configure the workspace.
                 </p>
 
             </div>
 
-        </div>
+
+            <div class="analytics-grid">
 
 
-        <div class="statistics-grid">
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Pie Chart', this)">
 
-            <div class="stat-box">
-                <span>Mean</span>
-                <strong id="meanValue">-</strong>
+                    <div class="analysis-icon">
+                        🥧
+                    </div>
+
+                    <h3>
+                        Pie Chart
+                    </h3>
+
+                    <p>
+                        Analyze proportions and
+                        categorical distributions.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Bar Chart', this)">
+
+                    <div class="analysis-icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Bar Chart
+                    </h3>
+
+                    <p>
+                        Compare values between
+                        different categories.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Histogram', this)">
+
+                    <div class="analysis-icon">
+                        📈
+                    </div>
+
+                    <h3>
+                        Histogram
+                    </h3>
+
+                    <p>
+                        Analyze the distribution
+                        of numerical data.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Line Chart', this)">
+
+                    <div class="analysis-icon">
+                        📉
+                    </div>
+
+                    <h3>
+                        Line Chart
+                    </h3>
+
+                    <p>
+                        Analyze trends and changes
+                        over time.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Scatter Plot', this)">
+
+                    <div class="analysis-icon">
+                        🔵
+                    </div>
+
+                    <h3>
+                        Scatter Plot
+                    </h3>
+
+                    <p>
+                        Explore relationships between
+                        data observations.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Doughnut Chart', this)">
+
+                    <div class="analysis-icon">
+                        🍩
+                    </div>
+
+                    <h3>
+                        Doughnut Chart
+                    </h3>
+
+                    <p>
+                        Display categorical data
+                        in circular format.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Area Chart', this)">
+
+                    <div class="analysis-icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Area Chart
+                    </h3>
+
+                    <p>
+                        Visualize changes and
+                        cumulative trends.
+                    </p>
+
+                </div>
+
+
+                <div class="analysis-card"
+                     onclick="selectAnalysis('Statistics', this)">
+
+                    <div class="analysis-icon">
+                        🧮
+                    </div>
+
+                    <h3>
+                        Statistics
+                    </h3>
+
+                    <p>
+                        Calculate descriptive statistics
+                        from the returned data.
+                    </p>
+
+                </div>
+
+
             </div>
 
-            <div class="stat-box">
-                <span>Median</span>
-                <strong id="medianValue">-</strong>
+        </section>
+
+
+        <!-- =================================================
+             BUILD ANALYSIS
+        ================================================== -->
+
+        <section class="workspace">
+
+            <div class="workspace-header">
+
+                <div>
+
+                    <h2>
+                        🔬 Build Your Analysis
+                    </h2>
+
+                    <p>
+                        Configure your dataset, analysis
+                        method and variables.
+                    </p>
+
+                </div>
+
+                <div class="step-badge">
+                    Step 1 of 4
+                </div>
+
             </div>
 
-            <div class="stat-box">
-                <span>Mode</span>
-                <strong id="modeValue">-</strong>
+
+            <div class="steps">
+
+                <div class="step active">
+                    1. Dataset
+                </div>
+
+                <div class="step">
+                    2. Analysis
+                </div>
+
+                <div class="step">
+                    3. Variables
+                </div>
+
+                <div class="step">
+                    4. Generate
+                </div>
+
             </div>
 
-            <div class="stat-box">
-                <span>Minimum</span>
-                <strong id="minValue">-</strong>
+
+            <div class="form-grid">
+
+
+                <div class="form-group">
+
+                    <label for="dataset">
+                        🗂️ Select Dataset
+                    </label>
+
+                    <select id="dataset"
+                            onchange="updateWorkspace()">
+
+                        <option value="">
+                            -- Select Dataset --
+                        </option>
+
+                        <option value="patients">
+                            Patients
+                        </option>
+
+                        <option value="doctors">
+                            Doctors
+                        </option>
+
+                        <option value="appointments">
+                            Appointments
+                        </option>
+
+                        <option value="medical_records">
+                            Medical Records
+                        </option>
+
+                        <option value="laboratory">
+                            Laboratory
+                        </option>
+
+                        <option value="pharmacy">
+                            Pharmacy
+                        </option>
+
+                    </select>
+
+                    <span class="form-help">
+                        Choose the hospital data you want to analyze.
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="analysis_type">
+                        📊 Analysis Type
+                    </label>
+
+                    <select id="analysis_type"
+                            onchange="updateWorkspace()">
+
+                        <option value="">
+                            -- Select Analysis --
+                        </option>
+
+                        <option value="pie">
+                            Pie Chart
+                        </option>
+
+                        <option value="bar">
+                            Bar Chart
+                        </option>
+
+                        <option value="histogram">
+                            Histogram
+                        </option>
+
+                        <option value="line">
+                            Line Chart
+                        </option>
+
+                        <option value="scatter">
+                            Scatter Plot
+                        </option>
+
+                        <option value="doughnut">
+                            Doughnut Chart
+                        </option>
+
+                        <option value="area">
+                            Area Chart
+                        </option>
+
+                        <option value="statistics">
+                            Statistical Analysis
+                        </option>
+
+                    </select>
+
+                    <span class="form-help">
+                        Choose how you want to visualize or analyze the data.
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="x_variable">
+                        ↔️ X-Axis / Category
+                    </label>
+
+                    <select id="x_variable">
+
+                        <option value="">
+                            -- Select Variable --
+                        </option>
+
+                        <option value="age">
+                            Age
+                        </option>
+
+                        <option value="gender">
+                            Gender
+                        </option>
+
+                        <option value="doctor">
+                            Doctor
+                        </option>
+
+                        <option value="specialization">
+                            Specialization
+                        </option>
+
+                        <option value="status">
+                            Status
+                        </option>
+
+                        <option value="date">
+                            Date
+                        </option>
+
+                        <option value="diagnosis">
+                            Diagnosis
+                        </option>
+
+                    </select>
+
+                    <span class="form-help">
+                        Select the category or field to analyze.
+                    </span>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="y_variable">
+                        ↕️ Y-Axis / Value
+                    </label>
+
+                    <select id="y_variable">
+
+                        <option value="">
+                            -- Select Variable --
+                        </option>
+
+                        <option value="count">
+                            Count
+                        </option>
+
+                        <option value="age">
+                            Age
+                        </option>
+
+                        <option value="quantity">
+                            Quantity
+                        </option>
+
+                        <option value="price">
+                            Price
+                        </option>
+
+                        <option value="appointments">
+                            Number of Appointments
+                        </option>
+
+                        <option value="patients">
+                            Number of Patients
+                        </option>
+
+                    </select>
+
+                    <span class="form-help">
+                        Select the value that should be measured.
+                    </span>
+
+                </div>
+
             </div>
 
-            <div class="stat-box">
-                <span>Maximum</span>
-                <strong id="maxValue">-</strong>
+
+            <div class="filter-panel">
+
+                <h3>
+                    🔎 Optional Filters
+                </h3>
+
+                <div class="filter-grid">
+
+                    <div class="form-group">
+
+                        <label for="date_from">
+                            Date From
+                        </label>
+
+                        <input type="date"
+                               id="date_from">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="date_to">
+                            Date To
+                        </label>
+
+                        <input type="date"
+                               id="date_to">
+
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="stat-box">
-                <span>Std. Deviation</span>
-                <strong id="stdValue">-</strong>
+
+            <div class="button-row">
+
+                <button type="button"
+                        class="analysis-button primary-button"
+                        onclick="generateAnalysis()">
+
+                    🚀 Generate Analysis
+
+                </button>
+
+
+                <button type="button"
+                        class="analysis-button secondary-button"
+                        onclick="resetAnalysis()">
+
+                    🔄 Reset
+
+                </button>
+
+
+                <button type="button"
+                        class="analysis-button light-button"
+                        onclick="scrollToPreview()">
+
+                    👁️ Preview
+
+                </button>
+
             </div>
 
-        </div>
-
-    </section>
+        </section>
 
 
-    <section class="old-analytics">
+        <!-- =================================================
+             ANALYSIS PREVIEW
+        ================================================== -->
 
-        <h3>
-            📌 Existing Hospital Analytics
-        </h3>
+        <section class="workspace"
+                 id="chartSection">
 
-        <p>
-            The predefined hospital analytics remain
-            available while the Data Analyst workspace
-            provides configurable analysis.
-        </p>
+            <div class="workspace-header">
 
-        <a href="{{ url_for('analytics') }}">
-            🔄 Refresh Analytics Workspace
-        </a>
+                <div>
 
-    </section>
+                    <h2>
+                        📊 Analysis Preview
+                    </h2>
 
-</main>
+                    <p id="chartDescription">
+                        Your selected analysis will appear here.
+                    </p>
+
+                </div>
+
+                <div class="step-badge">
+                    Preview
+                </div>
+
+            </div>
+
+
+            <div id="analysisMessage"
+                 class="preview-box">
+
+                <div class="preview-content">
+
+                    <div class="preview-icon">
+                        📊
+                    </div>
+
+                    <h3>
+                        Ready for Analysis
+                    </h3>
+
+                    <p>
+                        Select a dataset and analysis method,
+                        then click Generate Analysis.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="chartLoading"
+                 class="chart-loading">
+
+                ⏳ Loading real hospital data...
+
+            </div>
+
+
+            <div id="chartWrapper"
+                 class="chart-container"
+                 style="display:none;">
+
+                <div id="chartInfo"
+                     class="chart-info">
+                </div>
+
+                <canvas id="analyticsChart"></canvas>
+
+            </div>
+
+
+            <!-- =================================================
+                 DOWNLOAD ANALYSIS
+            ================================================== -->
+
+            <div class="download-panel">
+
+                <div class="download-header">
+
+                    <h3>
+                        📥 Download Analysis
+                    </h3>
+
+                    <p>
+                        Download the generated analysis
+                        and chart.
+                    </p>
+
+                </div>
+
+
+                <div class="download-grid">
+
+                    <button type="button"
+                            class="download-button pdf"
+                            onclick="downloadAnalysis('PDF')">
+
+                        📄 Download PDF
+
+                    </button>
+
+
+                    <button type="button"
+                            class="download-button excel"
+                            onclick="downloadAnalysis('Excel')">
+
+                        📊 Download Excel
+
+                    </button>
+
+
+                    <button type="button"
+                            class="download-button csv"
+                            onclick="downloadAnalysis('CSV')">
+
+                        📑 Download CSV
+
+                    </button>
+
+
+                    <button type="button"
+                            class="download-button png"
+                            onclick="downloadAnalysis('PNG')">
+
+                        🖼️ Download Chart
+
+                    </button>
+
+                </div>
+
+
+                <div id="downloadStatus"
+                     class="download-status">
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
+
+        <section class="workspace"
+                 id="statisticsSection"
+                 style="display:none;">
+
+            <div class="workspace-header">
+
+                <div>
+
+                    <h2>
+                        🧮 Statistical Summary
+                    </h2>
+
+                    <p>
+                        Descriptive statistics calculated
+                        from the data returned by the hospital database.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="statistics-grid">
+
+                <div class="stat-box">
+                    <span>Mean</span>
+                    <strong id="meanValue">-</strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Median</span>
+                    <strong id="medianValue">-</strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Mode</span>
+                    <strong id="modeValue">-</strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Minimum</span>
+                    <strong id="minValue">-</strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Maximum</span>
+                    <strong id="maxValue">-</strong>
+                </div>
+
+                <div class="stat-box">
+                    <span>Std. Deviation</span>
+                    <strong id="stdValue">-</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="old-analytics">
+
+            <h3>
+                📌 Existing Hospital Analytics
+            </h3>
+
+            <p>
+                The predefined hospital analytics remain
+                available while the Data Analyst workspace
+                provides configurable analysis.
+            </p>
+
+            <a href="{{ url_for('analytics') }}">
+                🔄 Refresh Analytics Workspace
+            </a>
+
+        </section>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="analytics-footer">
+
+        Hospital Data Analytics System
+        <br>
+        Analytics &amp; Data Analysis Module
+
+    </footer>
+
+</div>
+
 
 <script>
 
@@ -2677,3 +2942,4 @@
 </body>
 
 </html>
+```

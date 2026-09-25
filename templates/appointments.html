@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 
 <html lang="en">
@@ -6,49 +7,615 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>
         Hospital Data Analytics System - Appointments
     </title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 
     <style>
 
         /* =====================================================
-           CLICKABLE APPOINTMENT CARDS
+           APPOINTMENTS PAGE - ISOLATED STYLES
         ===================================================== */
+
+        .appointments-page,
+        .appointments-page * {
+            box-sizing: border-box;
+        }
+
+
+        .appointments-page {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #f4f7fb;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .appointments-header {
+            width: 100%;
+            background: #0f4c5c;
+            color: white;
+            padding: 20px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+
+        .appointments-hospital-title {
+            flex: 1;
+            min-width: 250px;
+        }
+
+
+        .appointments-hospital-title h1 {
+            margin: 0;
+            font-size: 25px;
+            line-height: 1.3;
+        }
+
+
+        .appointments-hospital-title p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+
+        .appointments-user-info {
+            min-width: 180px;
+            text-align: right;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+
+        .appointments-user-info p {
+            margin: 2px 0;
+        }
+
+
+        .appointments-logout {
+            display: inline-block;
+            margin-top: 7px;
+            color: #fecaca;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+
+        .appointments-logout:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        .appointments-nav {
+            width: 100%;
+            background: white;
+            border-bottom: 1px solid #dbe3ea;
+            padding: 12px 35px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+
+        .appointments-nav a {
+            display: inline-block;
+            padding: 9px 13px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #0f4c5c;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+
+        .appointments-nav a:hover {
+            background: #e8f1f4;
+        }
+
+
+        .appointments-nav .appointments-active {
+            background: #0f4c5c;
+            color: white;
+        }
+
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .appointments-container {
+            width: 92%;
+            max-width: 1250px;
+            margin: 30px auto 45px;
+        }
+
+
+        /* =====================================================
+           PAGE TITLE
+        ===================================================== */
+
+        .appointments-page-title {
+            margin-bottom: 25px;
+        }
+
+
+        .appointments-page-title h2 {
+            margin: 0;
+            color: #0f4c5c;
+            font-size: 27px;
+            line-height: 1.3;
+        }
+
+
+        .appointments-page-title p {
+            margin: 8px 0 0;
+            color: #6b7280;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+
+        /* =====================================================
+           APPOINTMENT SUMMARY CARDS
+        ===================================================== */
+
+        .appointments-page .cards {
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+
+        .appointments-page .card {
+            background: white;
+            border-radius: 10px;
+            padding: 22px;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
 
         .appointment-card {
             cursor: pointer;
-            transition: transform 0.2s ease,
-                        box-shadow 0.2s ease;
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
         }
+
 
         .appointment-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            box-shadow:
+                0 6px 15px rgba(0, 0, 0, 0.15);
         }
+
 
         .appointment-card.active {
             transform: translateY(-3px);
-            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+            box-shadow:
+                0 0 0 3px rgba(0, 123, 255, 0.25);
         }
+
+
+        .appointments-page .card .number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #0f4c5c;
+            margin-bottom: 8px;
+        }
+
+
+        .appointments-page .card h3 {
+            margin: 0 0 7px;
+            color: #1769c2;
+            font-size: 17px;
+        }
+
+
+        .appointments-page .card p {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
 
         .card-hint {
             font-size: 13px;
             margin-top: 8px;
-            opacity: 0.75;
+            color: #6b7280;
+            opacity: 0.9;
         }
+
+
+        /* =====================================================
+           CONTENT SECTIONS
+        ===================================================== */
+
+        .appointments-content-card {
+            width: 100%;
+            background: white;
+            padding: 28px 30px;
+            border-radius: 10px;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+
+        .appointments-content-card h2 {
+            margin: 0 0 22px;
+            color: #1769c2;
+            font-size: 22px;
+        }
+
+
+        /* =====================================================
+           SCHEDULE FORM
+        ===================================================== */
+
+        .appointment-form {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 18px 20px;
+        }
+
+
+        .appointment-form label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 7px;
+        }
+
+
+        .appointment-form select,
+        .appointment-form input,
+        .appointment-form textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+
+        .appointment-form textarea {
+            resize: vertical;
+        }
+
+
+        .appointment-form select:focus,
+        .appointment-form input:focus,
+        .appointment-form textarea:focus {
+            outline: none;
+            border-color: #1769c2;
+            box-shadow:
+                0 0 0 2px rgba(23, 105, 194, 0.12);
+        }
+
+
+        .appointment-form .appointment-form-full {
+            grid-column: 1 / -1;
+        }
+
+
+        .appointment-form-button {
+            grid-column: 1 / -1;
+            margin-top: 5px;
+        }
+
+
+        .appointment-form-button button {
+            display: inline-block;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #1769c2;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .appointment-form-button button:hover {
+            background: #12549b;
+        }
+
+
+        /* =====================================================
+           APPOINTMENT TABLE
+        ===================================================== */
+
+        .appointments-table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+
+
+        .appointments-table {
+            width: 100%;
+            min-width: 1100px;
+            border-collapse: collapse;
+            background: white;
+        }
+
+
+        .appointments-table th {
+            background: #1769c2;
+            color: white;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+
+        .appointments-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #dee2e6;
+            color: #222;
+            vertical-align: middle;
+        }
+
+
+        .appointments-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+
+        .appointments-table tbody tr:hover {
+            background: #eef5fb;
+        }
+
+
+        .appointment-row {
+            transition: background 0.15s ease;
+        }
+
+
+        /* =====================================================
+           ACTION BUTTONS
+        ===================================================== */
+
+        .appointment-actions {
+            white-space: nowrap;
+        }
+
+
+        .appointment-actions form {
+            display: inline;
+            margin: 0 3px 3px 0;
+        }
+
+
+        .appointment-actions button {
+            display: inline-block;
+            padding: 7px 11px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .appointment-accept {
+            background: #198754;
+        }
+
+
+        .appointment-accept:hover {
+            background: #146c43;
+        }
+
+
+        .appointment-reject {
+            background: #dc3545;
+        }
+
+
+        .appointment-reject:hover {
+            background: #b02a37;
+        }
+
+
+        .appointment-complete {
+            background: #1769c2;
+        }
+
+
+        .appointment-complete:hover {
+            background: #12549b;
+        }
+
+
+        .appointment-cancel {
+            background: #dc3545;
+        }
+
+
+        .appointment-cancel:hover {
+            background: #b02a37;
+        }
+
+
+        .appointment-completed {
+            color: #198754;
+            font-weight: bold;
+        }
+
+
+        .appointment-rejected,
+        .appointment-cancelled {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+
+        .appointment-view-only {
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+
+        /* =====================================================
+           NO FILTER RESULTS
+        ===================================================== */
 
         .no-filter-results {
             display: none;
             padding: 20px;
             text-align: center;
             font-weight: bold;
+            color: #6b7280;
+        }
+
+
+        .appointments-empty {
+            padding: 25px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+
+        /* =====================================================
+           WORKFLOW INFORMATION
+        ===================================================== */
+
+        .appointment-workflow {
+            width: 100%;
+            background: white;
+            border-radius: 10px;
+            padding: 25px 30px;
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+
+        .appointment-workflow h3 {
+            margin: 0 0 12px;
+            color: #1769c2;
+            font-size: 20px;
+        }
+
+
+        .appointment-workflow p {
+            margin: 0;
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .appointments-footer {
+            width: 100%;
+            background: #0f4c5c;
+            color: white;
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+
+        .appointments-footer p {
+            margin: 3px 0;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 750px) {
+
+            .appointments-header {
+                padding: 18px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+
+            .appointments-user-info {
+                text-align: left;
+                width: 100%;
+            }
+
+
+            .appointments-nav {
+                padding: 10px 20px;
+            }
+
+
+            .appointments-container {
+                width: 94%;
+                margin-top: 22px;
+            }
+
+
+            .appointments-page-title h2 {
+                font-size: 23px;
+            }
+
+
+            .appointment-form {
+                grid-template-columns: 1fr;
+            }
+
+
+            .appointment-form .appointment-form-full,
+            .appointment-form-button {
+                grid-column: auto;
+            }
+
+
+            .appointments-content-card,
+            .appointment-workflow {
+                padding: 22px 20px;
+            }
+
         }
 
     </style>
@@ -58,326 +625,435 @@
 
 <body>
 
-
-<!-- =====================================================
-     HEADER
-===================================================== -->
-
-<header>
-
-    <h1>
-        🏥 Hospital Data Analytics System
-    </h1>
-
-    <p>
-        Appointment Management
-    </p>
-
-</header>
+<div class="appointments-page">
 
 
-<!-- =====================================================
-     NAVIGATION
-===================================================== -->
+    <!-- =====================================================
+         HOSPITAL HEADER
+    ===================================================== -->
 
-<nav>
+    <header class="appointments-header">
 
-    <a href="{{ url_for('home') }}">
-        Dashboard
-    </a>
+        <div class="appointments-hospital-title">
 
-    <a href="{{ url_for('patients') }}">
-        Patients
-    </a>
+            <h1>
+                🏥 Hospital Data Analytics System
+            </h1>
 
-    <a href="{{ url_for('doctors') }}">
-        Doctors
-    </a>
+            <p>
+                Hospital Management &amp; Data Analytics Platform
+            </p>
 
-    <a href="{{ url_for('appointments') }}">
-        Appointments
-    </a>
-
-    <a href="{{ url_for('medical_records') }}">
-        Medical Records
-    </a>
-
-    <a href="{{ url_for('pharmacy') }}">
-        Pharmacy
-    </a>
-
-    <a href="{{ url_for('laboratory') }}">
-        Laboratory
-    </a>
+        </div>
 
 
-    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+        <div class="appointments-user-info">
+
+            <p>
+                Welcome,
+                <strong>{{ username }}</strong>
+            </p>
+
+            <p>
+                Role:
+                <strong>{{ role }}</strong>
+            </p>
+
+            <a
+                href="{{ url_for('logout') }}"
+                class="appointments-logout"
+            >
+                🚪 Logout
+            </a>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         NAVIGATION
+    ===================================================== -->
+
+    <nav class="appointments-nav">
+
+        <a href="{{ url_for('home') }}">
+            🏠 Dashboard
+        </a>
+
+
+        <a href="{{ url_for('patients') }}">
+            👥 Patients
+        </a>
+
+
+        <a href="{{ url_for('doctors') }}">
+            👨‍⚕️ Doctors
+        </a>
+
+
+        <a
+            href="{{ url_for('appointments') }}"
+            class="appointments-active"
+        >
+            📅 Appointments
+        </a>
+
+
+        {% if role in [
+            "Admin",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst"
+        ] %}
+
+        <a href="{{ url_for('medical_records') }}">
+            📋 Medical Records
+        </a>
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Pharmacist",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst"
+        ] %}
+
+        <a href="{{ url_for('pharmacy') }}">
+            💊 Pharmacy
+        </a>
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Laboratorian",
+            "Patient",
+            "Doctor",
+            "Receptionist",
+            "Data Analyst"
+        ] %}
+
+        <a href="{{ url_for('laboratory') }}">
+            🧪 Laboratory
+        </a>
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Receptionist",
+            "Doctor"
+        ] %}
+
+            {% if role == "Doctor" %}
+
+            <a href="{{ url_for('emergency_cases') }}">
+                🚨 EMD
+            </a>
+
+            {% else %}
+
+            <a href="{{ url_for('emergency_register') }}">
+                🚨 EMD
+            </a>
+
+            {% endif %}
+
+        {% endif %}
+
+
+        {% if role in [
+            "Admin",
+            "Doctor",
+            "Data Analyst"
+        ] %}
 
         <a href="{{ url_for('analytics') }}">
-            Analytics
+            📊 Analytics
         </a>
 
-    {% endif %}
+        {% endif %}
 
 
-    {% if role == "Admin" %}
+        {% if role == "Admin" %}
+
+        <a href="{{ url_for('reports') }}">
+            📑 Reports
+        </a>
 
         <a href="{{ url_for('users') }}">
-            Users
+            👤 Users
         </a>
 
-    {% endif %}
+        {% endif %}
+
+    </nav>
 
 
-    <a href="{{ url_for('logout') }}">
-        Logout
-    </a>
+    <!-- =====================================================
+         MAIN CONTENT
+    ===================================================== -->
 
-</nav>
-
-
-<!-- =====================================================
-     USER INFORMATION
-===================================================== -->
-
-<div class="user-info">
-
-    <strong>
-        User:
-    </strong>
-
-    {{ username }}
-
-    &nbsp;&nbsp; | &nbsp;&nbsp;
-
-    <strong>
-        Role:
-    </strong>
-
-    {{ role }}
-
-</div>
+    <main class="appointments-container">
 
 
-<!-- =====================================================
-     MAIN CONTAINER
-===================================================== -->
+        <!-- =================================================
+             PAGE TITLE
+        ================================================= -->
 
-<div class="container">
+        <section class="appointments-page-title">
 
+            <h2>
+                📅 Appointments
+            </h2>
 
-    <h2>
-        📅 Appointments
-    </h2>
+            <p>
+                Manage, schedule and monitor hospital appointments.
+            </p>
 
-
-    <!-- =================================================
-         APPOINTMENT SUMMARY CARDS
-    ================================================== -->
-
-    <div class="cards">
+        </section>
 
 
-        <!-- TOTAL -->
+        <!-- =================================================
+             APPOINTMENT SUMMARY CARDS
+        ================================================= -->
 
-        <div class="card appointment-card active"
-             onclick="filterAppointments('all', this)">
+        <div class="cards">
 
-            <div>
 
-                <div class="number">
-                    {{ total_appointments }}
-                </div>
+            <!-- TOTAL -->
 
-                <h3>
-                    Total Appointments
-                </h3>
+            <div
+                class="card appointment-card active"
+                onclick="filterAppointments('all', this)"
+            >
 
-                <p>
-                    All appointments
-                </p>
+                <div>
 
-                <div class="card-hint">
-                    Click to view all
+                    <div class="number">
+                        {{ total_appointments }}
+                    </div>
+
+                    <h3>
+                        Total Appointments
+                    </h3>
+
+                    <p>
+                        All appointments
+                    </p>
+
+                    <div class="card-hint">
+                        Click to view all
+                    </div>
+
                 </div>
 
             </div>
 
-        </div>
 
+            <!-- PENDING -->
 
-        <!-- PENDING -->
+            <div
+                class="card appointment-card"
+                onclick="filterAppointments('Pending', this)"
+            >
 
-        <div class="card appointment-card"
-             onclick="filterAppointments('Pending', this)">
+                <div>
 
-            <div>
+                    <div class="number">
+                        {{ pending_appointments }}
+                    </div>
 
-                <div class="number">
-                    {{ pending_appointments }}
-                </div>
+                    <h3>
+                        Pending
+                    </h3>
 
-                <h3>
-                    Pending
-                </h3>
+                    <p>
+                        Waiting for doctor action
+                    </p>
 
-                <p>
-                    Waiting for doctor action
-                </p>
+                    <div class="card-hint">
+                        Click to view pending
+                    </div>
 
-                <div class="card-hint">
-                    Click to view pending
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- ACCEPTED -->
-
-        <div class="card appointment-card"
-             onclick="filterAppointments('Accepted', this)">
-
-            <div>
-
-                <div class="number">
-                    {{ accepted_appointments }}
-                </div>
-
-                <h3>
-                    Accepted
-                </h3>
-
-                <p>
-                    Appointments accepted
-                </p>
-
-                <div class="card-hint">
-                    Click to view accepted
                 </div>
 
             </div>
 
-        </div>
 
+            <!-- ACCEPTED -->
 
-        <!-- REJECTED -->
+            <div
+                class="card appointment-card"
+                onclick="filterAppointments('Accepted', this)"
+            >
 
-        <div class="card appointment-card"
-             onclick="filterAppointments('Rejected', this)">
+                <div>
 
-            <div>
+                    <div class="number">
+                        {{ accepted_appointments }}
+                    </div>
 
-                <div class="number">
-                    {{ rejected_appointments }}
-                </div>
+                    <h3>
+                        Accepted
+                    </h3>
 
-                <h3>
-                    Rejected
-                </h3>
+                    <p>
+                        Appointments accepted
+                    </p>
 
-                <p>
-                    Appointments rejected
-                </p>
+                    <div class="card-hint">
+                        Click to view accepted
+                    </div>
 
-                <div class="card-hint">
-                    Click to view rejected
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- COMPLETED -->
-
-        <div class="card appointment-card"
-             onclick="filterAppointments('Completed', this)">
-
-            <div>
-
-                <div class="number">
-                    {{ completed_appointments }}
-                </div>
-
-                <h3>
-                    Completed
-                </h3>
-
-                <p>
-                    Completed appointments
-                </p>
-
-                <div class="card-hint">
-                    Click to view completed
                 </div>
 
             </div>
 
-        </div>
 
+            <!-- REJECTED -->
 
-        <!-- TODAY -->
+            <div
+                class="card appointment-card"
+                onclick="filterAppointments('Rejected', this)"
+            >
 
-        <div class="card appointment-card"
-             onclick="filterAppointments('Today', this)">
+                <div>
 
-            <div>
+                    <div class="number">
+                        {{ rejected_appointments }}
+                    </div>
 
-                <div class="number">
-                    {{ today_appointments }}
-                </div>
+                    <h3>
+                        Rejected
+                    </h3>
 
-                <h3>
-                    Today's Appointments
-                </h3>
+                    <p>
+                        Appointments rejected
+                    </p>
 
-                <p>
-                    Scheduled for today
-                </p>
+                    <div class="card-hint">
+                        Click to view rejected
+                    </div>
 
-                <div class="card-hint">
-                    Click to view today's
                 </div>
 
             </div>
 
+
+            <!-- COMPLETED -->
+
+            <div
+                class="card appointment-card"
+                onclick="filterAppointments('Completed', this)"
+            >
+
+                <div>
+
+                    <div class="number">
+                        {{ completed_appointments }}
+                    </div>
+
+                    <h3>
+                        Completed
+                    </h3>
+
+                    <p>
+                        Completed appointments
+                    </p>
+
+                    <div class="card-hint">
+                        Click to view completed
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- TODAY -->
+
+            <div
+                class="card appointment-card"
+                onclick="filterAppointments('Today', this)"
+            >
+
+                <div>
+
+                    <div class="number">
+                        {{ today_appointments }}
+                    </div>
+
+                    <h3>
+                        Today's Appointments
+                    </h3>
+
+                    <p>
+                        Scheduled for today
+                    </p>
+
+                    <div class="card-hint">
+                        Click to view today's
+                    </div>
+
+                </div>
+
+            </div>
+
+
         </div>
 
 
-    </div>
+        <!-- =================================================
+             SCHEDULE NEW APPOINTMENT
+        ================================================== -->
 
+        {% if role in ["Admin", "Receptionist"] %}
 
-    <!-- =================================================
-         SCHEDULE NEW APPOINTMENT
-    ================================================== -->
-
-    {% if role in ["Admin", "Receptionist"] %}
-
-        <div class="form-section">
+        <section class="appointments-content-card">
 
             <h2>
                 ➕ Schedule New Appointment
             </h2>
 
 
-            <form method="POST"
-                  action="{{ url_for('add_appointment') }}">
+            <form
+                method="POST"
+                action="{{ url_for('add_appointment') }}"
+                class="appointment-form"
+            >
+
+                <input
+                    type="hidden"
+                    name="csrf_token"
+                    value="{{ csrf_token() }}"
+                >
 
 
-                <label>
-                    Patient
-                </label>
+                <!-- PATIENT -->
 
-                <select name="patient_id"
-                        required>
+                <div>
 
-                    <option value="">
-                        Select Patient
-                    </option>
+                    <label>
+                        Patient
+                    </label>
 
-                    {% for patient in patients %}
+                    <select
+                        name="patient_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Patient
+                        </option>
+
+                        {% for patient in patients %}
 
                         <option value="{{ patient.id }}">
 
@@ -385,139 +1061,181 @@
 
                         </option>
 
-                    {% endfor %}
+                        {% endfor %}
 
-                </select>
+                    </select>
+
+                </div>
 
 
-                <label>
-                    Doctor
-                </label>
+                <!-- DOCTOR -->
 
-                <select name="doctor_id"
-                        required>
+                <div>
 
-                    <option value="">
-                        Select Doctor
-                    </option>
+                    <label>
+                        Doctor
+                    </label>
 
-                    {% for doctor in doctors %}
+                    <select
+                        name="doctor_id"
+                        required
+                    >
+
+                        <option value="">
+                            Select Doctor
+                        </option>
+
+                        {% for doctor in doctors %}
 
                         <option value="{{ doctor.id }}">
 
                             {{ doctor.full_name }}
-
                             -
-
                             {{ doctor.specialization }}
 
                         </option>
 
-                    {% endfor %}
+                        {% endfor %}
 
-                </select>
+                    </select>
 
-
-                <label>
-                    Appointment Date
-                </label>
-
-                <input type="date"
-                       name="appointment_date"
-                       required>
+                </div>
 
 
-                <label>
-                    Appointment Time
-                </label>
+                <!-- DATE -->
 
-                <input type="time"
-                       name="appointment_time"
-                       required>
+                <div>
+
+                    <label>
+                        Appointment Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="appointment_date"
+                        required
+                    >
+
+                </div>
 
 
-                <label>
-                    Reason
-                </label>
+                <!-- TIME -->
 
-                <textarea name="reason"
-                          rows="4"
-                          placeholder="Enter reason for appointment"></textarea>
+                <div>
+
+                    <label>
+                        Appointment Time
+                    </label>
+
+                    <input
+                        type="time"
+                        name="appointment_time"
+                        required
+                    >
+
+                </div>
 
 
-                <button type="submit">
-                    Schedule Appointment
-                </button>
+                <!-- REASON -->
+
+                <div class="appointment-form-full">
+
+                    <label>
+                        Reason
+                    </label>
+
+                    <textarea
+                        name="reason"
+                        rows="4"
+                        placeholder="Enter reason for appointment"
+                    ></textarea>
+
+                </div>
+
+
+                <!-- BUTTON -->
+
+                <div class="appointment-form-button">
+
+                    <button type="submit">
+                        Schedule Appointment
+                    </button>
+
+                </div>
 
 
             </form>
 
-        </div>
+        </section>
 
-    {% endif %}
-
-
-    <!-- =================================================
-         APPOINTMENT TABLE
-    ================================================== -->
-
-    <div class="table-section"
-         id="appointment-table">
-
-        <h2>
-            📋 Appointment Records
-        </h2>
+        {% endif %}
 
 
-        {% if appointments %}
+        <!-- =================================================
+             APPOINTMENT TABLE
+        ================================================== -->
 
-            <table>
+        <section
+            class="appointments-content-card"
+            id="appointment-table"
+        >
 
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            ID
-                        </th>
-
-                        <th>
-                            Patient
-                        </th>
-
-                        <th>
-                            Doctor
-                        </th>
-
-                        <th>
-                            Date
-                        </th>
-
-                        <th>
-                            Time
-                        </th>
-
-                        <th>
-                            Reason
-                        </th>
-
-                        <th>
-                            Status
-                        </th>
-
-                        <th>
-                            Actions
-                        </th>
-
-                    </tr>
-
-                </thead>
+            <h2>
+                📋 Appointment Records
+            </h2>
 
 
-                <tbody id="appointmentTableBody">
+            {% if appointments %}
+
+            <div class="appointments-table-container">
+
+                <table class="appointments-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                ID
+                            </th>
+
+                            <th>
+                                Patient
+                            </th>
+
+                            <th>
+                                Doctor
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Time
+                            </th>
+
+                            <th>
+                                Reason
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Actions
+                            </th>
+
+                        </tr>
+
+                    </thead>
 
 
-                    {% for appointment in appointments %}
+                    <tbody id="appointmentTableBody">
+
+
+                        {% for appointment in appointments %}
 
                         <tr
                             class="appointment-row"
@@ -525,29 +1243,36 @@
                             data-date="{{ appointment.appointment_date }}"
                         >
 
+
                             <td>
                                 {{ appointment.id }}
                             </td>
+
 
                             <td>
                                 {{ appointment.patient_name }}
                             </td>
 
+
                             <td>
                                 {{ appointment.doctor_name }}
                             </td>
+
 
                             <td>
                                 {{ appointment.appointment_date }}
                             </td>
 
+
                             <td>
                                 {{ appointment.appointment_time }}
                             </td>
 
+
                             <td>
                                 {{ appointment.reason }}
                             </td>
+
 
                             <td>
 
@@ -558,7 +1283,7 @@
                             </td>
 
 
-                            <td>
+                            <td class="appointment-actions">
 
 
                                 <!-- =================================
@@ -570,59 +1295,104 @@
 
                                     {% if appointment.status == "Pending" %}
 
-                                        <form method="POST"
-                                              action="{{ url_for('accept_appointment', appointment_id=appointment.id) }}"
-                                              style="display:inline;">
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'accept_appointment',
+                                            appointment_id=appointment.id
+                                        ) }}"
+                                    >
 
-                                            <button type="submit">
-                                                Accept
-                                            </button>
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
 
-                                        </form>
+                                        <button
+                                            type="submit"
+                                            class="appointment-accept"
+                                        >
+                                            Accept
+                                        </button>
+
+                                    </form>
 
 
-                                        <form method="POST"
-                                              action="{{ url_for('reject_appointment', appointment_id=appointment.id) }}"
-                                              style="display:inline;">
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'reject_appointment',
+                                            appointment_id=appointment.id
+                                        ) }}"
+                                    >
 
-                                            <button type="submit">
-                                                Reject
-                                            </button>
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
 
-                                        </form>
+                                        <button
+                                            type="submit"
+                                            class="appointment-reject"
+                                        >
+                                            Reject
+                                        </button>
+
+                                    </form>
 
 
                                     {% elif appointment.status == "Accepted" %}
 
-                                        <form method="POST"
-                                              action="{{ url_for('complete_appointment', appointment_id=appointment.id) }}"
-                                              style="display:inline;">
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'complete_appointment',
+                                            appointment_id=appointment.id
+                                        ) }}"
+                                    >
 
-                                            <button type="submit">
-                                                Complete
-                                            </button>
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
 
-                                        </form>
+                                        <button
+                                            type="submit"
+                                            class="appointment-complete"
+                                        >
+                                            Complete
+                                        </button>
+
+                                    </form>
 
 
                                     {% elif appointment.status == "Completed" %}
 
+                                    <span class="appointment-completed">
                                         ✓ Completed
+                                    </span>
 
 
                                     {% elif appointment.status == "Rejected" %}
 
+                                    <span class="appointment-rejected">
                                         ✕ Rejected
+                                    </span>
 
 
                                     {% elif appointment.status == "Cancelled" %}
 
+                                    <span class="appointment-cancelled">
                                         ✕ Cancelled
+                                    </span>
 
 
                                     {% else %}
 
-                                        {{ appointment.status }}
+                                    {{ appointment.status }}
 
                                     {% endif %}
 
@@ -634,22 +1404,39 @@
                                 {% elif role in ["Admin", "Receptionist"] %}
 
 
-                                    {% if appointment.status not in ["Completed", "Cancelled", "Rejected"] %}
+                                    {% if appointment.status not in [
+                                        "Completed",
+                                        "Cancelled",
+                                        "Rejected"
+                                    ] %}
 
-                                        <form method="POST"
-                                              action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}"
-                                              style="display:inline;">
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for(
+                                            'cancel_appointment',
+                                            appointment_id=appointment.id
+                                        ) }}"
+                                    >
 
-                                            <button type="submit">
-                                                Cancel
-                                            </button>
+                                        <input
+                                            type="hidden"
+                                            name="csrf_token"
+                                            value="{{ csrf_token() }}"
+                                        >
 
-                                        </form>
+                                        <button
+                                            type="submit"
+                                            class="appointment-cancel"
+                                        >
+                                            Cancel
+                                        </button>
+
+                                    </form>
 
 
                                     {% else %}
 
-                                        {{ appointment.status }}
+                                    {{ appointment.status }}
 
                                     {% endif %}
 
@@ -660,12 +1447,14 @@
 
                                 {% elif role == "Data Analyst" %}
 
+                                <span class="appointment-view-only">
                                     View Only
+                                </span>
 
 
                                 {% else %}
 
-                                    No Action
+                                No Action
 
                                 {% endif %}
 
@@ -674,73 +1463,80 @@
 
                         </tr>
 
-                    {% endfor %}
+                        {% endfor %}
 
 
-                </tbody>
+                    </tbody>
 
-            </table>
+                </table>
+
+            </div>
 
 
-            <p id="noFilterResults"
-               class="no-filter-results">
-
+            <p
+                id="noFilterResults"
+                class="no-filter-results"
+            >
                 No appointments found for this category.
-
             </p>
 
 
-        {% else %}
+            {% else %}
+
+            <div class="appointments-empty">
+
+                No appointments found.
+
+            </div>
+
+            {% endif %}
+
+
+        </section>
+
+
+        <!-- =================================================
+             INFORMATION
+        ================================================== -->
+
+        <section class="appointment-workflow">
+
+            <h3>
+                Appointment Workflow
+            </h3>
 
             <p>
-                No appointments found.
+                Receptionist schedules the appointment,
+                the assigned Doctor reviews it,
+                and the appointment moves through
+                Pending, Accepted, Rejected,
+                Completed or Cancelled status.
             </p>
 
-        {% endif %}
+        </section>
 
 
-    </div>
+    </main>
 
 
-    <!-- =================================================
-         INFORMATION
-    ================================================== -->
+    <!-- =====================================================
+         FOOTER
+    ===================================================== -->
 
-    <div class="user-info">
-
-        <h3>
-            Appointment Workflow
-        </h3>
+    <footer class="appointments-footer">
 
         <p>
-            Receptionist schedules the appointment,
-            the assigned Doctor reviews it,
-            and the appointment moves through
-            Pending, Accepted, Rejected,
-            Completed or Cancelled status.
+            Hospital Data Analytics System
         </p>
 
-    </div>
+        <p>
+            Appointment Management Module
+        </p>
+
+    </footer>
 
 
 </div>
-
-
-<!-- =====================================================
-     FOOTER
-===================================================== -->
-
-<footer>
-
-    <p>
-        Hospital Data Analytics System
-    </p>
-
-    <p>
-        Appointment Management Module
-    </p>
-
-</footer>
 
 
 <!-- =====================================================
@@ -924,3 +1720,4 @@ function filterAppointments(filter, selectedCard) {
 </body>
 
 </html>
+```

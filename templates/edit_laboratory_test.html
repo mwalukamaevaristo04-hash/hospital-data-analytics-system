@@ -1,418 +1,781 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <title>Edit Laboratory Test</title>
+<title>Edit Laboratory Test</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}">
 
-    <style>
+<style>
 
-        .form-page {
-            width: 95%;
-            max-width: 1000px;
-            margin: 30px auto;
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
+    .edit-test-page {
+        min-height: 100vh;
+        background: #f1f5f9;
+    }
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    .edit-test-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .edit-test-hospital-title h1 {
+        margin: 0 0 5px 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .edit-test-hospital-title p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.95;
+    }
+
+    .edit-test-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .edit-test-user-info p {
+        margin: 0;
+    }
+
+    .edit-test-logout {
+        display: inline-block;
+        margin-top: 3px;
+        color: #fecaca;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .edit-test-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =====================================================
+       NAVIGATION
+       ===================================================== */
+
+    .edit-test-nav {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 12px 35px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .edit-test-nav a {
+        color: #334155;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .edit-test-nav a:hover {
+        background: #e2e8f0;
+        color: #0f4c5c;
+    }
+
+    .edit-test-nav a.edit-test-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =====================================================
+       MAIN CONTAINER
+       ===================================================== */
+
+    .edit-test-container {
+        width: 92%;
+        max-width: 1100px;
+        margin: 30px auto 45px;
+    }
+
+    .page-header {
+        margin-bottom: 25px;
+    }
+
+    .page-header h1 {
+        margin: 0 0 8px 0;
+        color: #0f4c5c;
+        font-size: 28px;
+    }
+
+    .page-header p {
+        margin: 0;
+        color: #64748b;
+        font-size: 15px;
+    }
+
+    /* =====================================================
+       FORM CARD
+       ===================================================== */
+
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    label {
+        font-weight: 600;
+        margin-bottom: 7px;
+        color: #334155;
+        font-size: 14px;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 11px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 7px;
+        font-size: 14px;
+        background: white;
+        color: #1e293b;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #0f4c5c;
+        box-shadow: 0 0 0 2px rgba(15, 76, 92, 0.12);
+    }
+
+    textarea {
+        min-height: 110px;
+        resize: vertical;
+        font-family: Arial, sans-serif;
+    }
+
+    .required {
+        color: #dc2626;
+    }
+
+    .form-help {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 5px;
+    }
+
+    /* =====================================================
+       ACTIONS
+       ===================================================== */
+
+    .form-actions {
+        margin-top: 30px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 11px 18px;
+        border-radius: 7px;
+        border: none;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0b3b47;
+    }
+
+    .btn-secondary {
+        background: #475569;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #334155;
+    }
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    .edit-test-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 18px 20px;
+        font-size: 13px;
+    }
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @media (max-width: 750px) {
+
+        .edit-test-header {
+            padding: 18px 20px;
+            flex-direction: column;
+            align-items: flex-start;
         }
 
-        .form-header {
-            margin-bottom: 25px;
+        .edit-test-user-info {
+            text-align: left;
         }
 
-        .form-header h1 {
-            margin-bottom: 8px;
+        .edit-test-nav {
+            padding: 10px 20px;
         }
 
-        .form-header p {
-            color: #64748b;
+        .edit-test-nav a {
+            font-size: 13px;
+            padding: 7px 9px;
         }
 
-        .form-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+        .edit-test-container {
+            width: 94%;
+            margin-top: 25px;
         }
 
         .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
+            grid-template-columns: 1fr;
         }
 
         .form-group.full-width {
-            grid-column: 1 / -1;
+            grid-column: auto;
         }
 
-        label {
-            font-weight: 600;
-            margin-bottom: 7px;
-            color: #334155;
+        .form-card {
+            padding: 20px;
         }
 
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 11px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 7px;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: white;
+    }
+
+    @media (max-width: 500px) {
+
+        .edit-test-hospital-title h1 {
+            font-size: 20px;
         }
 
-        input:focus,
-        select:focus,
-        textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
-        }
-
-        textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        .required {
-            color: #dc2626;
-        }
-
-        .form-help {
+        .edit-test-hospital-title p {
             font-size: 12px;
-            color: #64748b;
-            margin-top: 5px;
+        }
+
+        .page-header h1 {
+            font-size: 23px;
+        }
+
+        .form-card {
+            padding: 15px;
         }
 
         .form-actions {
-            margin-top: 30px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+            flex-direction: column;
         }
 
         .btn {
-            display: inline-block;
-            padding: 11px 18px;
-            border-radius: 7px;
-            border: none;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
+            width: 100%;
+            text-align: center;
         }
 
-        .btn-primary {
-            background: #2563eb;
-            color: white;
-        }
+    }
 
-        .btn-secondary {
-            background: #475569;
-            color: white;
-        }
-
-        @media (max-width: 700px) {
-
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .form-group.full-width {
-                grid-column: auto;
-            }
-
-            .form-card {
-                padding: 20px;
-            }
-
-        }
-
-    </style>
+</style>
+```
 
 </head>
 
 <body>
 
-    <div class="form-page">
+<div class="edit-test-page">
 
-        <div class="form-header">
+```
+<!-- =====================================================
+     HEADER
+     ===================================================== -->
 
-            <h1>Edit Laboratory Test</h1>
+<header class="edit-test-header">
 
-            <p>
-                Update laboratory or diagnostic test
-                information.
-            </p>
+    <div class="edit-test-hospital-title">
 
-        </div>
+        <h1>🏥 Hospital Data Analytics System</h1>
 
-
-        <div class="form-card">
-
-            <form method="POST"
-                  action="{{ url_for(
-                      'edit_laboratory_test',
-                      test_id=test['id']
-                  ) }}">
-
-
-                <div class="form-grid">
-
-
-                    <div class="form-group">
-
-                        <label for="test_name">
-
-                            Test Name
-                            <span class="required">*</span>
-
-                        </label>
-
-                        <input type="text"
-                               id="test_name"
-                               name="test_name"
-                               value="{{ test['test_name'] }}"
-                               required>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="category">
-                            Category
-                        </label>
-
-                        <select id="category"
-                                name="category">
-
-                            <option value="">
-                                Select Category
-                            </option>
-
-                            <option value="Hematology"
-                                {% if test['category'] == 'Hematology' %}selected{% endif %}>
-                                Hematology
-                            </option>
-
-                            <option value="Biochemistry"
-                                {% if test['category'] == 'Biochemistry' %}selected{% endif %}>
-                                Biochemistry
-                            </option>
-
-                            <option value="Parasitology"
-                                {% if test['category'] == 'Parasitology' %}selected{% endif %}>
-                                Parasitology
-                            </option>
-
-                            <option value="Microbiology"
-                                {% if test['category'] == 'Microbiology' %}selected{% endif %}>
-                                Microbiology
-                            </option>
-
-                            <option value="Clinical Laboratory"
-                                {% if test['category'] == 'Clinical Laboratory' %}selected{% endif %}>
-                                Clinical Laboratory
-                            </option>
-
-                            <option value="Diagnostic Imaging"
-                                {% if test['category'] == 'Diagnostic Imaging' %}selected{% endif %}>
-                                Diagnostic Imaging
-                            </option>
-
-                            <option value="Immunology"
-                                {% if test['category'] == 'Immunology' %}selected{% endif %}>
-                                Immunology
-                            </option>
-
-                            <option value="Other"
-                                {% if test['category'] == 'Other' %}selected{% endif %}>
-                                Other
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group full-width">
-
-                        <label for="description">
-                            Description
-                        </label>
-
-                        <textarea id="description"
-                                  name="description">{{ test['description'] or '' }}</textarea>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="normal_range">
-                            Normal Range
-                        </label>
-
-                        <input type="text"
-                               id="normal_range"
-                               name="normal_range"
-                               value="{{ test['normal_range'] or '' }}">
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="unit">
-                            Unit
-                        </label>
-
-                        <input type="text"
-                               id="unit"
-                               name="unit"
-                               value="{{ test['unit'] or '' }}">
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="price">
-                            Price (TZS)
-                        </label>
-
-                        <input type="number"
-                               id="price"
-                               name="price"
-                               min="0"
-                               step="0.01"
-                               value="{{ test['price'] or 0 }}">
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="recommended_specialty">
-                            Recommended Specialty
-                        </label>
-
-                        <select id="recommended_specialty"
-                                name="recommended_specialty">
-
-                            <option value="">
-                                Select Specialty
-                            </option>
-
-                            <option value="Internal Medicine"
-                                {% if test['recommended_specialty'] == 'Internal Medicine' %}selected{% endif %}>
-                                Internal Medicine
-                            </option>
-
-                            <option value="Hematology"
-                                {% if test['recommended_specialty'] == 'Hematology' %}selected{% endif %}>
-                                Hematology
-                            </option>
-
-                            <option value="Orthopedic"
-                                {% if test['recommended_specialty'] == 'Orthopedic' %}selected{% endif %}>
-                                Orthopedic
-                            </option>
-
-                            <option value="Pulmonology"
-                                {% if test['recommended_specialty'] == 'Pulmonology' %}selected{% endif %}>
-                                Pulmonology
-                            </option>
-
-                            <option value="Ophthalmology"
-                                {% if test['recommended_specialty'] == 'Ophthalmology' %}selected{% endif %}>
-                                Ophthalmology
-                            </option>
-
-                            <option value="Cardiology"
-                                {% if test['recommended_specialty'] == 'Cardiology' %}selected{% endif %}>
-                                Cardiology
-                            </option>
-
-                            <option value="Neurology"
-                                {% if test['recommended_specialty'] == 'Neurology' %}selected{% endif %}>
-                                Neurology
-                            </option>
-
-                            <option value="Pediatrics"
-                                {% if test['recommended_specialty'] == 'Pediatrics' %}selected{% endif %}>
-                                Pediatrics
-                            </option>
-
-                            <option value="Gynecology"
-                                {% if test['recommended_specialty'] == 'Gynecology' %}selected{% endif %}>
-                                Gynecology
-                            </option>
-
-                            <option value="Urology"
-                                {% if test['recommended_specialty'] == 'Urology' %}selected{% endif %}>
-                                Urology
-                            </option>
-
-                            <option value="Dermatology"
-                                {% if test['recommended_specialty'] == 'Dermatology' %}selected{% endif %}>
-                                Dermatology
-                            </option>
-
-                            <option value="ENT"
-                                {% if test['recommended_specialty'] == 'ENT' %}selected{% endif %}>
-                                ENT
-                            </option>
-
-                            <option value="General Practice"
-                                {% if test['recommended_specialty'] == 'General Practice' %}selected{% endif %}>
-                                General Practice
-                            </option>
-
-                            <option value="Other"
-                                {% if test['recommended_specialty'] == 'Other' %}selected{% endif %}>
-                                Other
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                </div>
-
-
-                <div class="form-actions">
-
-                    <button type="submit"
-                            class="btn btn-primary">
-                        Update Laboratory Test
-                    </button>
-
-                    <a href="{{ url_for('laboratory_tests') }}"
-                       class="btn btn-secondary">
-                        Cancel
-                    </a>
-
-                </div>
-
-
-            </form>
-
-        </div>
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
 
     </div>
+
+    <div class="edit-test-user-info">
+
+        <p>
+            Welcome, <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role: <strong>{{ role }}</strong>
+        </p>
+
+        <a href="{{ url_for('logout') }}"
+           class="edit-test-logout">
+            🚪 Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+     ===================================================== -->
+
+<nav class="edit-test-nav">
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('laboratory') }}">
+        🔬 Laboratory
+    </a>
+
+    <a href="{{ url_for('laboratory_tests') }}"
+       class="edit-test-active">
+        🧪 Laboratory Tests
+    </a>
+
+    <a href="{{ url_for('laboratory_requests') }}">
+        📝 Lab Requests
+    </a>
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+    <a href="{{ url_for('analytics') }}">
+        📈 Analytics
+    </a>
+
+    {% endif %}
+
+    {% if role == "Admin" %}
+
+    <a href="{{ url_for('users') }}">
+        👤 Users
+    </a>
+
+    {% endif %}
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+     ===================================================== -->
+
+<main class="edit-test-container">
+
+    <div class="page-header">
+
+        <h1>🧪 Edit Laboratory Test</h1>
+
+        <p>
+            Update laboratory or diagnostic test
+            information.
+        </p>
+
+    </div>
+
+
+    <div class="form-card">
+
+        <form method="POST"
+              action="{{ url_for(
+                  'edit_laboratory_test',
+                  test_id=test['id']
+              ) }}">
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+
+            <div class="form-grid">
+
+
+                <!-- TEST NAME -->
+
+                <div class="form-group">
+
+                    <label for="test_name">
+
+                        Test Name
+                        <span class="required">*</span>
+
+                    </label>
+
+                    <input
+                        type="text"
+                        id="test_name"
+                        name="test_name"
+                        value="{{ test['test_name'] }}"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- CATEGORY -->
+
+                <div class="form-group">
+
+                    <label for="category">
+                        Category
+                    </label>
+
+                    <select
+                        id="category"
+                        name="category"
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option value="Hematology"
+                            {% if test['category'] == 'Hematology' %}selected{% endif %}>
+                            Hematology
+                        </option>
+
+                        <option value="Biochemistry"
+                            {% if test['category'] == 'Biochemistry' %}selected{% endif %}>
+                            Biochemistry
+                        </option>
+
+                        <option value="Parasitology"
+                            {% if test['category'] == 'Parasitology' %}selected{% endif %}>
+                            Parasitology
+                        </option>
+
+                        <option value="Microbiology"
+                            {% if test['category'] == 'Microbiology' %}selected{% endif %}>
+                            Microbiology
+                        </option>
+
+                        <option value="Clinical Laboratory"
+                            {% if test['category'] == 'Clinical Laboratory' %}selected{% endif %}>
+                            Clinical Laboratory
+                        </option>
+
+                        <option value="Diagnostic Imaging"
+                            {% if test['category'] == 'Diagnostic Imaging' %}selected{% endif %}>
+                            Diagnostic Imaging
+                        </option>
+
+                        <option value="Immunology"
+                            {% if test['category'] == 'Immunology' %}selected{% endif %}>
+                            Immunology
+                        </option>
+
+                        <option value="Other"
+                            {% if test['category'] == 'Other' %}selected{% endif %}>
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group full-width">
+
+                    <label for="description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                    >{{ test['description'] or '' }}</textarea>
+
+                </div>
+
+
+                <!-- NORMAL RANGE -->
+
+                <div class="form-group">
+
+                    <label for="normal_range">
+                        Normal Range
+                    </label>
+
+                    <input
+                        type="text"
+                        id="normal_range"
+                        name="normal_range"
+                        value="{{ test['normal_range'] or '' }}"
+                    >
+
+                </div>
+
+
+                <!-- UNIT -->
+
+                <div class="form-group">
+
+                    <label for="unit">
+                        Unit
+                    </label>
+
+                    <input
+                        type="text"
+                        id="unit"
+                        name="unit"
+                        value="{{ test['unit'] or '' }}"
+                    >
+
+                </div>
+
+
+                <!-- PRICE -->
+
+                <div class="form-group">
+
+                    <label for="price">
+                        Price (TZS)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        min="0"
+                        step="0.01"
+                        value="{{ test['price'] or 0 }}"
+                    >
+
+                </div>
+
+
+                <!-- RECOMMENDED SPECIALTY -->
+
+                <div class="form-group">
+
+                    <label for="recommended_specialty">
+                        Recommended Specialty
+                    </label>
+
+                    <select
+                        id="recommended_specialty"
+                        name="recommended_specialty"
+                    >
+
+                        <option value="">
+                            Select Specialty
+                        </option>
+
+                        <option value="Internal Medicine"
+                            {% if test['recommended_specialty'] == 'Internal Medicine' %}selected{% endif %}>
+                            Internal Medicine
+                        </option>
+
+                        <option value="Hematology"
+                            {% if test['recommended_specialty'] == 'Hematology' %}selected{% endif %}>
+                            Hematology
+                        </option>
+
+                        <option value="Orthopedic"
+                            {% if test['recommended_specialty'] == 'Orthopedic' %}selected{% endif %}>
+                            Orthopedic
+                        </option>
+
+                        <option value="Pulmonology"
+                            {% if test['recommended_specialty'] == 'Pulmonology' %}selected{% endif %}>
+                            Pulmonology
+                        </option>
+
+                        <option value="Ophthalmology"
+                            {% if test['recommended_specialty'] == 'Ophthalmology' %}selected{% endif %}>
+                            Ophthalmology
+                        </option>
+
+                        <option value="Cardiology"
+                            {% if test['recommended_specialty'] == 'Cardiology' %}selected{% endif %}>
+                            Cardiology
+                        </option>
+
+                        <option value="Neurology"
+                            {% if test['recommended_specialty'] == 'Neurology' %}selected{% endif %}>
+                            Neurology
+                        </option>
+
+                        <option value="Pediatrics"
+                            {% if test['recommended_specialty'] == 'Pediatrics' %}selected{% endif %}>
+                            Pediatrics
+                        </option>
+
+                        <option value="Gynecology"
+                            {% if test['recommended_specialty'] == 'Gynecology' %}selected{% endif %}>
+                            Gynecology
+                        </option>
+
+                        <option value="Urology"
+                            {% if test['recommended_specialty'] == 'Urology' %}selected{% endif %}>
+                            Urology
+                        </option>
+
+                        <option value="Dermatology"
+                            {% if test['recommended_specialty'] == 'Dermatology' %}selected{% endif %}>
+                            Dermatology
+                        </option>
+
+                        <option value="ENT"
+                            {% if test['recommended_specialty'] == 'ENT' %}selected{% endif %}>
+                            ENT
+                        </option>
+
+                        <option value="General Practice"
+                            {% if test['recommended_specialty'] == 'General Practice' %}selected{% endif %}>
+                            General Practice
+                        </option>
+
+                        <option value="Other"
+                            {% if test['recommended_specialty'] == 'Other' %}selected{% endif %}>
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 FORM ACTIONS
+                 ================================================= -->
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    💾 Update Laboratory Test
+                </button>
+
+                <a
+                    href="{{ url_for('laboratory_tests') }}"
+                    class="btn btn-secondary"
+                >
+                    ↩ Cancel
+                </a>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+     ===================================================== -->
+
+<footer class="edit-test-footer">
+
+    Hospital Data Analytics System
+
+</footer>
+```
+
+</div>
 
 </body>
 </html>

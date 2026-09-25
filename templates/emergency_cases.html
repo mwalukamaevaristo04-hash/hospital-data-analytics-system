@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+```
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>
+    EMD Emergency Cases - Hospital Data Analytics System
+</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f7fb;
+        color: #1f2937;
+    }
+
+    /* =================================================
+       EMD PAGE
+    ================================================= */
+
+    .emd-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* =================================================
+       HEADER
+    ================================================= */
+
+    .emd-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .emd-hospital-title {
+        flex: 1;
+        min-width: 250px;
+    }
+
+    .emd-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+        line-height: 1.3;
+    }
+
+    .emd-hospital-title p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        line-height: 1.5;
+        opacity: 0.9;
+    }
+
+    .emd-user-info {
+        min-width: 180px;
+        text-align: right;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .emd-user-info p {
+        margin: 2px 0;
+    }
+
+    .emd-logout {
+        display: inline-block;
+        margin-top: 5px;
+        color: #fecaca;
+        text-decoration: none;
+        font-size: 13px;
+    }
+
+    .emd-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
+
+    /* =================================================
+       NAVIGATION
+    ================================================= */
+
+    .emd-nav {
+        background: white;
+        padding: 12px 35px;
+        border-bottom: 1px solid #dbe3ea;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .emd-nav a {
+        display: inline-block;
+        text-decoration: none;
+        color: #0f4c5c;
+        padding: 9px 13px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .emd-nav a:hover {
+        background: #e8f1f4;
+    }
+
+    .emd-nav .emd-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    /* =================================================
+       MAIN CONTAINER
+    ================================================= */
+
+    .emd-container {
+        width: 92%;
+        max-width: 1250px;
+        margin: 30px auto 45px;
+        flex: 1;
+    }
+
+    .emd-page-title {
+        margin-bottom: 25px;
+    }
+
+    .emd-page-title h2 {
+        margin: 0;
+        color: #0f4c5c;
+        font-size: 27px;
+        line-height: 1.3;
+    }
+
+    .emd-page-title p {
+        margin: 8px 0 0;
+        color: #6b7280;
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    /* =================================================
+       CASE GRID
+    ================================================= */
+
+    .emd-cases-grid {
+        display: grid;
+        grid-template-columns: repeat(
+            auto-fit,
+            minmax(300px, 1fr)
+        );
+        gap: 22px;
+        align-items: start;
+    }
+
+    /* =================================================
+       CASE CARD
+    ================================================= */
+
+    .emd-case-card {
+        background: white;
+        border: 1px solid #e1e7ed;
+        border-radius: 10px;
+        padding: 22px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .emd-case-card h3 {
+        margin: 0 0 18px;
+        color: #991b1b;
+        font-size: 19px;
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .emd-case-info {
+        margin: 0 0 11px;
+        line-height: 1.5;
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .emd-case-info strong {
+        color: #374151;
+    }
+
+    /* =================================================
+       STATUS
+    ================================================= */
+
+    .emd-status {
+        display: inline-block;
+        margin: 5px 0;
+        padding: 6px 10px;
+        border-radius: 20px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #9a3412;
+        font-size: 13px;
+        font-weight: bold;
+    }
+
+    /* =================================================
+       CASE ACTIONS
+    ================================================= */
+
+    .emd-actions {
+        margin-top: 20px;
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .emd-action-form {
+        margin: 0;
+        width: 100%;
+    }
+
+    .emd-take-button,
+    .emd-details-button {
+        width: 100%;
+        min-height: 42px;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 15px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        line-height: 1.4;
+    }
+
+    .emd-take-button {
+        background: #0f766e;
+        color: white;
+    }
+
+    .emd-take-button:hover {
+        background: #115e59;
+    }
+
+    .emd-details-button {
+        background: #0f4c5c;
+        color: white;
+    }
+
+    .emd-details-button:hover {
+        background: #0b3844;
+    }
+
+    .emd-assigned {
+        margin: 0;
+        padding: 10px 12px;
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        border-radius: 6px;
+        color: #065f46;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* =================================================
+       EMPTY STATE
+    ================================================= */
+
+    .emd-empty-card {
+        background: white;
+        border: 1px solid #e1e7ed;
+        border-radius: 10px;
+        padding: 35px 25px;
+        text-align: center;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .emd-empty-card h3 {
+        margin: 0 0 10px;
+        color: #047857;
+        font-size: 20px;
+    }
+
+    .emd-empty-card p {
+        margin: 0;
+        color: #6b7280;
+        line-height: 1.6;
+    }
+
+    /* =================================================
+       BACK TO DASHBOARD
+    ================================================= */
+
+    .emd-back-area {
+        margin-top: 28px;
+    }
+
+    .emd-back-button {
+        display: inline-block;
+        background: #6b7280;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .emd-back-button:hover {
+        background: #4b5563;
+    }
+
+    /* =================================================
+       FOOTER
+    ================================================= */
+
+    .emd-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-size: 13px;
+        margin-top: auto;
+    }
+
+    /* =================================================
+       RESPONSIVE
+    ================================================= */
+
+    @media (max-width: 750px) {
+
+        .emd-header {
+            padding: 18px 20px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .emd-user-info {
+            width: 100%;
+            text-align: left;
+        }
+
+        .emd-nav {
+            padding: 10px 20px;
+        }
+
+        .emd-container {
+            width: 94%;
+            margin-top: 22px;
+        }
+
+        .emd-page-title h2 {
+            font-size: 23px;
+        }
+
+        .emd-cases-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="emd-page">
+
+```
+<!-- =====================================================
+     HOSPITAL HEADER
+===================================================== -->
+
+<header class="emd-header">
+
+    <div class="emd-hospital-title">
+
+        <h1>
+            🏥 Hospital Data Analytics System
+        </h1>
+
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
+
+    </div>
+
+
+    <div class="emd-user-info">
+
+        <p>
+            Welcome, <strong>{{ username }}</strong>
+        </p>
+
+        <p>
+            Role: <strong>{{ role }}</strong>
+        </p>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="emd-logout"
+        >
+            🚪 Logout
+        </a>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="emd-nav">
+
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
+
+    <a href="{{ url_for('patients') }}">
+        👤 Patients
+    </a>
+
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
+
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
+
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
+
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
+
+    <a href="{{ url_for('laboratory') }}">
+        🔬 Laboratory
+    </a>
+
+    {% if role in ["Admin", "Receptionist", "Doctor"] %}
+
+        {% if role == "Doctor" %}
+
+            <a
+                href="{{ url_for('emergency_cases') }}"
+                class="emd-active"
+            >
+                🚨 EMD
+            </a>
+
+        {% else %}
+
+            <a
+                href="{{ url_for('emergency_register') }}"
+                class="emd-active"
+            >
+                🚨 EMD
+            </a>
+
+        {% endif %}
+
+    {% endif %}
+
+    {% if role in ["Admin", "Doctor", "Data Analyst"] %}
+
+        <a href="{{ url_for('analytics') }}">
+            📊 Analytics
+        </a>
+
+    {% endif %}
+
+    {% if role == "Admin" %}
+
+        <a href="{{ url_for('reports') }}">
+            📄 Reports
+        </a>
+
+        <a href="{{ url_for('users') }}">
+            👥 Users
+        </a>
+
+    {% endif %}
+
+</nav>
+
+
+<!-- =====================================================
+     MAIN CONTENT
+===================================================== -->
+
+<main class="emd-container">
+
+
+    <!-- =================================================
+         PAGE TITLE
+    ================================================= -->
+
+    <section class="emd-page-title">
+
+        <h2>
+            🚨 Emergency Medical Department
+        </h2>
+
+        <p>
+            Emergency patients requiring immediate medical attention.
+        </p>
+
+    </section>
+
+
+    <!-- =================================================
+         EMERGENCY CASES
+    ================================================= -->
+
+    <section class="emd-cases-grid">
+
+        {% if emergency_cases %}
+
+            {% for emergency in emergency_cases %}
+
+                <article class="emd-case-card">
+
+                    <h3>
+                        🚨 {{ emergency["emergency_number"] }}
+                    </h3>
+
+
+                    <p class="emd-case-info">
+
+                        <strong>
+                            Patient:
+                        </strong>
+
+                        {{ emergency["patient_name"] }}
+
+                    </p>
+
+
+                    <p class="emd-case-info">
+
+                        <strong>
+                            Gender:
+                        </strong>
+
+                        {{ emergency["gender"] }}
+
+                    </p>
+
+
+                    <p class="emd-case-info">
+
+                        <strong>
+                            Age:
+                        </strong>
+
+                        {% if emergency["age"] is not none %}
+
+                            {{ emergency["age"] }}
+
+                        {% else %}
+
+                            Not Provided
+
+                        {% endif %}
+
+                    </p>
+
+
+                    <p class="emd-case-info">
+
+                        <strong>
+                            Phone:
+                        </strong>
+
+                        {% if emergency["phone"] %}
+
+                            {{ emergency["phone"] }}
+
+                        {% else %}
+
+                            Not Provided
+
+                        {% endif %}
+
+                    </p>
+
+
+                    <p class="emd-case-info">
+
+                        <strong>
+                            Emergency Reason:
+                        </strong>
+
+                        {{ emergency["emergency_reason"] }}
+
+                    </p>
+
+
+                    <p class="emd-case-info">
+
+                        <strong>
+                            Status:
+                        </strong>
+
+                        <span class="emd-status">
+                            {{ emergency["status"] }}
+                        </span>
+
+                    </p>
+
+
+                    <p class="emd-case-info">
+
+                        <strong>
+                            Doctor:
+                        </strong>
+
+                        {% if emergency["doctor_name"] %}
+
+                            {{ emergency["doctor_name"] }}
+
+                        {% else %}
+
+                            Not Assigned
+
+                        {% endif %}
+
+                    </p>
+
+
+                    <!-- =================================
+                         CASE ACTIONS
+                    ================================== -->
+
+                    <div class="emd-actions">
+
+
+                        {% if emergency["doctor_id"] is none %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'take_emergency_case',
+                                    emergency_id=emergency['id']
+                                ) }}"
+                                class="emd-action-form"
+                            >
+
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="emd-take-button"
+                                >
+                                    🩺 Take This Emergency Case
+                                </button>
+
+                            </form>
+
+
+                        {% elif
+                            emergency["doctor_id"]|string
+                            == doctor_id|string
+                        %}
+
+                            <p class="emd-assigned">
+                                🩺 Assigned to You
+                            </p>
+
+
+                            <a
+                                href="{{ url_for(
+                                    'emergency_case_details',
+                                    emergency_id=emergency['id']
+                                ) }}"
+                                class="emd-details-button"
+                            >
+                                👁️ View Case Details
+                            </a>
+
+
+                        {% else %}
+
+                            <p class="emd-assigned">
+                                🩺 Assigned to Another Doctor
+                            </p>
+
+                        {% endif %}
+
+
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+
+        {% else %}
+
+            <div class="emd-empty-card">
+
+                <h3>
+                    ✅ No Emergency Cases
+                </h3>
+
+                <p>
+                    There are currently no emergency
+                    patients waiting for a doctor.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- =================================================
+         BACK TO DASHBOARD
+    ================================================= -->
+
+    <div class="emd-back-area">
+
+        <a
+            href="{{ url_for('home') }}"
+            class="emd-back-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</main>
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer class="emd-footer">
+    Hospital Data Analytics System
+</footer>
+```
+
+</div>
+
+</body>
+
+</html>

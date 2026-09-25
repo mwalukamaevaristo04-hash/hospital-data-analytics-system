@@ -187,11 +187,20 @@
 
         {% if doctors %}
 
+<form
+    action="{{ url_for('patient_request_appointment') }}"
+    method="POST"
+>
 
-        <form
-            action="{{ url_for('patient_request_appointment') }}"
-            method="POST"
-        >
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
+
+    <!-- =========================
+         SELECT DOCTOR
+    ========================== -->
 
 
             <!-- =========================
