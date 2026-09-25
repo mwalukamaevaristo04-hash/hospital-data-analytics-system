@@ -1,4 +1,6 @@
+```html
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -19,53 +21,452 @@
 
 <style>
 
-    .profile-section {
-
-        margin-top: 10px;
-        margin-bottom: 15px;
-        padding: 15px;
-        border: 1px solid #cbd5e1;
-        border-radius: 8px;
-        background: #f8fafc;
-
+    * {
+        box-sizing: border-box;
     }
 
-    .profile-section label {
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f4f7f9;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #1f2937;
+    }
 
+    .users-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+
+    /* =====================================================
+       HEADER
+       ===================================================== */
+
+    .users-header {
+        background: #0f4c5c;
+        color: white;
+        padding: 20px 35px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 25px;
+    }
+
+    .users-hospital-title h1 {
+        margin: 0;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .users-hospital-title p {
+        margin: 5px 0 0;
+        font-size: 14px;
+        opacity: 0.95;
+    }
+
+    .users-user-info {
+        text-align: right;
+        min-width: 180px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .users-user-info p {
+        margin: 0 0 3px;
+    }
+
+    .users-logout {
+        color: #fecaca;
+        text-decoration: none;
         font-weight: 600;
-
     }
 
-    .profile-section select {
+    .users-logout:hover {
+        color: white;
+        text-decoration: underline;
+    }
 
-        margin-top: 7px;
-        padding: 9px;
+
+    /* =====================================================
+       NAVIGATION
+       ===================================================== */
+
+    .users-nav {
         width: 100%;
-        max-width: 500px;
-
+        background: white;
+        border-bottom: 1px solid #dbe3e8;
+        padding: 12px 35px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
     }
 
-    .profile-section small {
+    .users-nav a {
+        color: #334155;
+        text-decoration: none;
+        padding: 9px 13px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
 
-        display: block;
-        margin-top: 7px;
+    .users-nav a:hover {
+        background: #e7f1f4;
+        color: #0f4c5c;
+    }
+
+    .users-nav a.users-active {
+        background: #0f4c5c;
+        color: white;
+    }
+
+
+    /* =====================================================
+       MAIN CONTAINER
+       ===================================================== */
+
+    .users-container {
+        width: 92%;
+        max-width: 1400px;
+        margin: 30px auto 45px;
+        flex: 1;
+    }
+
+
+    /* =====================================================
+       PAGE TITLE
+       ===================================================== */
+
+    .users-page-title {
+        background: white;
+        border-radius: 10px;
+        padding: 22px 25px;
+        border: 1px solid #dbe3e8;
+        margin-bottom: 25px;
+    }
+
+    .users-page-title h2 {
+        margin: 0;
+        color: #0f4c5c;
+        font-size: 24px;
+    }
+
+    .users-page-title p {
+        margin: 8px 0 0;
         color: #64748b;
+        font-size: 14px;
+    }
 
+
+    /* =====================================================
+       ERROR MESSAGE
+       ===================================================== */
+
+    .users-error {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+    }
+
+
+    /* =====================================================
+       FORM CARD
+       ===================================================== */
+
+    .users-form-card {
+        background: white;
+        border: 1px solid #dbe3e8;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
+
+    .users-form-card h2 {
+        margin-top: 0;
+        margin-bottom: 22px;
+        color: #0f4c5c;
+        font-size: 21px;
+    }
+
+    .users-form-group {
+        margin-bottom: 18px;
+    }
+
+    .users-form-group label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .users-form-group input,
+    .users-form-group select {
+        width: 100%;
+        max-width: 650px;
+        padding: 11px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: white;
+        font-size: 14px;
+        outline: none;
+    }
+
+    .users-form-group input:focus,
+    .users-form-group select:focus {
+        border-color: #0f4c5c;
+        box-shadow: 0 0 0 2px rgba(15, 76, 92, 0.10);
     }
 
     .required {
-
         color: red;
-
     }
 
     .email-help {
-
         display: block;
         margin-top: 5px;
-        margin-bottom: 10px;
         color: #64748b;
         font-size: 13px;
+        max-width: 650px;
+    }
+
+
+    /* =====================================================
+       PROFILE SECTIONS
+       ===================================================== */
+
+    .profile-section {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        padding: 18px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #f8fafc;
+        max-width: 700px;
+    }
+
+    .profile-section label {
+        display: block;
+        margin-bottom: 7px;
+        font-weight: 600;
+        color: #334155;
+    }
+
+    .profile-section select {
+        margin-top: 2px;
+        padding: 10px;
+        width: 100%;
+        max-width: 650px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        background: white;
+        font-size: 14px;
+    }
+
+    .profile-section small {
+        display: block;
+        margin-top: 8px;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       BUTTONS
+       ===================================================== */
+
+    .users-primary-btn {
+        background: #0f4c5c;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 11px 18px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .users-primary-btn:hover {
+        background: #0b3c49;
+    }
+
+
+    /* =====================================================
+       SYSTEM USERS CARD
+       ===================================================== */
+
+    .users-list-card {
+        background: white;
+        border: 1px solid #dbe3e8;
+        border-radius: 10px;
+        padding: 25px;
+        overflow-x: auto;
+    }
+
+    .users-list-card h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #0f4c5c;
+        font-size: 21px;
+    }
+
+
+    /* =====================================================
+       USERS TABLE
+       ===================================================== */
+
+    .users-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .users-table {
+        width: 100%;
+        min-width: 900px;
+        border-collapse: collapse;
+        background: white;
+    }
+
+    .users-table th {
+        background: #0f4c5c;
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .users-table td {
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .users-table tr:hover td {
+        background: #f8fafc;
+    }
+
+
+    /* =====================================================
+       PROFILE STATUS
+       ===================================================== */
+
+    .profile-warning {
+        color: #b91c1c;
+        font-weight: 600;
+    }
+
+    .profile-not-set {
+        color: #64748b;
+    }
+
+
+    /* =====================================================
+       ACTIONS
+       ===================================================== */
+
+    .users-action-edit {
+        display: inline-block;
+        color: #0f4c5c;
+        text-decoration: none;
+        font-weight: 600;
+        margin-right: 8px;
+    }
+
+    .users-action-edit:hover {
+        text-decoration: underline;
+    }
+
+    .users-delete-form {
+        display: inline;
+        margin: 0;
+        padding: 0;
+    }
+
+    .users-delete-btn {
+        border: none;
+        background: #dc2626;
+        color: white;
+        padding: 7px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .users-delete-btn:hover {
+        background: #b91c1c;
+    }
+
+    .users-current-user {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    .users-footer {
+        background: #0f4c5c;
+        color: white;
+        text-align: center;
+        padding: 18px 20px;
+        margin-top: auto;
+    }
+
+    .users-footer p {
+        margin: 4px 0;
+        font-size: 13px;
+    }
+
+
+    /* =====================================================
+       RESPONSIVE
+       ===================================================== */
+
+    @media (max-width: 750px) {
+
+        .users-header {
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 18px 20px;
+        }
+
+        .users-user-info {
+            text-align: left;
+        }
+
+        .users-nav {
+            padding: 10px 20px;
+        }
+
+        .users-container {
+            width: 94%;
+            margin-top: 20px;
+        }
+
+        .users-page-title h2 {
+            font-size: 21px;
+        }
+
+        .users-form-card,
+        .users-list-card {
+            padding: 18px;
+        }
+
+        .users-hospital-title h1 {
+            font-size: 21px;
+        }
 
     }
 
@@ -77,23 +478,52 @@
 <body>
 
 
+<div class="users-page">
+
+
 <!-- =====================================================
      HEADER
      ===================================================== -->
 
-<header>
+<header class="users-header">
 
-<h1>
+    <div class="users-hospital-title">
 
-    🏥 Hospital Data Analytics System
+        <h1>
+            🏥 Hospital Data Analytics System
+        </h1>
 
-</h1>
+        <p>
+            Hospital Management &amp; Data Analytics Platform
+        </p>
 
-<p>
+    </div>
 
-    Hospital Management & Data Analytics Platform
 
-</p>
+    <div class="users-user-info">
+
+        <p>
+            Welcome,
+            <strong>
+                {{ session["username"] }}
+            </strong>
+        </p>
+
+        <p>
+            Role:
+            <strong>
+                {{ session["role"] }}
+            </strong>
+        </p>
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="users-logout"
+        >
+            🚪 Logout
+        </a>
+
+    </div>
 
 </header>
 
@@ -102,101 +532,97 @@
      NAVIGATION BAR
      ===================================================== -->
 
-<nav>
+<nav class="users-nav">
 
-<a href="{{ url_for('home') }}">
+    <a href="{{ url_for('home') }}">
+        🏠 Dashboard
+    </a>
 
-    🏠 Dashboard
 
-</a>
+    <a href="{{ url_for('patients') }}">
+        👥 Patients
+    </a>
 
-<a href="{{ url_for('patients') }}">
 
-    👥 Patients
+    <a href="{{ url_for('doctors') }}">
+        👨‍⚕️ Doctors
+    </a>
 
-</a>
 
-<a href="{{ url_for('doctors') }}">
+    <a href="{{ url_for('appointments') }}">
+        📅 Appointments
+    </a>
 
-    👨‍⚕️ Doctors
 
-</a>
+    <a href="{{ url_for('medical_records') }}">
+        📋 Medical Records
+    </a>
 
-<a href="{{ url_for('appointments') }}">
 
-    📅 Appointments
+    <a href="{{ url_for('pharmacy') }}">
+        💊 Pharmacy
+    </a>
 
-</a>
 
-<a href="{{ url_for('analytics') }}">
+    <a href="{{ url_for('laboratory') }}">
+        🔬 Laboratory
+    </a>
 
-    📊 Analytics
 
-</a>
+    {% if session["role"] in ["Admin", "Doctor", "Data Analyst"] %}
 
-<a href="{{ url_for('users') }}">
+        <a href="{{ url_for('analytics') }}">
+            📊 Analytics
+        </a>
 
-    👤 Users
+    {% endif %}
 
-</a>
 
-<a href="{{ url_for('logout') }}">
+    {% if session["role"] in ["Admin", "Doctor", "Data Analyst"] %}
 
-    🚪 Logout
+        <a href="{{ url_for('reports') }}">
+            📑 Reports
+        </a>
 
-</a>
+    {% endif %}
+
+
+    {% if session["role"] == "Admin" %}
+
+        <a
+            href="{{ url_for('users') }}"
+            class="users-active"
+        >
+            👤 Users
+        </a>
+
+    {% endif %}
 
 </nav>
 
 
 <!-- =====================================================
-     USER INFORMATION
+     MAIN CONTAINER
      ===================================================== -->
 
-<div class="user-info">
-
-<p>
-
-    Welcome,
-
-    <strong>
-
-        {{ session["username"] }}
-
-    </strong>
-
-</p>
-
-<p>
-
-    Role:
-
-    <strong>
-
-        {{ session["role"] }}
-
-    </strong>
-
-</p>
-
-</div>
+<main class="users-container">
 
 
 <!-- =====================================================
      PAGE TITLE
      ===================================================== -->
 
-<h2>
+<section class="users-page-title">
 
-    👤 User Management
+    <h2>
+        👤 User Management
+    </h2>
 
-</h2>
+    <p>
+        Manage system users and their access roles.
+    </p>
 
-<p>
-
-    Manage system users and their access roles.
-
-</p>
+</section>
 
 
 <!-- =====================================================
@@ -205,15 +631,13 @@
 
 {% if error %}
 
-<p style="color: red;">
+    <div class="users-error">
 
-<strong>
+        <strong>
+            {{ error }}
+        </strong>
 
-    {{ error }}
-
-</strong>
-
-</p>
+    </div>
 
 {% endif %}
 
@@ -222,552 +646,572 @@
      ADD NEW USER
      ===================================================== -->
 
-<h2>
+<section class="users-form-card">
 
-    Add New User
+    <h2>
+        Add New User
+    </h2>
 
-</h2>
 
-
-<form
-    method="POST"
-    action="{{ url_for('users') }}"
->
-
-
-<!-- =====================================================
-     USERNAME
-     ===================================================== -->
-
-<label for="username">
-
-    Username:
-
-</label>
-
-<br>
-
-<input
-    type="text"
-    id="username"
-    name="username"
-    required
->
-
-<br>
-<br>
-
-
-<!-- =====================================================
-     RECOVERY EMAIL
-     ===================================================== -->
-
-<label for="email">
-
-    Recovery Email:
-
-    <span class="required">*</span>
-
-</label>
-
-<br>
-
-<input
-    type="email"
-    id="email"
-    name="email"
-    placeholder="Enter user's email address"
-    required
->
-
-<small class="email-help">
-
-    This email will be used for password recovery.
-
-</small>
-
-<br>
-
-
-<!-- =====================================================
-     PASSWORD
-     ===================================================== -->
-
-<label for="password">
-
-    Password:
-
-</label>
-
-<br>
-
-<input
-    type="password"
-    id="password"
-    name="password"
-    minlength="8"
-    required
->
-
-<br>
-
-<small class="email-help">
-
-    Password must contain at least 8 characters.
-
-</small>
-
-<br>
-
-
-<!-- =====================================================
-     ROLE
-     ===================================================== -->
-
-<label for="role">
-
-    Role:
-
-</label>
-
-<br>
-
-<select
-    id="role"
-    name="role"
-    required
-    onchange="showProfileSection()"
->
-
-    <option value="">
-
-        -- Select Role --
-
-    </option>
-
-    <option value="Admin">
-
-        Admin
-
-    </option>
-
-    <option value="Doctor">
-
-        Doctor
-
-    </option>
-
-    <option value="Receptionist">
-
-        Receptionist
-
-    </option>
-
-    <option value="Data Analyst">
-
-        Data Analyst
-
-    </option>
-
-    <option value="Patient">
-
-        Patient
-
-    </option>
-
-    <option value="Laboratorian">
-
-        Laboratorian
-
-    </option>
-
-    <option value="Pharmacist">
-
-        Pharmacist
-
-    </option>
-
-</select>
-
-<br>
-<br>
-
-
-<!-- =================================================
-     DOCTOR PROFILE
-     ================================================= -->
-
-<div
-    id="doctorProfileSection"
-    class="profile-section"
-    style="display: none;"
->
-
-    <label for="doctor_id">
-
-        Doctor Profile
-
-        <span class="required">*</span>
-
-    </label>
-
-    <br>
-
-    <select
-        id="doctor_id"
-        name="doctor_id"
+    <form
+        method="POST"
+        action="{{ url_for('users') }}"
     >
 
-        <option value="">
+        <!-- =================================================
+             CSRF PROTECTION
+             ================================================= -->
 
-            -- Select Doctor --
-
-        </option>
-
-        {% for doctor in doctors %}
-
-        <option value="{{ doctor['id'] }}">
-
-            {{ doctor['full_name'] }}
-
-            -
-
-            {{ doctor['specialization'] }}
-
-        </option>
-
-        {% endfor %}
-
-    </select>
-
-    <small>
-
-        Select the Doctor Profile belonging
-        to this user account.
-
-    </small>
-
-</div>
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+        >
 
 
-<!-- =================================================
-     PATIENT PROFILE
-     ================================================= -->
+        <!-- =================================================
+             USERNAME
+             ================================================= -->
 
-<div
-    id="patientProfileSection"
-    class="profile-section"
-    style="display: none;"
->
+        <div class="users-form-group">
 
-    <label for="patient_id">
+            <label for="username">
 
-        Patient Profile
+                Username:
 
-        <span class="required">*</span>
+            </label>
 
-    </label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                required
+            >
 
-    <br>
-
-    <select
-        id="patient_id"
-        name="patient_id"
-    >
-
-        <option value="">
-
-            -- Select Patient --
-
-        </option>
-
-        {% for patient in patients %}
-
-        <option value="{{ patient['id'] }}">
-
-            {{ patient['full_name'] }}
-
-            -
-
-            Patient ID:
-
-            {{ patient['id'] }}
-
-        </option>
-
-        {% endfor %}
-
-    </select>
-
-    <small>
-
-        Select the Patient Profile belonging
-        to this user account.
-
-    </small>
-
-</div>
+        </div>
 
 
-<!-- =====================================================
-     ADD USER BUTTON
-     ===================================================== -->
+        <!-- =================================================
+             RECOVERY EMAIL
+             ================================================= -->
 
-<button type="submit">
+        <div class="users-form-group">
 
-    ➕ Add User
+            <label for="email">
 
-</button>
+                Recovery Email:
+
+                <span class="required">
+                    *
+                </span>
+
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter user's email address"
+                required
+            >
+
+            <small class="email-help">
+
+                This email will be used for password recovery.
+
+            </small>
+
+        </div>
 
 
-</form>
+        <!-- =================================================
+             PASSWORD
+             ================================================= -->
+
+        <div class="users-form-group">
+
+            <label for="password">
+
+                Password:
+
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                minlength="8"
+                required
+            >
+
+            <small class="email-help">
+
+                Password must contain at least 8 characters.
+
+            </small>
+
+        </div>
+
+
+        <!-- =================================================
+             ROLE
+             ================================================= -->
+
+        <div class="users-form-group">
+
+            <label for="role">
+
+                Role:
+
+            </label>
+
+            <select
+                id="role"
+                name="role"
+                required
+                onchange="showProfileSection()"
+            >
+
+                <option value="">
+                    -- Select Role --
+                </option>
+
+                <option value="Admin">
+                    Admin
+                </option>
+
+                <option value="Doctor">
+                    Doctor
+                </option>
+
+                <option value="Receptionist">
+                    Receptionist
+                </option>
+
+                <option value="Data Analyst">
+                    Data Analyst
+                </option>
+
+                <option value="Patient">
+                    Patient
+                </option>
+
+                <option value="Laboratorian">
+                    Laboratorian
+                </option>
+
+                <option value="Pharmacist">
+                    Pharmacist
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- =================================================
+             DOCTOR PROFILE
+             ================================================= -->
+
+        <div
+            id="doctorProfileSection"
+            class="profile-section"
+            style="display: none;"
+        >
+
+            <label for="doctor_id">
+
+                Doctor Profile
+
+                <span class="required">
+                    *
+                </span>
+
+            </label>
+
+            <select
+                id="doctor_id"
+                name="doctor_id"
+            >
+
+                <option value="">
+                    -- Select Doctor --
+                </option>
+
+                {% for doctor in doctors %}
+
+                    <option
+                        value="{{ doctor['id'] }}"
+                    >
+
+                        {{ doctor['full_name'] }}
+
+                        -
+
+                        {{ doctor['specialization'] }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+            <small>
+
+                Select the Doctor Profile belonging
+                to this user account.
+
+            </small>
+
+        </div>
+
+
+        <!-- =================================================
+             PATIENT PROFILE
+             ================================================= -->
+
+        <div
+            id="patientProfileSection"
+            class="profile-section"
+            style="display: none;"
+        >
+
+            <label for="patient_id">
+
+                Patient Profile
+
+                <span class="required">
+                    *
+                </span>
+
+            </label>
+
+            <select
+                id="patient_id"
+                name="patient_id"
+            >
+
+                <option value="">
+                    -- Select Patient --
+                </option>
+
+                {% for patient in patients %}
+
+                    <option
+                        value="{{ patient['id'] }}"
+                    >
+
+                        {{ patient['full_name'] }}
+
+                        -
+
+                        Patient ID:
+
+                        {{ patient['id'] }}
+
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+            <small>
+
+                Select the Patient Profile belonging
+                to this user account.
+
+            </small>
+
+        </div>
+
+
+        <!-- =================================================
+             ADD USER BUTTON
+             ================================================= -->
+
+        <button
+            type="submit"
+            class="users-primary-btn"
+        >
+
+            ➕ Add User
+
+        </button>
+
+    </form>
+
+</section>
 
 
 <!-- =====================================================
      USERS LIST
      ===================================================== -->
 
-<h2>
+<section class="users-list-card">
 
-    System Users
+    <h2>
+        System Users
+    </h2>
 
-</h2>
 
+    <div class="users-table-wrapper">
 
-<table>
+        <table class="users-table">
 
-<thead>
+            <thead>
 
-<tr>
+                <tr>
 
-    <th>
+                    <th>
+                        ID
+                    </th>
 
-        ID
+                    <th>
+                        Username
+                    </th>
 
-    </th>
+                    <th>
+                        Recovery Email
+                    </th>
 
-    <th>
+                    <th>
+                        Role
+                    </th>
 
-        Username
+                    <th>
+                        Profile
+                    </th>
 
-    </th>
+                    <th>
+                        Actions
+                    </th>
 
-    <th>
+                </tr>
 
-        Recovery Email
+            </thead>
 
-    </th>
 
-    <th>
+            <tbody>
 
-        Role
+            {% for user in users %}
 
-    </th>
+                <tr>
 
-    <th>
 
-        Profile
+                    <!-- =====================================
+                         ID
+                         ===================================== -->
 
-    </th>
+                    <td>
 
-    <th>
+                        {{ user["id"] }}
 
-        Actions
+                    </td>
 
-    </th>
 
-</tr>
+                    <!-- =====================================
+                         USERNAME
+                         ===================================== -->
 
-</thead>
+                    <td>
 
+                        {{ user["username"] }}
 
-<tbody>
+                    </td>
 
-{% for user in users %}
 
-<tr>
+                    <!-- =====================================
+                         RECOVERY EMAIL
+                         ===================================== -->
 
+                    <td>
 
-    <!-- ID -->
+                        {% if user["email"] %}
 
-    <td>
+                            📧 {{ user["email"] }}
 
-        {{ user["id"] }}
+                        {% else %}
 
-    </td>
+                            <span class="profile-not-set">
 
+                                Not set
 
-    <!-- USERNAME -->
+                            </span>
 
-    <td>
+                        {% endif %}
 
-        {{ user["username"] }}
+                    </td>
 
-    </td>
 
+                    <!-- =====================================
+                         ROLE
+                         ===================================== -->
 
-    <!-- RECOVERY EMAIL -->
+                    <td>
 
-    <td>
+                        {{ user["role"] }}
 
-        {% if user["email"] %}
+                    </td>
 
-            📧 {{ user["email"] }}
 
-        {% else %}
+                    <!-- =====================================
+                         PROFILE
+                         ===================================== -->
 
-            <span style="color: #64748b;">
+                    <td>
 
-                Not set
+                        {% if user["role"] == "Doctor" %}
 
-            </span>
+                            {% if user["doctor_name"] %}
 
-        {% endif %}
+                                👨‍⚕️
 
-    </td>
+                                {{ user["doctor_name"] }}
 
+                            {% else %}
 
-    <!-- ROLE -->
+                                <span class="profile-warning">
 
-    <td>
+                                    ⚠️ Doctor Not Linked
 
-        {{ user["role"] }}
+                                </span>
 
-    </td>
+                            {% endif %}
 
 
-    <!-- PROFILE -->
+                        {% elif user["role"] == "Patient" %}
 
-    <td>
+                            {% if user["patient_name"] %}
 
-        {% if user["role"] == "Doctor" %}
+                                👤
 
-            {% if user["doctor_name"] %}
+                                {{ user["patient_name"] }}
 
-                👨‍⚕️
+                            {% else %}
 
-                {{ user["doctor_name"] }}
+                                <span class="profile-warning">
 
-            {% else %}
+                                    ⚠️ Patient Not Linked
 
-                <span style="color: red;">
+                                </span>
 
-                    ⚠️ Doctor Not Linked
+                            {% endif %}
 
-                </span>
 
-            {% endif %}
+                        {% else %}
 
+                            —
 
-        {% elif user["role"] == "Patient" %}
+                        {% endif %}
 
-            {% if user["patient_name"] %}
+                    </td>
 
-                👤
 
-                {{ user["patient_name"] }}
+                    <!-- =====================================
+                         ACTIONS
+                         ===================================== -->
 
-            {% else %}
+                    <td>
 
-                <span style="color: red;">
+                        <a
+                            href="{{ url_for(
+                                'edit_user',
+                                user_id=user['id']
+                            ) }}"
+                            class="users-action-edit"
+                        >
 
-                    ⚠️ Patient Not Linked
+                            ✏️ Edit
 
-                </span>
+                        </a>
 
-            {% endif %}
 
+                        {% if user["id"] != session["user_id"] %}
 
-        {% else %}
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'delete_user',
+                                    user_id=user['id']
+                                ) }}"
+                                class="users-delete-form"
+                                onsubmit="return confirm(
+                                    'Are you sure you want to delete this user?'
+                                );"
+                            >
 
-            —
+                                <!-- =================================
+                                     CSRF PROTECTION
+                                     ================================= -->
 
-        {% endif %}
+                                <input
+                                    type="hidden"
+                                    name="csrf_token"
+                                    value="{{ csrf_token() }}"
+                                >
 
-    </td>
 
+                                <button
+                                    type="submit"
+                                    class="users-delete-btn"
+                                >
 
-    <!-- ACTIONS -->
+                                    🗑️ Delete
 
-    <td>
+                                </button>
 
-        <a
-            href="{{ url_for(
-                'edit_user',
-                user_id=user['id']
-            ) }}"
-        >
+                            </form>
 
-            ✏️ Edit
+                        {% else %}
 
-        </a>
+                            <span class="users-current-user">
 
+                                Current User
 
-        {% if user["id"] != session["user_id"] %}
+                            </span>
 
-            <form
-                method="POST"
-                action="{{ url_for(
-                    'delete_user',
-                    user_id=user['id']
-                ) }}"
-                style="display:inline;"
-                onsubmit="return confirm(
-                    'Are you sure you want to delete this user?'
-                );"
-            >
+                        {% endif %}
 
-                <button type="submit">
+                    </td>
 
-                    🗑️ Delete
 
-                </button>
+                </tr>
 
-            </form>
+            {% endfor %}
 
-        {% else %}
+            </tbody>
 
-            <span>
+        </table>
 
-                Current User
+    </div>
 
-            </span>
+</section>
 
-        {% endif %}
 
-    </td>
-
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
+</main>
 
 
 <!-- =====================================================
      FOOTER
      ===================================================== -->
 
-<hr>
+<footer class="users-footer">
 
-<p>
+    <p>
 
-<strong>
+        <strong>
+            🏥 Hospital Data Analytics System
+        </strong>
 
-    🏥 Hospital Data Analytics System
+    </p>
 
-</strong>
+    <p>
 
-</p>
+        Role-Based Access Control Enabled
 
-<p>
+    </p>
 
-Role-Based Access Control Enabled
-
-</p>
+</footer>
 
 
 <!-- =====================================================
@@ -808,7 +1252,9 @@ function showProfileSection() {
 
 
     /*
+     * =====================================================
      * DOCTOR
+     * =====================================================
      */
 
     if (role === "Doctor") {
@@ -831,7 +1277,9 @@ function showProfileSection() {
 
 
     /*
+     * =====================================================
      * PATIENT
+     * =====================================================
      */
 
     if (role === "Patient") {
@@ -857,6 +1305,10 @@ function showProfileSection() {
 </script>
 
 
+</div>
+
+
 </body>
 
 </html>
+```
